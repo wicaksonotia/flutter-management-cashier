@@ -46,34 +46,36 @@ class ListCategories extends StatelessWidget {
                                     icon: const Icon(Icons.edit),
                                     color: MyColors.primary,
                                     onPressed: () => categoryController
-                                        .updateCategory(categoryController
-                                            .resultData[index].id),
+                                        .detailCategory(categoryController
+                                            .resultData[index].id!),
                                   ),
                                   const SizedBox(
                                     width: 10,
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete),
+                                    icon: const Icon(Icons.delete),
                                     color: MyColors.red,
                                     onPressed: () => categoryController
                                         .deleteCategory(categoryController
-                                            .resultData[index].id),
+                                            .resultData[index].id!),
                                   ),
                                 ],
                               ),
-                              leading:
-                                  categoryController.resultData[index].type ==
-                                          "Pemasukan"
-                                      ? const Icon(
-                                          Icons.download,
-                                          color: MyColors.green,
-                                        )
-                                      : const Icon(
-                                          Icons.upload,
-                                          color: MyColors.red,
-                                        ),
+                              leading: categoryController
+                                          .resultData[index].categoryType ==
+                                      "PEMASUKAN"
+                                  ? const Icon(
+                                      Icons.download,
+                                      color: MyColors.green,
+                                    )
+                                  : const Icon(
+                                      Icons.upload,
+                                      color: MyColors.red,
+                                    ),
                               title: Text(
-                                categoryController.resultData[index].name,
+                                categoryController
+                                        .resultData[index].categoryName ??
+                                    '',
                                 style: const TextStyle(color: MyColors.primary),
                               ),
                               // leading: categoryController[index][0],
@@ -86,73 +88,6 @@ class ListCategories extends StatelessWidget {
                 ),
               ),
             ),
-    );
-  }
-}
-
-class CustomChip extends StatelessWidget {
-  final String label;
-  final Color? color;
-  final double? width;
-  final double? height;
-  final EdgeInsetsGeometry? margin;
-  final bool selected;
-  final Function(bool selected) onSelect;
-
-  const CustomChip({
-    Key? key,
-    required this.label,
-    this.color,
-    this.width,
-    this.height,
-    this.margin,
-    this.selected = false,
-    required this.onSelect,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return AnimatedContainer(
-      width: width,
-      height: height,
-      margin: margin ?? const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-      duration: const Duration(milliseconds: 300),
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: selected
-            ? (color ?? Colors.green)
-            : theme.unselectedWidgetColor.withOpacity(.12),
-        borderRadius: BorderRadius.all(Radius.circular(selected ? 25 : 10)),
-        border: Border.all(
-          color: selected
-              ? (color ?? Colors.green)
-              : theme.colorScheme.onSurface.withOpacity(.38),
-          width: 1,
-        ),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.all(Radius.circular(selected ? 25 : 10)),
-        onTap: () => onSelect(!selected),
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            Positioned(
-              left: 9,
-              right: 9,
-              bottom: 7,
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: selected ? Colors.white : theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

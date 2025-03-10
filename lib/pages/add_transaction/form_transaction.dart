@@ -57,7 +57,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       transactionController.tipeContoller.value = value!;
                       categoryController.getData(value);
                       transactionController.kategoriController.value =
-                          value == "Pemasukan" ? "STMJ" : "SUSU";
+                          value == "PEMASUKAN" ? "STMJ" : "SUSU";
                     },
                     isExpanded: true,
                     style: const TextStyle(
@@ -77,8 +77,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               //       activeColor: MyColors.red,
               //     ),
               //     Text(transactionController.isExpense.value
-              //         ? 'Pengeluaran'
-              //         : 'Pemasukan'),
+              //         ? 'PENGELUARAN'
+              //         : 'PEMASUKAN'),
               //   ],
               // ),
               const Gap(10),
@@ -93,8 +93,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                     items: categoryController.resultData.map(
                       (val) {
                         return DropdownMenuItem(
-                          value: val.name,
-                          child: Text(val.name),
+                          value: val.categoryName,
+                          child: Text(val.categoryName!),
                         );
                       },
                     ).toList(),

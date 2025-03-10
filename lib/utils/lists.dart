@@ -186,9 +186,9 @@ List pastTransactions = [
   ],
 ];
 List<Map<String, String>> tipeKategori = [
-  {"id": "1", "nama": "Pemasukan"},
-  {"id": "2", "nama": "Pengeluaran"},
+  {"id": "1", "nama": "PEMASUKAN"},
+  {"id": "2", "nama": "PENGELUARAN"},
 ];
-List<String> dropDownKategori = ["Pemasukan", "Pengeluaran"];
-List<String> dropDownKategoriSearch = ["All", "Pemasukan", "Pengeluaran"];
+List<String> dropDownKategori = ["PEMASUKAN", "PENGELUARAN"];
+List<String> dropDownKategoriSearch = ["All", "PEMASUKAN", "PENGELUARAN"];
 List<String> dropDownTransactionCategories = ["makan", "minum", "mandi"];

@@ -61,7 +61,7 @@ class _VerticalListState extends State<VerticalList> {
                           ),
                           leading:
                               transactionController.resultData[index].type ==
-                                      "Pemasukan"
+                                      "PEMASUKAN"
                                   ? const Icon(
                                       Icons.download,
                                       color: MyColors.green,
