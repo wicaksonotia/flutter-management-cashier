@@ -1,4 +1,4 @@
-import 'package:financial_apps/database/api_request.dart';
+import 'package:financial_apps/database/database_helper.dart';
 import 'package:financial_apps/models/category_model.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/lists.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class CategoryController extends GetxController {
+class CategorySqliteController extends GetxController {
   TextEditingController nameController = TextEditingController();
   var tipeContoller = dropDownKategori.first.obs;
   var kategoriSearch = dropDownKategoriSearch.first.obs;
@@ -17,38 +17,25 @@ class CategoryController extends GetxController {
   var dataCategoryType = ''.obs;
   var dataStatus = true.obs;
 
+  closeDialog() {
+    Get.back();
+  }
+
   @override
   void onInit() {
     super.onInit();
-    getData([]);
+    getData(kategoriSearch.value);
   }
 
   void insertCategory() async {
-    try {
-      isLoading(true);
-      final model = CategoryModel(
-          categoryName: nameController.text,
-          categoryType: tipeContoller.value,
-          id: resultData.length);
-      var resultSave = await RemoteDataSource.saveCategory(model.toJson());
-      if (resultSave) {
-        // NOTIF SAVE SUCCESS
-        Get.snackbar('Notification', 'Data saved successfully',
-            icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-        nameController.clear();
-        // getData(kategoriSearch.value);
-      } else {
-        // NOTIF SAVE FAILED
-        Get.snackbar('Notification', 'Failed to save data',
-            icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      }
-    } catch (e) {
-      Get.snackbar(
-          'Notification', 'Failed to save transaction: ${e.toString()}',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-    } finally {
-      isLoading(false);
-    }
+    final model = CategoryModel(
+        categoryName: nameController.text,
+        categoryType: tipeContoller.value,
+        id: resultData.length);
+    DatabaseHelper().insertCategories(model);
+    nameController.clear();
+    getData(kategoriSearch.value);
+    // closeDialog();
   }
 
   void deleteCategory(int id) async {
@@ -58,19 +45,11 @@ class CategoryController extends GetxController {
       textCancel: "No",
       textConfirm: "Yes",
       onConfirm: () async {
-        var resultUpdate = await RemoteDataSource.deleteCategory(id);
-        print(resultUpdate);
-        // if (resultUpdate) {
-        //   // NOTIF UPDATE SUCCESS
-        //   Get.snackbar('Notification', 'Data updated successfully',
-        //       icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-        //   getData(tags);
-        //   Get.back();
-        // } else {
-        //   // NOTIF UPDATE FAILED
-        //   Get.snackbar('Notification', 'Failed to update data',
-        //       icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-        // }
+        // await DatabaseHelper.instance.deleteCategories(id);
+        // resultData.removeWhere((element) => element.id == id);
+        await DatabaseHelper.instance.deleteCategories(id);
+        getData(kategoriSearch.value);
+        Get.back();
       },
       onCancel: () {
         Get.back();
@@ -78,36 +57,8 @@ class CategoryController extends GetxController {
     );
   }
 
-  void updateCategory(int id) async {
-    try {
-      isLoading(true);
-      final model = CategoryModel(
-          categoryName: nameController.text,
-          categoryType: dataCategoryType.value,
-          status: dataStatus.value);
-      var resultUpdate =
-          await RemoteDataSource.updateCategory(id, model.toJson());
-      if (resultUpdate) {
-        // NOTIF UPDATE SUCCESS
-        Get.snackbar('Notification', 'Data updated successfully',
-            icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-        // getData(kategoriSearch.value);
-      } else {
-        // NOTIF UPDATE FAILED
-        Get.snackbar('Notification', 'Failed to update data',
-            icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      }
-    } catch (e) {
-      Get.snackbar(
-          'Notification', 'Failed to update transaction: ${e.toString()}',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-    } finally {
-      isLoading(false);
-    }
-  }
-
   void detailCategory(int id) async {
-    final data = await RemoteDataSource.detailCategory(id);
+    final data = await DatabaseHelper.instance.detailCategories(id);
     nameController.text = data?.categoryName ?? '';
     dataCategoryType.value = data?.categoryType ?? '';
     dataStatus.value = data?.status ?? true;
@@ -166,14 +117,39 @@ class CategoryController extends GetxController {
         });
   }
 
-  // LIST DATA CATEGORIES
-  void getData(Object kategori) async {
+  void updateCategory(int id) async {
+    final model = CategoryModel(
+        categoryName: nameController.text,
+        categoryType: dataCategoryType.value,
+        id: id);
+    DatabaseHelper().updateCategories(id, model);
+    getData(kategoriSearch.value);
+  }
+
+  void syncLocalToServerCategories() async {
+    await DatabaseHelper.instance.syncLocalToServerCategories();
+  }
+
+  void syncServerToLocalCategories() async {
+    await DatabaseHelper.instance.syncServerToLocalCategories();
+    getData(kategoriSearch.value);
+  }
+
+  void getData(String kategori) async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.listCategories(kategori);
-      if (result != null) {
-        resultData.assignAll(result);
-      }
+      resultData.clear();
+      DatabaseHelper.instance.fetchCategories(kategori).then((value) {
+        for (var element in value) {
+          resultData.add(
+            CategoryModel(
+                id: element.id,
+                categoryName: element.categoryName,
+                categoryType: element.categoryType,
+                status: element.status),
+          );
+        }
+      });
     } catch (error) {
       Get.snackbar('Error', error.toString(),
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);

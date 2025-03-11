@@ -144,7 +144,8 @@ class DatabaseHelper {
     final dbClient = await db;
     try {
       Dio dio = Dio();
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.getcategories;
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcategories;
       Response response = await dio.get(url);
       if (response.statusCode == 200) {
         await dbClient.delete(tableCategories);

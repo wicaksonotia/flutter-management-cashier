@@ -1,6 +1,6 @@
 import 'package:financial_apps/pages/AccountPage.dart';
 import 'package:financial_apps/pages/home/home_page.dart';
-import 'package:financial_apps/pages/master_categories/form_categories.dart';
+import 'package:financial_apps/pages/master_categories/categories.dart';
 import 'package:financial_apps/pages/transaction/transaction_page.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';

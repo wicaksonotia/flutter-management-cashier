@@ -6,5 +6,8 @@ class ApiEndPoints {
 class _AuthEndPoints {
   final String login = 'loginkios';
   final String savecategories = 'financialsavecategory';
-  final String getcategories = 'financialcategory';
+  final String listcategories = 'financiallistcategories';
+  final String detailcategory = 'financialdetailcategory';
+  final String updateCategory = 'financialupdatecategory';
+  final String deletecategory = 'financialdeletecategory';
 }

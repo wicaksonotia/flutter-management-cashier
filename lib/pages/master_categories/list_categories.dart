@@ -1,5 +1,4 @@
 import 'package:financial_apps/controllers/category_controller.dart';
-import 'package:financial_apps/pages/master_categories/select_box.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,13 +18,13 @@ class ListCategories extends StatelessWidget {
               ),
             )
           : Padding(
-              padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Chips(),
-                    SelectBoxSearch(),
+                    // SelectBoxSearch(),
                     // const MultiSelectHome(),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * .8,
