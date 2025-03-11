@@ -61,8 +61,11 @@ class ListCategories extends StatelessWidget {
                               title: const Text('Update Status'),
                               onTap: () {
                                 Get.back();
-                                categoryController.detailCategory(
-                                    categoryController.resultData[index].id!);
+                                categoryController.updateCategoryStatus(
+                                    categoryController.resultData[index].id!,
+                                    categoryController
+                                            .resultData[index].status ??
+                                        false);
                               }),
                         ),
                         const PopupMenuDivider(),
@@ -73,7 +76,7 @@ class ListCategories extends StatelessWidget {
                               title: const Text('Delete'),
                               onTap: () {
                                 Get.back();
-                                categoryController.detailCategory(
+                                categoryController.deleteCategory(
                                     categoryController.resultData[index].id!);
                               }),
                         ),
@@ -92,7 +95,6 @@ class ListCategories extends StatelessWidget {
                         ),
                   title: Text(
                     categoryController.resultData[index].categoryName ?? '',
-                    style: const TextStyle(color: MyColors.primary),
                   ),
                   subtitle: Text(
                     categoryController.resultData[index].status == true

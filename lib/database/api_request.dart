@@ -47,6 +47,27 @@ class RemoteDataSource {
     }
   }
 
+  static Future<bool> updateStatusCategory(int id, bool status) async {
+    try {
+      var rawFormat = jsonEncode({'id': id, 'status': !status});
+      print(rawFormat);
+      Dio dio = Dio();
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.updatecategorystatus;
+      Response response = await dio.post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   //DELETE CATEGORY
   static Future<bool> deleteCategory(int id) async {
     try {

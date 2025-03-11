@@ -9,5 +9,6 @@ class _AuthEndPoints {
   final String listcategories = 'financiallistcategories';
   final String detailcategory = 'financialdetailcategory';
   final String updateCategory = 'financialupdatecategory';
+  final String updatecategorystatus = 'financialupdatecategorystatus';
   final String deletecategory = 'financialdeletecategory';
 }
