@@ -59,18 +59,18 @@ class CategoryController extends GetxController {
       textConfirm: "Yes",
       onConfirm: () async {
         var resultUpdate = await RemoteDataSource.deleteCategory(id);
-        print(resultUpdate);
-        // if (resultUpdate) {
-        //   // NOTIF UPDATE SUCCESS
-        //   Get.snackbar('Notification', 'Data updated successfully',
-        //       icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-        //   getData(tags);
-        //   Get.back();
-        // } else {
-        //   // NOTIF UPDATE FAILED
-        //   Get.snackbar('Notification', 'Failed to update data',
-        //       icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-        // }
+        // print(resultUpdate);
+        if (resultUpdate) {
+          // NOTIF UPDATE SUCCESS
+          Get.back();
+          Get.snackbar('Notification', 'Data updated successfully',
+              icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+          getData(tags);
+        } else {
+          // NOTIF UPDATE FAILED
+          Get.snackbar('Notification', 'Failed to update data',
+              icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+        }
       },
       onCancel: () {
         Get.back();
