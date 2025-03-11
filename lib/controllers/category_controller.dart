@@ -27,16 +27,15 @@ class CategoryController extends GetxController {
     try {
       isLoading(true);
       final model = CategoryModel(
-          categoryName: nameController.text,
-          categoryType: tipeContoller.value,
-          id: resultData.length);
+          categoryName: nameController.text, categoryType: tipeContoller.value);
       var resultSave = await RemoteDataSource.saveCategory(model.toJson());
       if (resultSave) {
         // NOTIF SAVE SUCCESS
+        Get.back();
         Get.snackbar('Notification', 'Data saved successfully',
             icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
         nameController.clear();
-        // getData(kategoriSearch.value);
+        getData(tags);
       } else {
         // NOTIF SAVE FAILED
         Get.snackbar('Notification', 'Failed to save data',
