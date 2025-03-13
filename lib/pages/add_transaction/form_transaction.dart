@@ -1,5 +1,5 @@
 import 'package:financial_apps/controllers/category_controller.dart';
-import 'package:financial_apps/controllers/transaction_controller.dart';
+import 'package:financial_apps/controllers/transaction_sqlite_controller.dart';
 import 'package:financial_apps/utils/loading_button.dart';
 import 'package:financial_apps/utils/app_bar_header.dart';
 import 'package:financial_apps/utils/colors.dart';
@@ -17,8 +17,8 @@ class AddTransactionPage extends StatefulWidget {
 }
 
 class _AddTransactionPageState extends State<AddTransactionPage> {
-  final TransactionController transactionController =
-      Get.find<TransactionController>();
+  final TransactionSqliteController transactionController =
+      Get.find<TransactionSqliteController>();
   final CategoryController categoryController = Get.find<CategoryController>();
 
   @override

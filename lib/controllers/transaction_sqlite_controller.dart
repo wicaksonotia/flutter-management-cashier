@@ -4,7 +4,7 @@ import 'package:financial_apps/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class TransactionController extends GetxController {
+class TransactionSqliteController extends GetxController {
   TextEditingController amountController = TextEditingController();
   var tipeContoller = dropDownKategori.first.obs;
   var kategoriController = 'STMJ'.obs;

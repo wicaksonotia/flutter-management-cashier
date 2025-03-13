@@ -30,15 +30,6 @@ class _FormCategoriesState extends State<FormCategories> {
               color: Colors.black54, fontSize: 20, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.black54,
-          ),
-          onPressed: () {
-            Get.back();
-          },
-        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -100,43 +91,54 @@ class _FormCategoriesState extends State<FormCategories> {
                         ),
                         const Gap(10),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: MyColors.primary,
-                                  backgroundColor: Colors.white,
-                                  minimumSize: const Size(0, 45),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      side: const BorderSide(
-                                          color: MyColors.primary)),
+                            ElevatedButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: const BorderSide(color: MyColors.green),
                                 ),
-                                onPressed: () {
-                                  Get.back();
-                                },
-                                child: const Text(
-                                  'CANCEL',
+                                backgroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                minimumSize:
+                                    const Size(100, 40), // Set width and height
+                                textStyle: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              child: const Text(
+                                'CANCEL',
+                                style: TextStyle(color: MyColors.green),
+                              ),
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: const Color(0xFFFFFFFF),
-                                  backgroundColor: MyColors.primary,
-                                  minimumSize: const Size(0, 45),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                            const Gap(10),
+                            ElevatedButton(
+                              onPressed: () async {
+                                categoryController.insertCategory();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                onPressed: () {
-                                  categoryController.insertCategory();
-                                },
-                                child: const Text(
-                                  'SAVE',
+                                backgroundColor: MyColors.green,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                minimumSize:
+                                    const Size(100, 40), // Set width and height
+                                textStyle: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                              ),
+                              child: const Text(
+                                'SAVE',
+                                style: TextStyle(color: Colors.white),
                               ),
                             ),
                           ],

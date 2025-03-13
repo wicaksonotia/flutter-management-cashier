@@ -217,7 +217,7 @@ class CategoryController extends GetxController {
             ),
             const Gap(20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                   onPressed: () {
@@ -231,45 +231,39 @@ class CategoryController extends GetxController {
                     backgroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
+                    minimumSize: const Size(100, 40), // Set width and height
                     textStyle: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: const Row(
-                    children: [
-                      Text(
-                        'Close',
-                        style: TextStyle(color: MyColors.green),
-                      )
-                    ],
+                  child: const Text(
+                    'CANCEL',
+                    style: TextStyle(color: MyColors.green),
                   ),
                 ),
                 const Gap(10),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     updateCategory(id);
                     Get.back();
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12), // <-- Radius
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     backgroundColor: MyColors.green,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
+                    minimumSize: const Size(100, 40), // Set width and height
                     textStyle: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: const Row(
-                    children: [
-                      Text(
-                        'Save',
-                        style: TextStyle(color: Colors.white),
-                      )
-                    ],
+                  child: const Text(
+                    'SAVE',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -330,13 +324,14 @@ class CategoryController extends GetxController {
                     backgroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
+                    minimumSize: const Size(100, 40), // Set width and height
                     textStyle: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   child: const Text(
-                    'No',
+                    'NO',
                     style: TextStyle(color: MyColors.green),
                   ),
                 ),
@@ -366,13 +361,14 @@ class CategoryController extends GetxController {
                     backgroundColor: MyColors.green,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
+                    minimumSize: const Size(100, 40), // Set width and height
                     textStyle: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   child: const Text(
-                    'Yes',
+                    'YES',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

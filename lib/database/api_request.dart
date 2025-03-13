@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:financial_apps/database/api_endpoints.dart';
 import 'package:financial_apps/models/category_model.dart';
+import 'package:financial_apps/models/history_model.dart';
 import 'package:financial_apps/models/total_per_type_model.dart';
 
 class RemoteDataSource {
@@ -135,6 +136,21 @@ class RemoteDataSource {
       final response = await Dio().get(url);
       if (response.statusCode == 200) {
         final TotalPerTypeModel res = TotalPerTypeModel.fromJson(response.data);
+        return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<FinancialHistoryModel?> history(String kategori) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.history;
+      final response = await Dio().get('$url?kategori=$kategori');
+      if (response.statusCode == 200) {
+        final FinancialHistoryModel res =
+            FinancialHistoryModel.fromJson(response.data);
         return res;
       }
       return null;

@@ -1,5 +1,5 @@
 import 'package:calendar_appbar/calendar_appbar.dart';
-import 'package:financial_apps/controllers/transaction_controller.dart';
+import 'package:financial_apps/controllers/transaction_sqlite_controller.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -14,8 +14,7 @@ class CalendarWeeklyView extends StatefulWidget {
 
 class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
   // int? groupValue = 0;
-  final TransactionController transactionController =
-      Get.find<TransactionController>();
+
   @override
   Widget build(BuildContext context) {
     // Widget calendarBox(BuildContext context) {
@@ -54,7 +53,7 @@ class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Last Week's Expenses",
+                "Last Week's Transaction",
                 style: TextStyle(
                     color: Colors.grey[700],
                     fontSize: 18,
@@ -83,16 +82,16 @@ class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
           backButton: false,
           // onDateChanged: (value) => (),
           onDateChanged: (value) {
-            transactionController.selectedTabDate.value = value;
-            DateTime date = DateTime(
-                transactionController.selectedTabDate.value.year,
-                transactionController.selectedTabDate.value.month,
-                transactionController.selectedTabDate.value.day);
-            var convertedDateBackToInt = date.millisecondsSinceEpoch;
+            // transactionController.selectedTabDate.value = value;
+            // DateTime date = DateTime(
+            //     transactionController.selectedTabDate.value.year,
+            //     transactionController.selectedTabDate.value.month,
+            //     transactionController.selectedTabDate.value.day);
+            // var convertedDateBackToInt = date.millisecondsSinceEpoch;
 
-            transactionController.getData(
-                transactionController.kategoriSearch.value,
-                convertedDateBackToInt);
+            // transactionController.getData(
+            //     transactionController.kategoriSearch.value,
+            //     convertedDateBackToInt);
           },
           firstDate: DateTime.now().subtract(const Duration(days: 366)),
           lastDate: DateTime.now(),

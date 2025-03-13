@@ -1,7 +1,7 @@
 import 'package:financial_apps/pages/AccountPage.dart';
 import 'package:financial_apps/pages/home/home_page.dart';
 import 'package:financial_apps/pages/master_categories/categories.dart';
-import 'package:financial_apps/pages/transaction/transaction_page.dart';
+import 'package:financial_apps/pages/transaction/history_page.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   final screens = [
     const HomePage(),
-    const TransactionPage(),
+    const TransactionHistoryPage(),
     const FormCategories(),
     const AccountPage(),
   ];
