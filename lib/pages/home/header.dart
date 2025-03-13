@@ -35,11 +35,11 @@ class Header extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    CurrencyFormat.convertToIdr(10000, 0),
+                    CurrencyFormat.convertToIdr(1000000000, 0),
                     textAlign: TextAlign.left,
                     style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 35,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold),
                   )
                 ],
@@ -47,13 +47,13 @@ class Header extends StatelessWidget {
               ElevatedButton.icon(
                 icon: const Icon(
                   Icons.addchart_outlined,
-                  size: 30.0,
+                  size: 20,
                 ),
                 onPressed: (() => {Get.toNamed(RouterClass.addtransaction)}),
                 label: const Text(
                   "Add Transaction",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

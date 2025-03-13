@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:financial_apps/database/api_endpoints.dart';
 import 'package:financial_apps/models/category_model.dart';
+import 'package:financial_apps/models/total_per_type_model.dart';
 
 class RemoteDataSource {
   // ===================== CATEGORY =====================
@@ -128,4 +129,17 @@ class RemoteDataSource {
   }
 
   // ===================== TRANSACTION =====================
+  static Future<TotalPerTypeModel?> totalPerType() async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.totalpertype;
+      final response = await Dio().get(url);
+      if (response.statusCode == 200) {
+        final TotalPerTypeModel res = TotalPerTypeModel.fromJson(response.data);
+        return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }

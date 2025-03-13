@@ -1,7 +1,6 @@
 import 'package:calendar_appbar/calendar_appbar.dart';
 import 'package:financial_apps/controllers/transaction_controller.dart';
 import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -61,20 +60,19 @@ class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
                     fontSize: 18,
                     fontWeight: FontWeight.w600),
               ),
-              Row(
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  Text(
-                    CurrencyFormat.convertToIdr(10000, 0),
-                    style: TextStyle(
-                        color: Colors.grey[700], fontWeight: FontWeight.w500),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 12,
-                  )
-                ],
-              )
+              // Row(
+              //   children: [
+              //     Text(
+              //       CurrencyFormat.convertToIdr(10000, 0),
+              //       style: TextStyle(
+              //           color: Colors.grey[700], fontWeight: FontWeight.w500),
+              //     ),
+              //     const Icon(
+              //       Icons.arrow_forward_ios,
+              //       size: 12,
+              //     )
+              //   ],
+              // )
             ],
           ),
         ),
