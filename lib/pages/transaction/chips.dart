@@ -1,19 +1,19 @@
 import 'package:chips_choice/chips_choice.dart';
-import 'package:financial_apps/controllers/category_controller.dart';
+import 'package:financial_apps/controllers/history_controller.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class Chips extends StatefulWidget {
-  const Chips({super.key});
+class ChipsTransaction extends StatefulWidget {
+  const ChipsTransaction({super.key});
 
   @override
-  _ChipsState createState() => _ChipsState();
+  _ChipsTransactionState createState() => _ChipsTransactionState();
 }
 
-class _ChipsState extends State<Chips> {
-  final CategoryController categoryController = Get.find<CategoryController>();
+class _ChipsTransactionState extends State<ChipsTransaction> {
+  final HistoryController _historyController = Get.find<HistoryController>();
   List<String> tags = [];
   @override
   Widget build(BuildContext context) {
@@ -21,8 +21,8 @@ class _ChipsState extends State<Chips> {
       value: tags,
       onChanged: (val) => setState(() {
         tags = val;
-        categoryController.tags.value = val;
-        categoryController.getData(val);
+        _historyController.tags.value = val;
+        _historyController.getDataByDate();
       }),
       choiceItems: C2Choice.listFrom<String, Map<String, String>>(
         source: tipeKategori,

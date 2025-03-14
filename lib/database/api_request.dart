@@ -153,13 +153,26 @@ class RemoteDataSource {
     }
   }
 
-  static Future<FinancialHistoryModel?> historyByDate(DateTime startdate,
-      DateTime enddate, DateTime singledate, bool checksingledate) async {
+  static Future<FinancialHistoryModel?> historyByDate(
+      DateTime startdate,
+      DateTime enddate,
+      DateTime singledate,
+      bool checksingledate,
+      Object kategori) async {
     try {
+      var rawFormat = (jsonEncode({
+        'startDate': startdate.toString(),
+        'endDate': enddate.toString(),
+        'singleDate': singledate.toString(),
+        'checkSingleDate': checksingledate,
+        'kategori': kategori
+      }));
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybydate;
-      final response = await Dio().get(
-          '$url?startdate=$startdate&enddate=$enddate&singledate=$singledate&checksingledate=$checksingledate');
-      // print(response.data);
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
       if (response.statusCode == 200) {
         final FinancialHistoryModel res =
             FinancialHistoryModel.fromJson(response.data);
@@ -167,7 +180,7 @@ class RemoteDataSource {
       }
       return null;
     } catch (e) {
-      // print(e.toString());
+      print(e.toString());
       throw Exception(e.toString());
     }
   }

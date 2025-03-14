@@ -82,13 +82,13 @@ class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
           white: MyColors.primary,
           backButton: false,
           onDateChanged: (value) {
-            historyController.singleDate.value = value;
+            // historyController.singleDate.value = value;
             // DateTime date = DateTime(
             //     value.year,
             //     value.month,
             //     value.day);
             // var convertedDateBackToInt = date.millisecondsSinceEpoch;
-            historyController.getDataByDate();
+            historyController.getDataSingleDate(value);
           },
           firstDate: DateTime.now().subtract(const Duration(days: 366)),
           lastDate: DateTime.now(),

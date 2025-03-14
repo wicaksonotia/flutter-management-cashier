@@ -3,7 +3,7 @@ import 'package:financial_apps/controllers/total_per_type_controller.dart';
 import 'package:financial_apps/pages/home/calendar_weekly_view.dart';
 import 'package:financial_apps/pages/home/header.dart';
 import 'package:financial_apps/pages/home/planning_ahead.dart';
-import 'package:financial_apps/pages/transaction/transaction_list.dart';
+import 'package:financial_apps/pages/home/transaction_list.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

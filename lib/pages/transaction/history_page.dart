@@ -1,6 +1,9 @@
 import 'package:financial_apps/controllers/history_controller.dart';
+import 'package:financial_apps/pages/transaction/chips.dart';
+import 'package:financial_apps/pages/transaction/filter.dart';
 import 'package:financial_apps/pages/transaction/transaction_list.dart';
 import 'package:financial_apps/utils/colors.dart';
+import 'package:financial_apps/utils/search_bar_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -28,46 +31,36 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => const FilterReport(),
+                isScrollControlled: true,
+                backgroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+              );
+            },
             icon: const Icon(
-              Icons.filter_alt_outlined,
+              Icons.filter_alt_rounded,
+              color: MyColors.green,
             ),
           )
         ],
       ),
-      body: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: <Widget>[
-            TabBar(
-              indicatorColor: MyColors.green,
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: MyColors.green,
-              dividerColor: Colors.transparent,
-              unselectedLabelColor: Colors.grey,
-              tabs: const [
-                Tab(text: "Income"),
-                Tab(text: "Expenses"),
-              ],
-              onTap: (index) {
-                if (index == 1) {
-                  historyController.kategori.value = 'PENGELUARAN';
-                } else {
-                  historyController.kategori.value = 'PEMASUKAN';
-                }
-                historyController.getData();
-              },
-            ),
-            const Expanded(
-              child: TabBarView(
-                children: [
-                  TransactionList(),
-                  TransactionList(),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: SearchBarContainer(),
+          ),
+          const ChipsTransaction(),
+          const Expanded(
+            child: TransactionList(),
+          ),
+        ],
       ),
     );
   }

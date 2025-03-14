@@ -30,8 +30,8 @@ class _NavigationPageState extends State<NavigationPage> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Colors.transparent,
-          unselectedItemColor: Colors.grey,
-          selectedItemColor: MyColors.primary,
+          unselectedItemColor: Colors.grey[400],
+          selectedItemColor: MyColors.green,
           currentIndex: widget.currentIndex,
           onTap: (index) => setState(() {
             widget.currentIndex = index;

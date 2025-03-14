@@ -151,7 +151,7 @@ class _FormCategoriesState extends State<FormCategories> {
             },
             icon: const Icon(
               Icons.add_box,
-              size: 30,
+              color: MyColors.green,
             ),
           ),
         ],
