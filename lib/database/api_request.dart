@@ -11,10 +11,9 @@ class RemoteDataSource {
   // SAVE CATEGORY
   static Future<bool> saveCategory(dynamic data) async {
     try {
-      Dio dio = Dio();
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.savecategories;
-      Response response = await dio.post(url,
+      Response response = await Dio().post(url,
           data: jsonEncode(data),
           options: Options(
             contentType: Headers.jsonContentType,
@@ -32,10 +31,9 @@ class RemoteDataSource {
   static Future<bool> updateCategory(int id, dynamic data) async {
     try {
       data['id'] = id;
-      Dio dio = Dio();
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateCategory;
-      Response response = await dio.post(url,
+      Response response = await Dio().post(url,
           data: jsonEncode(data),
           options: Options(
             contentType: Headers.jsonContentType,
@@ -52,11 +50,9 @@ class RemoteDataSource {
   static Future<bool> updateStatusCategory(int id, bool status) async {
     try {
       var rawFormat = jsonEncode({'id': id, 'status': !status});
-      print(rawFormat);
-      Dio dio = Dio();
       var url = ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.updatecategorystatus;
-      Response response = await dio.post(url,
+      Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
             contentType: Headers.jsonContentType,
@@ -74,10 +70,9 @@ class RemoteDataSource {
   static Future<bool> deleteCategory(int id) async {
     try {
       var rawFormat = jsonEncode({'id': id});
-      Dio dio = Dio();
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deletecategory;
-      Response response = await dio.post(url,
+      Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
             contentType: Headers.jsonContentType,
@@ -95,10 +90,9 @@ class RemoteDataSource {
   static Future<List<CategoryModel>?> listCategories(Object kategori) async {
     try {
       var rawFormat = jsonEncode({'kategori': kategori});
-      Dio dio = Dio();
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcategories;
-      Response response = await dio.post(url,
+      Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
             contentType: Headers.jsonContentType,
@@ -155,6 +149,25 @@ class RemoteDataSource {
       }
       return null;
     } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<FinancialHistoryModel?> historyByDate(DateTime startdate,
+      DateTime enddate, DateTime singledate, bool checksingledate) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybydate;
+      final response = await Dio().get(
+          '$url?startdate=$startdate&enddate=$enddate&singledate=$singledate&checksingledate=$checksingledate');
+      // print(response.data);
+      if (response.statusCode == 200) {
+        final FinancialHistoryModel res =
+            FinancialHistoryModel.fromJson(response.data);
+        return res;
+      }
+      return null;
+    } catch (e) {
+      // print(e.toString());
       throw Exception(e.toString());
     }
   }

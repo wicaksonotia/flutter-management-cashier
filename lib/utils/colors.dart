@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MyColors {
@@ -8,7 +7,7 @@ class MyColors {
   static const Color green = Color(0xFF11967b);
   static const Color blue = Color.fromARGB(255, 86, 125, 244);
   static const Color orange = Color(0xFFE57734);
-  static const Color grey = Color(0xFF8D8D8E);
+  static const Color grey = Color.fromARGB(255, 175, 175, 175);
   static const Color form = Color(0xFFf9f5ff);
   static const Color backgroundColor = Color(0xffebebeb);
   static const Color darkTextColor = Color(0xff171717);

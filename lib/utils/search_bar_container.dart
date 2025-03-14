@@ -1,7 +1,6 @@
 import 'package:financial_apps/controllers/search_bar_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:financial_apps/utils/colors.dart';
 
 class SearchBarContainer extends StatelessWidget {
   SearchBarContainer({super.key});

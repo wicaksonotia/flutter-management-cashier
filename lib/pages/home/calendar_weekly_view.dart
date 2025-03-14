@@ -1,5 +1,5 @@
 import 'package:calendar_appbar/calendar_appbar.dart';
-import 'package:financial_apps/controllers/transaction_sqlite_controller.dart';
+import 'package:financial_apps/controllers/history_controller.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -14,6 +14,7 @@ class CalendarWeeklyView extends StatefulWidget {
 
 class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
   // int? groupValue = 0;
+  final HistoryController historyController = Get.find<HistoryController>();
 
   @override
   Widget build(BuildContext context) {
@@ -80,18 +81,14 @@ class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
           accent: Colors.transparent,
           white: MyColors.primary,
           backButton: false,
-          // onDateChanged: (value) => (),
           onDateChanged: (value) {
-            // transactionController.selectedTabDate.value = value;
+            historyController.singleDate.value = value;
             // DateTime date = DateTime(
-            //     transactionController.selectedTabDate.value.year,
-            //     transactionController.selectedTabDate.value.month,
-            //     transactionController.selectedTabDate.value.day);
+            //     value.year,
+            //     value.month,
+            //     value.day);
             // var convertedDateBackToInt = date.millisecondsSinceEpoch;
-
-            // transactionController.getData(
-            //     transactionController.kategoriSearch.value,
-            //     convertedDateBackToInt);
+            historyController.getDataByDate();
           },
           firstDate: DateTime.now().subtract(const Duration(days: 366)),
           lastDate: DateTime.now(),

@@ -1,6 +1,6 @@
 import 'package:financial_apps/controllers/category_controller.dart';
 import 'package:financial_apps/pages/master_categories/chips.dart';
-import 'package:financial_apps/pages/master_categories/list_categories.dart';
+import 'package:financial_apps/pages/master_categories/category_list.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/lists.dart';
 import 'package:financial_apps/utils/search_bar_container.dart';

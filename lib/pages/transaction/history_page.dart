@@ -30,8 +30,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           IconButton(
             onPressed: () {},
             icon: const Icon(
-              Icons.settings,
-              size: 30,
+              Icons.filter_alt_outlined,
             ),
           )
         ],
@@ -52,29 +51,18 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
               ],
               onTap: (index) {
                 if (index == 1) {
-                  historyController.getData('PENGELUARAN');
+                  historyController.kategori.value = 'PENGELUARAN';
                 } else {
-                  historyController.getData('PEMASUKAN');
+                  historyController.kategori.value = 'PEMASUKAN';
                 }
+                historyController.getData();
               },
             ),
-            Expanded(
+            const Expanded(
               child: TabBarView(
                 children: [
-                  Obx(() {
-                    if (historyController.isLoading.value) {
-                      return Center(child: CircularProgressIndicator());
-                    } else {
-                      return TransactionList();
-                    }
-                  }),
-                  Obx(() {
-                    if (historyController.isLoading.value) {
-                      return Center(child: CircularProgressIndicator());
-                    } else {
-                      return TransactionList();
-                    }
-                  }),
+                  TransactionList(),
+                  TransactionList(),
                 ],
               ),
             ),

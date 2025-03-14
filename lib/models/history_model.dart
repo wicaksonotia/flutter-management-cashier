@@ -34,7 +34,7 @@ class DataHistory {
   String? categoryType;
   String? note;
   int? amount;
-  DateTime? transactionDate;
+  String? transactionDate;
 
   DataHistory(
       {this.id,

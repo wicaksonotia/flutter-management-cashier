@@ -1,8 +1,9 @@
+import 'package:financial_apps/controllers/history_controller.dart';
 import 'package:financial_apps/controllers/total_per_type_controller.dart';
 import 'package:financial_apps/pages/home/calendar_weekly_view.dart';
 import 'package:financial_apps/pages/home/header.dart';
 import 'package:financial_apps/pages/home/planning_ahead.dart';
-import 'package:financial_apps/pages/home/vertical_list.dart';
+import 'package:financial_apps/pages/transaction/transaction_list.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,9 +18,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TotalPerTypeController totalPerTypeController =
       Get.find<TotalPerTypeController>();
+  final HistoryController historyController = Get.find<HistoryController>();
 
   Future<void> _refresh() async {
     totalPerTypeController.getData();
+    historyController.getDataByDate();
   }
 
   @override
@@ -38,8 +41,11 @@ class _HomePageState extends State<HomePage> {
                 Gap(15),
                 PlanningAhead(),
                 Gap(15),
-                // CalendarWeeklyView(),
-                // VerticalList(),
+                CalendarWeeklyView(),
+                SizedBox(
+                  height: 260,
+                  child: TransactionList(),
+                ),
               ],
             ),
           ),
