@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class TransactionList extends StatefulWidget {
-  const TransactionList({super.key});
+class HistoryList extends StatefulWidget {
+  const HistoryList({super.key});
 
   @override
-  State<TransactionList> createState() => _TransactionListState();
+  State<HistoryList> createState() => _HistoryListState();
 }
 
-class _TransactionListState extends State<TransactionList> {
+class _HistoryListState extends State<HistoryList> {
   final HistoryController historyController = Get.find<HistoryController>();
 
   @override

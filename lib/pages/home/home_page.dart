@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _refresh() async {
     totalPerTypeController.getData();
-    historyController.getDataByDate();
+    historyController.getDataByFilter();
   }
 
   @override

@@ -8,7 +8,9 @@ class HistoryController extends GetxController {
   var resultData = <DataHistory>[].obs;
   var resultDataSingleDate = <DataHistory>[].obs;
   RxBool isLoading = false.obs;
-  RxList<dynamic> tags = [].obs;
+  RxList<dynamic> tagCategory = ["PEMASUKAN", "PENGELUARAN"].obs;
+  RxList<dynamic> tagSubCategory = [].obs;
+  RxList<Map<String, String>> listSubCategory = <Map<String, String>>[].obs;
   var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
@@ -20,19 +22,40 @@ class HistoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getDataByDate();
+    getDataByFilter();
+    getDataListSubCategory();
+  }
+
+  void getDataListSubCategory() async {
+    if (tagCategory.isEmpty) {
+      [
+        {"value": "PEMASUKAN", "nama": "Incomes"},
+        {"value": "PENGELUARAN", "nama": "Expenses"},
+      ];
+    }
+    try {
+      isLoading(true);
+      final result = await RemoteDataSource.listCategories(tagCategory);
+      if (result != null) {
+        listSubCategory.assignAll(result.map((category) => {
+              'value': category.id.toString(),
+              'nama': category.categoryName!,
+            }));
+      }
+    } catch (error) {
+      Get.snackbar('Error', error.toString(),
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      isLoading(false);
+    } finally {
+      isLoading(false);
+    }
   }
 
   void getDataSingleDate(selectedDate) async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.historyByDate(
-        startDate.value,
-        endDate.value,
-        selectedDate,
-        true,
-        ["PEMASUKAN", "PENGELUARAN"],
-      );
+      final result = await RemoteDataSource.historyByFilter(startDate.value,
+          endDate.value, selectedDate, true, ["PEMASUKAN", "PENGELUARAN"], []);
       if (result != null && result.data != null) {
         resultDataSingleDate.assignAll(result.data!);
       }
@@ -45,15 +68,16 @@ class HistoryController extends GetxController {
     }
   }
 
-  void getDataByDate() async {
+  void getDataByFilter() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.historyByDate(
+      final result = await RemoteDataSource.historyByFilter(
         startDate.value,
         endDate.value,
         singleDate.value,
         checkSingleDate.value,
-        tags,
+        tagCategory,
+        tagSubCategory,
       );
       if (result != null && result.data != null) {
         resultData.assignAll(result.data!);

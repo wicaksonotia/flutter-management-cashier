@@ -1,22 +1,18 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/pages/transaction/chips.dart';
-import 'package:financial_apps/pages/transaction/filter.dart';
-import 'package:financial_apps/pages/transaction/transaction_list.dart';
+import 'package:financial_apps/pages/master_categories/category_form.dart';
+import 'package:financial_apps/pages/master_categories/chips.dart';
+import 'package:financial_apps/pages/master_categories/category_list.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/search_bar_container.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-class TransactionHistoryPage extends StatefulWidget {
-  const TransactionHistoryPage({Key? key}) : super(key: key);
+class CategoryPage extends StatefulWidget {
+  const CategoryPage({super.key});
 
   @override
-  State<TransactionHistoryPage> createState() => _TransactionHistoryPageState();
+  State<CategoryPage> createState() => _CategoryPageState();
 }
 
-class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
-  final HistoryController historyController = Get.find<HistoryController>();
-
+class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,17 +20,17 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Transaction History',
+          'Categories',
           style: TextStyle(
-              color: Colors.black54, fontSize: 20, fontWeight: FontWeight.bold),
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: MyColors.green,
         actions: [
           IconButton(
             onPressed: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) => const FilterReport(),
+                builder: (context) => const CategoryForm(),
                 isScrollControlled: true,
                 backgroundColor: Colors.white,
                 shape: const RoundedRectangleBorder(
@@ -43,10 +39,11 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
               );
             },
             icon: const Icon(
-              Icons.filter_alt_rounded,
-              color: MyColors.green,
+              Icons.add_box,
+              color: Colors.white,
+              size: 30,
             ),
-          )
+          ),
         ],
       ),
       body: Column(
@@ -56,9 +53,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: SearchBarContainer(),
           ),
-          const ChipsTransaction(),
-          const Expanded(
-            child: TransactionList(),
+          const Chips(),
+          Expanded(
+            child: ListCategories(),
           ),
         ],
       ),

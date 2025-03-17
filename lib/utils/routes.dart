@@ -1,6 +1,6 @@
 import 'package:financial_apps/pages/add_transaction/form_transaction.dart';
 import 'package:financial_apps/pages/navigation_page.dart';
-import 'package:financial_apps/pages/transaction/history_page.dart';
+import 'package:financial_apps/pages/history/history_page.dart';
 import 'package:get/get.dart';
 
 import '../pages/home/home_page.dart';
