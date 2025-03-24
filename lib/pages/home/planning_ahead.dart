@@ -63,7 +63,6 @@ class PlanningAhead extends StatelessWidget {
                   itemCount: 5,
                   itemBuilder: (context, int index) {
                     return SizedBox(
-                      height: 50,
                       width: 120,
                       child: Card(
                         shape: RoundedRectangleBorder(
@@ -108,7 +107,6 @@ class PlanningAhead extends StatelessWidget {
                   itemCount: totalPerTypeController.resultData.length,
                   itemBuilder: (context, int index) {
                     return SizedBox(
-                      height: 50,
                       width: 120,
                       child: Card(
                         shape: RoundedRectangleBorder(

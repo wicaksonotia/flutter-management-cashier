@@ -1,10 +1,13 @@
 import 'package:financial_apps/pages/history/filter.dart';
+import 'package:financial_apps/pages/history/filter_month.dart';
 import 'package:financial_apps/pages/history/history_list.dart';
+import 'package:financial_apps/pages/history/total_transaction.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
-  const TransactionHistoryPage({Key? key}) : super(key: key);
+  const TransactionHistoryPage({super.key});
 
   @override
   State<TransactionHistoryPage> createState() => _TransactionHistoryPageState();
@@ -15,17 +18,16 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: const Text(
-          'Transaction History',
-          style: TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          'Riwayat Transaksi',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: MyColors.green,
+        backgroundColor: Colors.white,
         actions: [
           PopupMenuButton<int>(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
+            icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               if (value == 1) {
                 // Handle Add action
@@ -71,6 +73,12 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       body: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // NEXT AND PREVIOUS MONTH YEAR
+          FilterMonth(),
+
+          // INCOME, EXPENSE, AND BALANCE
+          TotalTransaction(),
+          Gap(10),
           Expanded(
             child: HistoryList(),
           ),

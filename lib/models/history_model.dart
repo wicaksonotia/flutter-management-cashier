@@ -1,13 +1,18 @@
 class FinancialHistoryModel {
   String? status;
   String? message;
+  int? income;
+  int? expense;
   List<DataHistory>? data;
 
-  FinancialHistoryModel({this.status, this.message, this.data});
+  FinancialHistoryModel(
+      {this.status, this.message, this.income, this.expense, this.data});
 
   FinancialHistoryModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
+    income = json['income'];
+    expense = json['expense'];
     if (json['data'] != null) {
       data = <DataHistory>[];
       json['data'].forEach((v) {
@@ -20,6 +25,8 @@ class FinancialHistoryModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['status'] = status;
     data['message'] = message;
+    data['income'] = income;
+    data['expense'] = expense;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }

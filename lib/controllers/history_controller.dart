@@ -8,6 +8,9 @@ class HistoryController extends GetxController {
   var resultData = <DataHistory>[].obs;
   var resultDataSingleDate = <DataHistory>[].obs;
   RxBool isLoading = false.obs;
+  RxInt totalIncome = 0.obs;
+  RxInt totalExpense = 0.obs;
+  RxInt totalBalance = 0.obs;
   RxList<dynamic> tagCategory = ["PEMASUKAN", "PENGELUARAN"].obs;
   RxList<dynamic> tagSubCategory = [].obs;
   RxList<Map<String, String>> listSubCategory = <Map<String, String>>[].obs;
@@ -18,10 +21,13 @@ class HistoryController extends GetxController {
   var textStartDate = ''.obs;
   var textEndDate = ''.obs;
   var checkSingleDate = true.obs;
+  var filterBy = 'bulan'.obs;
+  late RxString monthYear;
 
   @override
   void onInit() {
     super.onInit();
+    monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
     getDataByFilter();
     getDataListSubCategory();
   }
@@ -71,15 +77,28 @@ class HistoryController extends GetxController {
   void getDataByFilter() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.historyByFilter(
-        startDate.value,
-        endDate.value,
-        singleDate.value,
-        checkSingleDate.value,
-        tagCategory,
-        tagSubCategory,
-      );
+      FinancialHistoryModel? result;
+      if (filterBy.value == 'bulan') {
+        result = await RemoteDataSource.historyByMonth(
+          monthYear.value,
+          tagCategory,
+          tagSubCategory,
+        );
+      } else {
+        result = await RemoteDataSource.historyByFilter(
+          startDate.value,
+          endDate.value,
+          singleDate.value,
+          checkSingleDate.value,
+          tagCategory,
+          tagSubCategory,
+        );
+      }
+
       if (result != null && result.data != null) {
+        totalIncome.value = result.income ?? 0;
+        totalExpense.value = result.expense ?? 0;
+        totalBalance.value = totalIncome.value - totalExpense.value;
         resultData.assignAll(result.data!);
       }
     } catch (error) {

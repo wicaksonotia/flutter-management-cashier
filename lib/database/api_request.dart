@@ -169,7 +169,6 @@ class RemoteDataSource {
         'kategori': kategori,
         'subKategori': subKategori,
       }));
-      // print(rawFormat);
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybyfilter;
       Response response = await Dio().post(url,
@@ -184,7 +183,34 @@ class RemoteDataSource {
       }
       return null;
     } catch (e) {
-      print(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<FinancialHistoryModel?> historyByMonth(
+      String monthYear, Object kategori, Object subKategori) async {
+    try {
+      var rawFormat = (jsonEncode({
+        'monthYear': monthYear,
+        'kategori': kategori,
+        'subKategori': subKategori,
+      }));
+      print(rawFormat);
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybymonth;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        final FinancialHistoryModel res =
+            FinancialHistoryModel.fromJson(response.data);
+        // print(res.toJson());
+        return res;
+      }
+      return null;
+    } catch (e) {
       throw Exception(e.toString());
     }
   }
