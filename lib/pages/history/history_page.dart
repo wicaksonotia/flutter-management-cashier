@@ -1,3 +1,4 @@
+import 'package:financial_apps/controllers/history_controller.dart';
 import 'package:financial_apps/pages/history/filter.dart';
 import 'package:financial_apps/pages/history/filter_month.dart';
 import 'package:financial_apps/pages/history/history_list.dart';
@@ -5,6 +6,7 @@ import 'package:financial_apps/pages/history/total_transaction.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
   const TransactionHistoryPage({super.key});
@@ -14,11 +16,16 @@ class TransactionHistoryPage extends StatefulWidget {
 }
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
+  final HistoryController historyController = Get.find<HistoryController>();
+  Future<void> _refresh() async {
+    historyController.getDataByFilter();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Text(
           'Riwayat Transaksi',
@@ -70,19 +77,22 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           ),
         ],
       ),
-      body: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // NEXT AND PREVIOUS MONTH YEAR
-          FilterMonth(),
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // NEXT AND PREVIOUS MONTH YEAR
+            FilterMonth(),
 
-          // INCOME, EXPENSE, AND BALANCE
-          TotalTransaction(),
-          Gap(10),
-          Expanded(
-            child: HistoryList(),
-          ),
-        ],
+            // INCOME, EXPENSE, AND BALANCE
+            TotalTransaction(),
+            Gap(10),
+            Expanded(
+              child: HistoryList(),
+            ),
+          ],
+        ),
       ),
     );
   }
