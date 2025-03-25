@@ -153,24 +153,17 @@ class RemoteDataSource {
     }
   }
 
-  static Future<FinancialHistoryModel?> historyByFilter(
-      DateTime startdate,
-      DateTime enddate,
-      DateTime singledate,
-      bool checksingledate,
-      Object kategori,
-      Object subKategori) async {
+  static Future<FinancialHistoryModel?> historyByDateRange(DateTime startdate,
+      DateTime enddate, Object kategori, Object subKategori) async {
     try {
       var rawFormat = (jsonEncode({
         'startDate': startdate.toString(),
         'endDate': enddate.toString(),
-        'singleDate': singledate.toString(),
-        'checkSingleDate': checksingledate,
         'kategori': kategori,
         'subKategori': subKategori,
       }));
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybyfilter;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybydaterange;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(

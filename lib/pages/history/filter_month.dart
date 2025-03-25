@@ -14,29 +14,6 @@ class FilterMonth extends StatefulWidget {
 
 class _FilterMonthState extends State<FilterMonth> {
   final HistoryController historyController = Get.find<HistoryController>();
-  DateTime _selectedDate = DateTime.now();
-
-  void _goToPreviousMonth() {
-    setState(() {
-      _selectedDate = DateTime(_selectedDate.year, _selectedDate.month - 1);
-      // debugPrint("month :" + _selectedDate.month.toString());
-      // debugPrint("year :" + _selectedDate.year.toString());
-    });
-    historyController.monthYear.value =
-        "${_selectedDate.month.toString()}-${_selectedDate.year.toString()}";
-    historyController.getDataByFilter();
-  }
-
-  void _goToNextMonth() {
-    setState(() {
-      _selectedDate = DateTime(_selectedDate.year, _selectedDate.month + 1);
-      // debugPrint("month :" + _selectedDate.month.toString());
-      // debugPrint("year :" + _selectedDate.year.toString());
-    });
-    historyController.monthYear.value =
-        "${_selectedDate.month.toString()}-${_selectedDate.year.toString()}";
-    historyController.getDataByFilter();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +23,7 @@ class _FilterMonthState extends State<FilterMonth> {
       children: [
         IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: _goToPreviousMonth,
+          onPressed: historyController.goToPreviousMonth,
         ),
         Expanded(
           child: Center(
@@ -65,32 +42,31 @@ class _FilterMonthState extends State<FilterMonth> {
                 if (selectedDate.year < DateTime.now().year ||
                     (selectedDate.year == DateTime.now().year &&
                         selectedDate.month <= DateTime.now().month)) {
-                  setState(() {
-                    _selectedDate = selectedDate;
-                  });
+                  historyController.singleDate.value = selectedDate;
                   historyController.monthYear.value =
-                      "${_selectedDate.month.toString()}-${_selectedDate.year.toString()}";
+                      "${selectedDate.month.toString()}-${selectedDate.year.toString()}";
                   historyController.getDataByFilter();
                 }
                 // Use the selected date as needed.
-                // debugPrint("month :" + _selectedDate.month.toString());
-                // debugPrint("year :" + _selectedDate.year.toString());
-                // debugPrint('Selected date: $_selectedDate');
+                // debugPrint("month :" + selectedDate.month.toString());
+                // debugPrint("year :" + selectedDate.year.toString());
+                // debugPrint('Selected date: $selectedDate');
               },
-              child: Text(
-                DateFormat('MMMM yyyy').format(_selectedDate),
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              child: Obx(() => Text(
+                    DateFormat('MMMM yyyy')
+                        .format(historyController.singleDate.value),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  )),
             ),
           ),
         ),
         IconButton(
           icon: const Icon(Icons.arrow_forward_ios),
           onPressed: () {
-            if (_selectedDate.isBefore(
+            if (historyController.singleDate.value.isBefore(
                 DateTime(DateTime.now().year, DateTime.now().month))) {
-              _goToNextMonth();
+              historyController.goToNextMonth();
             }
           },
         ),

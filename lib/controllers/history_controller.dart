@@ -17,11 +17,10 @@ class HistoryController extends GetxController {
   var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
-  var textSingleDate = ''.obs;
-  var textStartDate = ''.obs;
-  var textEndDate = ''.obs;
-  var checkSingleDate = true.obs;
-  var filterBy = 'bulan'.obs;
+  // var textSingleDate = ''.obs;
+  var textStartDate = DateFormat('dd MMMM yyyy').format(DateTime.now()).obs;
+  var textEndDate = DateFormat('dd MMMM yyyy').format(DateTime.now()).obs;
+  RxString filterBy = 'bulan'.obs;
   late RxString monthYear;
 
   @override
@@ -30,6 +29,22 @@ class HistoryController extends GetxController {
     monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
     getDataByFilter();
     getDataListSubCategory();
+  }
+
+  void goToNextMonth() {
+    singleDate.value =
+        DateTime(singleDate.value.year, singleDate.value.month + 1);
+    monthYear.value =
+        "${singleDate.value.month.toString()}-${singleDate.value.year.toString()}";
+    getDataByFilter();
+  }
+
+  void goToPreviousMonth() {
+    singleDate.value =
+        DateTime(singleDate.value.year, singleDate.value.month - 1);
+    monthYear.value =
+        "${singleDate.value.month.toString()}-${singleDate.value.year.toString()}";
+    getDataByFilter();
   }
 
   void getDataListSubCategory() async {
@@ -60,8 +75,8 @@ class HistoryController extends GetxController {
   void getDataSingleDate(selectedDate) async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.historyByFilter(startDate.value,
-          endDate.value, selectedDate, true, ["PEMASUKAN", "PENGELUARAN"], []);
+      final result = await RemoteDataSource.historyByDateRange(
+          startDate.value, endDate.value, ["PEMASUKAN", "PENGELUARAN"], []);
       if (result != null && result.data != null) {
         resultDataSingleDate.assignAll(result.data!);
       }
@@ -85,11 +100,9 @@ class HistoryController extends GetxController {
           tagSubCategory,
         );
       } else {
-        result = await RemoteDataSource.historyByFilter(
+        result = await RemoteDataSource.historyByDateRange(
           startDate.value,
           endDate.value,
-          singleDate.value,
-          checkSingleDate.value,
           tagCategory,
           tagSubCategory,
         );
@@ -113,53 +126,53 @@ class HistoryController extends GetxController {
   /// ===================================
   /// FILTER DATE
   /// ===================================
-  bool disableDate(DateTime day) {
-    if ((day.isBefore(DateTime.now().add(const Duration(days: 0))))) {
-      return true;
-    }
-    return false;
-  }
+  // bool disableDate(DateTime day) {
+  //   if ((day.isBefore(DateTime.now().add(const Duration(days: 0))))) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
-  chooseDate(singleOrstartOrend) async {
-    var initialDate = DateTime.now();
-    if (singleOrstartOrend == 'single') {
-      initialDate = singleDate.value;
-    } else if (singleOrstartOrend == 'start') {
-      initialDate = startDate.value;
-    } else {
-      initialDate = endDate.value;
-    }
-    DateTime? pickedDate = await showDatePicker(
-      context: Get.context!,
-      initialDate: initialDate,
-      firstDate: DateTime(DateTime.now().year - 1),
-      lastDate: DateTime(DateTime.now().year + 1),
-      cancelText: 'Close',
-      confirmText: 'Confirm',
-      errorFormatText: 'Enter valid date',
-      errorInvalidText: 'Enter valid date range',
-      fieldHintText: 'Month/Date/Year',
-      selectableDayPredicate: disableDate,
-    );
-    if (pickedDate != null) {
-      if (singleOrstartOrend == 'single') {
-        if (pickedDate != singleDate.value) {
-          singleDate.value = pickedDate;
-          textSingleDate.value =
-              DateFormat('dd MMMM yyyy').format(singleDate.value);
-        }
-      } else if (singleOrstartOrend == 'start') {
-        if (pickedDate != startDate.value) {
-          startDate.value = pickedDate;
-          textStartDate.value =
-              DateFormat('dd MMMM yyyy').format(startDate.value);
-        }
-      } else {
-        if (pickedDate != endDate.value) {
-          endDate.value = pickedDate;
-          textEndDate.value = DateFormat('dd MMMM yyyy').format(endDate.value);
-        }
-      }
-    }
-  }
+  // chooseDate(singleOrstartOrend) async {
+  //   var initialDate = DateTime.now();
+  //   if (singleOrstartOrend == 'single') {
+  //     initialDate = singleDate.value;
+  //   } else if (singleOrstartOrend == 'start') {
+  //     initialDate = startDate.value;
+  //   } else {
+  //     initialDate = endDate.value;
+  //   }
+  //   DateTime? pickedDate = await showDatePicker(
+  //     context: Get.context!,
+  //     initialDate: initialDate,
+  //     firstDate: DateTime(DateTime.now().year - 1),
+  //     lastDate: DateTime(DateTime.now().year + 1),
+  //     cancelText: 'Close',
+  //     confirmText: 'Confirm',
+  //     errorFormatText: 'Enter valid date',
+  //     errorInvalidText: 'Enter valid date range',
+  //     fieldHintText: 'Month/Date/Year',
+  //     selectableDayPredicate: disableDate,
+  //   );
+  //   if (pickedDate != null) {
+  //     if (singleOrstartOrend == 'single') {
+  //       if (pickedDate != singleDate.value) {
+  //         singleDate.value = pickedDate;
+  //         textSingleDate.value =
+  //             DateFormat('dd MMMM yyyy').format(singleDate.value);
+  //       }
+  //     } else if (singleOrstartOrend == 'start') {
+  //       if (pickedDate != startDate.value) {
+  //         startDate.value = pickedDate;
+  //         textStartDate.value =
+  //             DateFormat('dd MMMM yyyy').format(startDate.value);
+  //       }
+  //     } else {
+  //       if (pickedDate != endDate.value) {
+  //         endDate.value = pickedDate;
+  //         textEndDate.value = DateFormat('dd MMMM yyyy').format(endDate.value);
+  //       }
+  //     }
+  //   }
+  // }
 }

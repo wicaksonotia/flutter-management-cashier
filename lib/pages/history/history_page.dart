@@ -1,5 +1,6 @@
 import 'package:financial_apps/controllers/history_controller.dart';
 import 'package:financial_apps/pages/history/filter.dart';
+import 'package:financial_apps/pages/history/filter_date_range.dart';
 import 'package:financial_apps/pages/history/filter_month.dart';
 import 'package:financial_apps/pages/history/history_list.dart';
 import 'package:financial_apps/pages/history/total_transaction.dart';
@@ -17,6 +18,7 @@ class TransactionHistoryPage extends StatefulWidget {
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   final HistoryController historyController = Get.find<HistoryController>();
+
   Future<void> _refresh() async {
     historyController.getDataByFilter();
   }
@@ -79,16 +81,18 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // NEXT AND PREVIOUS MONTH YEAR
-            FilterMonth(),
+            Obx(() => historyController.filterBy.value == 'bulan'
+                ? const FilterMonth()
+                : const FilterDateRange()),
 
             // INCOME, EXPENSE, AND BALANCE
-            TotalTransaction(),
-            Gap(10),
-            Expanded(
+            const TotalTransaction(),
+            const Gap(10),
+            const Expanded(
               child: HistoryList(),
             ),
           ],

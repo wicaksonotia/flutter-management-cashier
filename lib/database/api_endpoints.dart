@@ -16,6 +16,6 @@ class _AuthEndPoints {
   //TOTAL PER TYPE
   final String totalpertype = 'financialtotalpertype';
   final String history = 'financialhistory';
-  final String historybyfilter = 'financialhistorybyfilter';
+  final String historybydaterange = 'financialhistorybydaterange';
   final String historybymonth = 'financialhistorybymonth';
 }
