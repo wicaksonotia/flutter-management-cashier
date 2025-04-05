@@ -11,7 +11,7 @@ class HistoryController extends GetxController {
   RxInt totalIncome = 0.obs;
   RxInt totalExpense = 0.obs;
   RxInt totalBalance = 0.obs;
-  RxList<dynamic> tagCategory = ["PEMASUKAN", "PENGELUARAN"].obs;
+  RxList<dynamic> tagCategory = [].obs;
   RxList<dynamic> tagSubCategory = [].obs;
   RxList<Map<String, String>> listSubCategory = <Map<String, String>>[].obs;
   var singleDate = DateTime.now().obs;
@@ -48,15 +48,9 @@ class HistoryController extends GetxController {
   }
 
   void getDataListSubCategory() async {
-    if (tagCategory.isEmpty) {
-      [
-        {"value": "PEMASUKAN", "nama": "Incomes"},
-        {"value": "PENGELUARAN", "nama": "Expenses"},
-      ];
-    }
     try {
       isLoading(true);
-      final result = await RemoteDataSource.listCategories(tagCategory);
+      final result = await RemoteDataSource.listCategoryFilter();
       if (result != null) {
         listSubCategory.assignAll(result.map((category) => {
               'value': category.id.toString(),

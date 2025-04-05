@@ -86,6 +86,22 @@ class RemoteDataSource {
     }
   }
 
+  // LIST CATEGORY FILTER
+  static Future<List<CategoryModel>?> listCategoryFilter() async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcategoryfilter;
+      final response = await Dio().get(url);
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => CategoryModel.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   // LIST CATEGORIES
   static Future<List<CategoryModel>?> listCategories(Object kategori) async {
     try {
@@ -130,21 +146,6 @@ class RemoteDataSource {
       final response = await Dio().get(url);
       if (response.statusCode == 200) {
         final TotalPerTypeModel res = TotalPerTypeModel.fromJson(response.data);
-        return res;
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  static Future<FinancialHistoryModel?> history(String kategori) async {
-    try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.history;
-      final response = await Dio().get('$url?kategori=$kategori');
-      if (response.statusCode == 200) {
-        final FinancialHistoryModel res =
-            FinancialHistoryModel.fromJson(response.data);
         return res;
       }
       return null;

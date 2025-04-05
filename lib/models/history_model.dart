@@ -42,6 +42,9 @@ class DataHistory {
   String? note;
   int? amount;
   String? transactionDate;
+  int? expenseFromCategoryId;
+  String? expenseFromCategoryName;
+  String imageIcon;
 
   DataHistory(
       {this.id,
@@ -50,9 +53,13 @@ class DataHistory {
       this.categoryType,
       this.note,
       this.amount,
-      this.transactionDate});
+      this.transactionDate,
+      this.expenseFromCategoryId,
+      this.expenseFromCategoryName,
+      required this.imageIcon});
 
-  DataHistory.fromJson(Map<String, dynamic> json) {
+  DataHistory.fromJson(Map<String, dynamic> json)
+      : imageIcon = json['image_icon'] ?? 'stmj.png' {
     id = json['id'];
     categoryId = json['category_id'];
     categoryName = json['category_name'];
@@ -60,6 +67,8 @@ class DataHistory {
     note = json['note'];
     amount = json['amount'];
     transactionDate = json['transaction_date'];
+    expenseFromCategoryId = json['expense_from_category_id'];
+    expenseFromCategoryName = json['expense_from_category_name'];
   }
 
   Map<String, dynamic> toJson() {
@@ -71,6 +80,9 @@ class DataHistory {
     data['note'] = note;
     data['amount'] = amount;
     data['transaction_date'] = transactionDate;
+    data['expense_from_category_id'] = expenseFromCategoryId;
+    data['expense_from_category_name'] = expenseFromCategoryName;
+    data['image_icon'] = imageIcon;
     return data;
   }
 }

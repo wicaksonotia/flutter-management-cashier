@@ -18,11 +18,11 @@ class _ChipsCategoryState extends State<ChipsCategory> {
   @override
   Widget build(BuildContext context) {
     return ChipsChoice.multiple(
+      wrapped: true,
       padding: EdgeInsets.zero,
       value: _historyController.tagCategory,
       onChanged: (val) => setState(() {
         _historyController.tagCategory.value = val.cast<String>();
-        _historyController.getDataListSubCategory();
       }),
       choiceItems: C2Choice.listFrom<String, Map<String, String>>(
         source: tipeKategori,

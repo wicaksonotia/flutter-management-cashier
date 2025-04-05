@@ -1,5 +1,4 @@
 import 'package:financial_apps/pages/history/chips_category.dart';
-import 'package:financial_apps/pages/history/chips_filter_category.dart';
 import 'package:financial_apps/pages/history/chips_sub_category.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/sizes.dart';
@@ -19,7 +18,7 @@ class _FilterReportState extends State<FilterReport> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: .85,
+      initialChildSize: .47,
       maxChildSize: 1,
       minChildSize: .2,
       builder: (BuildContext context, ScrollController scrollController) {
@@ -41,13 +40,6 @@ class _FilterReportState extends State<FilterReport> {
                 Divider(
                   color: Colors.grey.shade300,
                 ),
-                const Text(
-                  'Filter By',
-                  style: TextStyle(
-                    fontSize: MySizes.fontSizeMd,
-                  ),
-                ),
-                const ChipsFilterCategory(),
                 const Text(
                   'Category',
                   style: TextStyle(

@@ -18,7 +18,6 @@ class _ChipsFilterCategoryState extends State<ChipsFilterCategory> {
   @override
   Widget build(BuildContext context) {
     return ChipsChoice.single(
-      padding: EdgeInsets.zero,
       value: _historyController.filterBy,
       onChanged: (val) => setState(() {
         _historyController.filterBy.value = val.toString();
@@ -30,9 +29,10 @@ class _ChipsFilterCategoryState extends State<ChipsFilterCategory> {
         label: (i, v) => v['nama']!,
       ),
       choiceStyle: C2ChoiceStyle(
-        showCheckmark: true,
-        color: Colors.grey,
+        // showCheckmark: true,
+        color: Colors.red,
         borderRadius: BorderRadius.circular(5),
+        borderWidth: 1,
       ),
       choiceActiveStyle: const C2ChoiceStyle(
         color: MyColors.green,

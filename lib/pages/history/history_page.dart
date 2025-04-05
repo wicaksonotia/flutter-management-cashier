@@ -5,6 +5,7 @@ import 'package:financial_apps/pages/history/filter_month.dart';
 import 'package:financial_apps/pages/history/history_list.dart';
 import 'package:financial_apps/pages/history/total_transaction.dart';
 import 'package:financial_apps/utils/colors.dart';
+import 'package:financial_apps/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -17,17 +18,17 @@ class TransactionHistoryPage extends StatefulWidget {
 }
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
-  final HistoryController historyController = Get.find<HistoryController>();
-
+  final HistoryController _historyController = Get.find<HistoryController>();
+  int? groupValue = 0;
   Future<void> _refresh() async {
-    historyController.getDataByFilter();
+    _historyController.getDataByFilter();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text(
           'Riwayat Transaksi',
@@ -84,14 +85,75 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              padding: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(
+                    width: 0.5,
+                    color: Colors.grey[300]!,
+                  ),
+                ),
+              ),
+              child: Row(
+                children: [
+                  ...List.generate(
+                    filterKategori.length,
+                    (index) => Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            groupValue = index;
+                          });
+                          _historyController.filterBy.value =
+                              filterKategori[index]['value']!;
+                          _historyController.getDataByFilter();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                width: 0.5,
+                                color: Colors.grey[300]!,
+                              ),
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          child: Center(
+                            child: Text(
+                              filterKategori[index]['nama']!,
+                              style: TextStyle(
+                                color: groupValue == index
+                                    ? MyColors.green
+                                    : Colors.black,
+                                fontWeight: groupValue == index
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             // NEXT AND PREVIOUS MONTH YEAR
-            Obx(() => historyController.filterBy.value == 'bulan'
-                ? const FilterMonth()
-                : const FilterDateRange()),
-
+            Container(
+              color: Colors.white,
+              width: MediaQuery.of(context).size.width,
+              height: context.height * 0.05,
+              child: Obx(() => _historyController.filterBy.value == 'bulan'
+                  ? const FilterMonth()
+                  : const FilterDateRange()),
+            ),
+            const Gap(5),
             // INCOME, EXPENSE, AND BALANCE
             const TotalTransaction(),
-            const Gap(10),
+            const Gap(5),
             const Expanded(
               child: HistoryList(),
             ),

@@ -6,6 +6,7 @@ class ApiEndPoints {
 class _AuthEndPoints {
   final String login = 'loginkios';
   // CATEGORY
+  final String listcategoryfilter = 'financiallistcategoryfilter';
   final String savecategories = 'financialsavecategory';
   final String listcategories = 'financiallistcategories';
   final String detailcategory = 'financialdetailcategory';
@@ -15,7 +16,8 @@ class _AuthEndPoints {
 
   //TOTAL PER TYPE
   final String totalpertype = 'financialtotalpertype';
-  final String history = 'financialhistory';
+
+  //HISTORY
   final String historybydaterange = 'financialhistorybydaterange';
   final String historybymonth = 'financialhistorybymonth';
 }

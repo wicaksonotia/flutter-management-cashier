@@ -35,29 +35,27 @@ class _FilterDateRangeState extends State<FilterDateRange> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      child: ElevatedButton.icon(
-        icon: const Icon(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
           Icons.date_range,
           color: MyColors.green,
         ),
-        label: Obx(() => Text(
-              '${historyController.textStartDate.value} - ${historyController.textEndDate.value}',
-              style: const TextStyle(
-                color: Colors.black,
+        const SizedBox(width: 10),
+        Obx(() => GestureDetector(
+              onTap: () {
+                _selectDate(context);
+              },
+              child: Text(
+                '${historyController.textStartDate.value} - ${historyController.textEndDate.value}',
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
               ),
             )),
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          backgroundColor: Colors.white,
-        ),
-        onPressed: () {
-          _selectDate(context);
-        },
-      ),
+      ],
     );
   }
 }

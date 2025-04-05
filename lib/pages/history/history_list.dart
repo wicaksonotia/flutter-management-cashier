@@ -231,22 +231,30 @@ class _HistoryListState extends State<HistoryList> {
                 leading: Container(
                   height: 40,
                   width: 40,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: warna,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey,
+                        blurRadius: 2,
+                        spreadRadius: 0.5,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
                   ),
                   child: Center(
-                    child: Text(
-                      element.categoryName![0],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: MySizes.fontSizeLg,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Image.asset(
+                      'assets/${element.imageIcon.toLowerCase()}',
+                      height: 25,
+                      width: 25,
                     ),
                   ),
                 ),
-                title: Text(element.categoryName!,
+                title: Text(
+                    kategori == "PENGELUARAN"
+                        ? '[${element.expenseFromCategoryName}] ${element.categoryName!}'
+                        : element.categoryName!,
                     style: const TextStyle(fontSize: MySizes.fontSizeMd)),
                 subtitle: Text(
                   element.note ?? '',
