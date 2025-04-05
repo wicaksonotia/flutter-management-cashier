@@ -20,9 +20,9 @@ class _ChipsSubCategoryState extends State<ChipsSubCategory> {
       return ChipsChoice.multiple(
         wrapped: true,
         padding: EdgeInsets.zero,
-        value: _historyController.tagSubCategory,
+        value: _historyController.temporaryTagSubCategory,
         onChanged: (val) => setState(() {
-          _historyController.tagSubCategory.value = val.cast<String>();
+          _historyController.temporaryTagSubCategory.value = val.cast<String>();
         }),
         choiceItems: C2Choice.listFrom<String, Map<String, String>>(
           source: _historyController.listSubCategory,

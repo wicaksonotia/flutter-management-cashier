@@ -36,47 +36,53 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         ),
         backgroundColor: Colors.white,
         actions: [
-          PopupMenuButton<int>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              if (value == 1) {
-                // Handle Add action
-              } else if (value == 2) {
-                // Handle Filter action
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => const FilterReport(),
-                  isScrollControlled: true,
-                  backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
-                  ),
-                );
-              }
+          // PopupMenuButton<int>(
+          //   icon: const Icon(Icons.more_vert),
+          //   onSelected: (value) {
+          //     if (value == 1) {
+          //       // Handle Add action
+          //     } else if (value == 2) {
+          //       // Handle Filter action
+          //       showModalBottomSheet(
+          //         context: context,
+          //         builder: (context) => const FilterReport(),
+          //         isScrollControlled: true,
+          //         backgroundColor: Colors.white,
+          //         shape: const RoundedRectangleBorder(
+          //           borderRadius:
+          //               BorderRadius.vertical(top: Radius.circular(20)),
+          //         ),
+          //       );
+          //     }
+          //   },
+          //   itemBuilder: (context) => [
+          //     const PopupMenuItem(
+          //       value: 1,
+          //       child: Row(
+          //         children: [
+          //           Icon(Icons.add_box, color: MyColors.green),
+          //           SizedBox(width: 10),
+          //           Text('Add Transaction'),
+          //         ],
+          //       ),
+          //     ),
+          //     const PopupMenuItem(
+          //       value: 2,
+          //       child: Row(
+          //         children: [
+          //           Icon(Icons.filter_alt_outlined, color: MyColors.green),
+          //           SizedBox(width: 10),
+          //           Text('Filter'),
+          //         ],
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          IconButton(
+            icon: const Icon(Icons.add_box, color: MyColors.green),
+            onPressed: () {
+              // Handle Add action
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 1,
-                child: Row(
-                  children: [
-                    Icon(Icons.add_box, color: MyColors.green),
-                    SizedBox(width: 10),
-                    Text('Add Transaction'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 2,
-                child: Row(
-                  children: [
-                    Icon(Icons.filter_alt_outlined, color: MyColors.green),
-                    SizedBox(width: 10),
-                    Text('Filter'),
-                  ],
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -97,7 +103,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 ),
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // SHOW DISPLAY BY DATE, MONTH, YEAR
                   ...List.generate(
                     filterKategori.length,
                     (index) => Expanded(
@@ -135,6 +144,38 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             ),
                           ),
                         ),
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+
+                  // FILTER
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => const FilterReport(),
+                        isScrollControlled: true,
+                        backgroundColor: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(
+                            width: 0.5,
+                            color: Colors.grey[300]!,
+                          ),
+                        ),
+                      ),
+                      padding: const EdgeInsets.only(right: 10),
+                      child: const Icon(
+                        Icons.filter_list,
+                        color: MyColors.green,
                       ),
                     ),
                   ),

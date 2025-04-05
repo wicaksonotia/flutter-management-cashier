@@ -23,28 +23,21 @@ class _HistoryListState extends State<HistoryList> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (historyController.isLoading.value) {
-        return ListView.builder(
-          itemCount: 6,
-          itemBuilder: (context, index) {
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(8),
-              ),
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: ListView.builder(
+            itemCount: 10,
+            itemBuilder: (_, __) => Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey[400]!,
-                    highlightColor: Colors.grey[300]!,
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey[400],
-                      ),
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[300],
                     ),
                   ),
                   const Gap(16),
@@ -52,57 +45,30 @@ class _HistoryListState extends State<HistoryList> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Shimmer.fromColors(
-                          baseColor: Colors.grey[400]!,
-                          highlightColor: Colors.grey[300]!,
-                          child: Container(
-                            height: 16,
-                            width: double.infinity,
-                            color: Colors.grey[400],
+                        Container(
+                          width: double.infinity,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.grey[300],
                           ),
                         ),
                         const Gap(8),
-                        Shimmer.fromColors(
-                          baseColor: Colors.grey[400]!,
-                          highlightColor: Colors.grey[300]!,
-                          child: Container(
-                            height: 12,
-                            width: 100,
-                            color: Colors.grey[400],
+                        Container(
+                          width: double.infinity,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.grey[300],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Gap(16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[400]!,
-                        highlightColor: Colors.grey[300]!,
-                        child: Container(
-                          height: 16,
-                          width: 80,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                      const Gap(8),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[400]!,
-                        highlightColor: Colors.grey[300]!,
-                        child: Container(
-                          height: 12,
-                          width: 50,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
-            );
-          },
+            ),
+          ),
         );
       } else {
         return GroupedListView<dynamic, String>(

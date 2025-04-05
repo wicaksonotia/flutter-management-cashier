@@ -1,4 +1,5 @@
-import 'package:financial_apps/pages/history/chips_category.dart';
+import 'package:financial_apps/controllers/history_controller.dart';
+// import 'package:financial_apps/pages/history/chips_category.dart';
 import 'package:financial_apps/pages/history/chips_sub_category.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/sizes.dart';
@@ -14,11 +15,13 @@ class FilterReport extends StatefulWidget {
 }
 
 class _FilterReportState extends State<FilterReport> {
+  final HistoryController _historyController = Get.find<HistoryController>();
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: .47,
+      initialChildSize: .4,
       maxChildSize: 1,
       minChildSize: .2,
       builder: (BuildContext context, ScrollController scrollController) {
@@ -46,13 +49,13 @@ class _FilterReportState extends State<FilterReport> {
                     fontSize: MySizes.fontSizeMd,
                   ),
                 ),
-                const ChipsCategory(),
-                const Text(
-                  'Sub Category',
-                  style: TextStyle(
-                    fontSize: MySizes.fontSizeMd,
-                  ),
-                ),
+                // const ChipsCategory(),
+                // const Text(
+                //   'Sub Category',
+                //   style: TextStyle(
+                //     fontSize: MySizes.fontSizeMd,
+                //   ),
+                // ),
                 const ChipsSubCategory(),
                 // Row(
                 //   children: [
@@ -210,7 +213,7 @@ class _FilterReportState extends State<FilterReport> {
                       ),
                     ),
                     onPressed: () {
-                      // _historyController.getDataByFilter();
+                      _historyController.setDataByFilter();
                       Get.back();
                     },
                     child: const Text(

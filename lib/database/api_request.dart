@@ -154,13 +154,13 @@ class RemoteDataSource {
     }
   }
 
-  static Future<FinancialHistoryModel?> historyByDateRange(DateTime startdate,
-      DateTime enddate, Object kategori, Object subKategori) async {
+  static Future<FinancialHistoryModel?> historyByDateRange(
+      DateTime startdate, DateTime enddate, Object subKategori) async {
     try {
       var rawFormat = (jsonEncode({
         'startDate': startdate.toString(),
         'endDate': enddate.toString(),
-        'kategori': kategori,
+        // 'kategori': kategori,
         'subKategori': subKategori,
       }));
       var url =
@@ -182,14 +182,13 @@ class RemoteDataSource {
   }
 
   static Future<FinancialHistoryModel?> historyByMonth(
-      String monthYear, Object kategori, Object subKategori) async {
+      String monthYear, Object subKategori) async {
     try {
       var rawFormat = (jsonEncode({
         'monthYear': monthYear,
-        'kategori': kategori,
+        // 'kategori': kategori,
         'subKategori': subKategori,
       }));
-      print(rawFormat);
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybymonth;
       Response response = await Dio().post(url,
