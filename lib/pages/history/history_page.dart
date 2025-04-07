@@ -6,6 +6,7 @@ import 'package:financial_apps/pages/history/history_list.dart';
 import 'package:financial_apps/pages/history/total_transaction.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/lists.dart';
+import 'package:financial_apps/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -19,7 +20,7 @@ class TransactionHistoryPage extends StatefulWidget {
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   final HistoryController _historyController = Get.find<HistoryController>();
-  int? groupValue = 0;
+  int? groupValue = 1;
   Future<void> _refresh() async {
     _historyController.getDataByFilter();
   }
@@ -81,7 +82,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           IconButton(
             icon: const Icon(Icons.add_box, color: MyColors.green),
             onPressed: () {
-              // Handle Add action
+              Get.toNamed(RouterClass.addtransaction);
             },
           ),
         ],

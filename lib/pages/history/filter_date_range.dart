@@ -12,26 +12,7 @@ class FilterDateRange extends StatefulWidget {
 }
 
 class _FilterDateRangeState extends State<FilterDateRange> {
-  final HistoryController historyController = Get.find<HistoryController>();
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTimeRange? picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        historyController.startDate.value = picked.start;
-        historyController.endDate.value = picked.end;
-        historyController.textStartDate.value =
-            DateFormat('dd MMMM yyyy').format(picked.start);
-        historyController.textEndDate.value =
-            DateFormat('dd MMMM yyyy').format(picked.end);
-        historyController.getDataByFilter();
-      });
-    }
-  }
+  final HistoryController _historyController = Get.find<HistoryController>();
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +27,10 @@ class _FilterDateRangeState extends State<FilterDateRange> {
         const SizedBox(width: 10),
         Obx(() => GestureDetector(
               onTap: () {
-                _selectDate(context);
+                _historyController.showDialogDateRangePicker();
               },
               child: Text(
-                '${historyController.textStartDate.value} - ${historyController.textEndDate.value}',
+                '${DateFormat('dd MMMM yyyy').format(_historyController.startDate.value)} - ${DateFormat('dd MMMM yyyy').format(_historyController.endDate.value)}',
                 style: const TextStyle(
                   color: Colors.black,
                 ),

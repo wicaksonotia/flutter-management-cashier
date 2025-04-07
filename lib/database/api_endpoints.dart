@@ -20,4 +20,7 @@ class _AuthEndPoints {
   //HISTORY
   final String historybydaterange = 'financialhistorybydaterange';
   final String historybymonth = 'financialhistorybymonth';
+  final String historybyyear = 'financialhistorybyyear';
+  final String saveTransactionExpense = 'financialsavetransactionexpense';
+  final String saveTransactionIncome = 'financialsavetransactionincome';
 }

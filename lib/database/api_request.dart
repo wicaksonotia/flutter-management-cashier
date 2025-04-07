@@ -207,4 +207,72 @@ class RemoteDataSource {
       throw Exception(e.toString());
     }
   }
+
+  static Future<bool> saveTransactionExpense(
+      int incomeId,
+      int expenseId,
+      String incomeName,
+      String expenseName,
+      int amount,
+      String description,
+      String transactionDate,
+      String transactionTime) async {
+    try {
+      var rawFormat = (jsonEncode({
+        'incomeId': incomeId,
+        'expenseId': expenseId,
+        'incomeName': incomeName,
+        'expenseName': expenseName,
+        'amount': amount,
+        'description': description,
+        'transactionDate': transactionDate,
+        'transactionTime': transactionTime,
+      }));
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.saveTransactionExpense;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> saveTransactionIncome(
+      int incomeId,
+      String incomeName,
+      int amount,
+      String description,
+      String transactionDate,
+      String transactionTime) async {
+    try {
+      var rawFormat = (jsonEncode({
+        'incomeId': incomeId,
+        'incomeName': incomeName,
+        'amount': amount,
+        'description': description,
+        'transactionDate': transactionDate,
+        'transactionTime': transactionTime,
+      }));
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.saveTransactionIncome;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
 }

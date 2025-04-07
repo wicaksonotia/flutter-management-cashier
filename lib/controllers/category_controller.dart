@@ -13,7 +13,6 @@ class CategoryController extends GetxController {
   var resultData = <CategoryModel>[].obs;
   RxList<dynamic> tags = [].obs;
   RxBool isLoading = false.obs;
-  var dataCategoryName = ''.obs;
   var dataCategoryType = ''.obs;
   var dataStatus = true.obs;
 
