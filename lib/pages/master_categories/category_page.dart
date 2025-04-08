@@ -21,28 +21,27 @@ class _CategoryPageState extends State<CategoryPage> {
       appBar: AppBar(
         title: const Text(
           'Categories',
-          style: TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: MyColors.green,
+        backgroundColor: Colors.white,
         actions: [
           IconButton(
+            icon: const Icon(Icons.add_box, color: MyColors.green),
             onPressed: () {
-              showModalBottomSheet(
+              showDialog(
                 context: context,
-                builder: (context) => const CategoryForm(),
-                isScrollControlled: true,
-                backgroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                ),
+                builder: (context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    backgroundColor: Colors.white,
+                    contentPadding: const EdgeInsets.all(10),
+                    content: const CategoryForm(),
+                  );
+                },
               );
             },
-            icon: const Icon(
-              Icons.add_box,
-              color: Colors.white,
-              size: 30,
-            ),
           ),
         ],
       ),
@@ -54,6 +53,11 @@ class _CategoryPageState extends State<CategoryPage> {
             child: SearchBarContainer(),
           ),
           const Chips(),
+          Divider(
+            height: 1,
+            thickness: .5,
+            color: Colors.grey.shade300,
+          ),
           Expanded(
             child: ListCategories(),
           ),

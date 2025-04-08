@@ -31,7 +31,7 @@ class _ChipsState extends State<Chips> {
       ),
       choiceStyle: C2ChoiceStyle(
         showCheckmark: true,
-        color: Colors.grey,
+        color: Colors.grey.shade700,
         borderRadius: BorderRadius.circular(5),
       ),
       choiceActiveStyle: const C2ChoiceStyle(

@@ -54,7 +54,7 @@ class _FormIncomeState extends State<FormIncome> {
                     ),
                   ),
                   const Icon(Icons.arrow_forward_ios,
-                      size: 16, color: Colors.black54),
+                      size: 16, color: MyColors.green),
                 ],
               ),
             ),

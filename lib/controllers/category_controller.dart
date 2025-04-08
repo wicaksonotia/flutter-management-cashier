@@ -1,19 +1,20 @@
+import 'package:financial_apps/controllers/transaction_controller.dart';
 import 'package:financial_apps/database/api_request.dart';
 import 'package:financial_apps/models/category_model.dart';
+import 'package:financial_apps/pages/master_categories/category_form.dart';
 import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class CategoryController extends GetxController {
+  final TransactionController _transactionController =
+      Get.put(TransactionController());
   TextEditingController nameController = TextEditingController();
-  var tipeContoller = dropDownKategori.first.obs;
-  var kategoriSearch = dropDownKategoriSearch.first.obs;
+  var tipeContoller = 'PEMASUKAN'.obs;
   var resultData = <CategoryModel>[].obs;
   RxList<dynamic> tags = [].obs;
   RxBool isLoading = false.obs;
-  var dataCategoryType = ''.obs;
   var dataStatus = true.obs;
 
   @override
@@ -35,6 +36,9 @@ class CategoryController extends GetxController {
             icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
         nameController.clear();
         getData(tags);
+        _transactionController.getListDataIncome();
+        _transactionController.getListDataExpense();
+        _transactionController.getListDataExpenseFrom();
       } else {
         // NOTIF SAVE FAILED
         Get.snackbar('Notification', 'Failed to save data',
@@ -86,6 +90,7 @@ class CategoryController extends GetxController {
                     backgroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
+                    minimumSize: const Size(100, 40), // Set width and height
                     textStyle: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -120,6 +125,7 @@ class CategoryController extends GetxController {
                     backgroundColor: MyColors.green,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
+                    minimumSize: const Size(100, 40), // Set width and height
                     textStyle: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -143,7 +149,7 @@ class CategoryController extends GetxController {
       isLoading(true);
       final model = CategoryModel(
           categoryName: nameController.text,
-          categoryType: dataCategoryType.value,
+          categoryType: tipeContoller.value,
           status: dataStatus.value);
       var resultUpdate =
           await RemoteDataSource.updateCategory(id, model.toJson());
@@ -169,108 +175,96 @@ class CategoryController extends GetxController {
   void detailCategory(int id) async {
     final data = await RemoteDataSource.detailCategory(id);
     nameController.text = data?.categoryName ?? '';
-    dataCategoryType.value = data?.categoryType ?? '';
+    tipeContoller.value = data?.categoryType ?? '';
     dataStatus.value = data?.status ?? true;
-    Get.bottomSheet(
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
-      ),
-      Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Obx(() => InputDecorator(
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Category",
-                      contentPadding: EdgeInsets.fromLTRB(10, 3, 3, 3)),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      value: dataCategoryType.value,
-                      items: dropDownKategori.map(
-                        (String value) {
-                          return DropdownMenuItem(
-                            value: value,
-                            child: Text(value),
-                          );
-                        },
-                      ).toList(),
-                      onChanged: (value) {
-                        dataCategoryType.value = value!;
-                      },
-                      isExpanded: true,
-                      style: const TextStyle(
-                          fontSize: 17, color: MyColors.darkTextColor),
-                    ),
-                  ),
-                )),
-            const Gap(10),
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Category Name',
-              ),
-            ),
-            const Gap(20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: MyColors.green),
-                    ),
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    minimumSize: const Size(100, 40), // Set width and height
-                    textStyle: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text(
-                    'CANCEL',
-                    style: TextStyle(color: MyColors.green),
-                  ),
-                ),
-                const Gap(10),
-                ElevatedButton(
-                  onPressed: () async {
-                    updateCategory(id);
-                    Get.back();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    backgroundColor: MyColors.green,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    minimumSize: const Size(100, 40), // Set width and height
-                    textStyle: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text(
-                    'SAVE',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+    showDialog(
+      context: Get.context!,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          backgroundColor: Colors.white,
+          contentPadding: const EdgeInsets.all(10),
+          content: const CategoryForm(),
+        );
+      },
     );
+    // Get.bottomSheet(
+    //   backgroundColor: Colors.white,
+    //   shape: const RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
+    //   ),
+    //   Container(
+    //     padding: const EdgeInsets.all(16),
+    //     child: Column(
+    //       mainAxisSize: MainAxisSize.min,
+    //       children: [
+    //         const Gap(10),
+    //         TextField(
+    //           controller: nameController,
+    //           decoration: const InputDecoration(
+    //             border: OutlineInputBorder(),
+    //             labelText: 'Category Name',
+    //           ),
+    //         ),
+    //         const Gap(20),
+    //         Row(
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           children: [
+    //             ElevatedButton(
+    //               onPressed: () {
+    //                 Get.back();
+    //               },
+    //               style: ElevatedButton.styleFrom(
+    //                 shape: RoundedRectangleBorder(
+    //                   borderRadius: BorderRadius.circular(12),
+    //                   side: const BorderSide(color: MyColors.green),
+    //                 ),
+    //                 backgroundColor: Colors.white,
+    //                 padding: const EdgeInsets.symmetric(
+    //                     horizontal: 20, vertical: 10),
+    //                 minimumSize: const Size(100, 40), // Set width and height
+    //                 textStyle: const TextStyle(
+    //                   fontSize: 12,
+    //                   fontWeight: FontWeight.bold,
+    //                 ),
+    //               ),
+    //               child: const Text(
+    //                 'CANCEL',
+    //                 style: TextStyle(color: MyColors.green),
+    //               ),
+    //             ),
+    //             const Gap(10),
+    //             ElevatedButton(
+    //               onPressed: () async {
+    //                 updateCategory(id);
+    //                 Get.back();
+    //               },
+    //               style: ElevatedButton.styleFrom(
+    //                 shape: RoundedRectangleBorder(
+    //                   borderRadius: BorderRadius.circular(12),
+    //                 ),
+    //                 backgroundColor: MyColors.green,
+    //                 padding: const EdgeInsets.symmetric(
+    //                     horizontal: 20, vertical: 10),
+    //                 minimumSize: const Size(100, 40), // Set width and height
+    //                 textStyle: const TextStyle(
+    //                   fontSize: 12,
+    //                   fontWeight: FontWeight.bold,
+    //                 ),
+    //               ),
+    //               child: const Text(
+    //                 'SAVE',
+    //                 style: TextStyle(color: Colors.white),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 
   void updateCategoryStatus(int id, bool status) async {

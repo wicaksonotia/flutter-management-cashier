@@ -55,7 +55,7 @@ class _FormExpenseState extends State<FormExpense> {
                     ),
                   ),
                   const Icon(Icons.arrow_forward_ios,
-                      size: 16, color: Colors.black54),
+                      size: 16, color: MyColors.green),
                 ],
               ),
             ),
@@ -86,7 +86,7 @@ class _FormExpenseState extends State<FormExpense> {
                     ),
                   ),
                   const Icon(Icons.arrow_forward_ios,
-                      size: 16, color: Colors.black54),
+                      size: 16, color: MyColors.green),
                 ],
               ),
             ),
@@ -104,6 +104,13 @@ class _FormExpenseState extends State<FormExpense> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: 'Amount',
+              floatingLabelStyle: const TextStyle(
+                color: MyColors.green,
+              ),
+              hintText: 'Rp.0',
+              hintStyle: TextStyle(
+                color: Colors.grey.shade300,
+              ),
               border: const OutlineInputBorder(),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(5),
@@ -127,6 +134,9 @@ class _FormExpenseState extends State<FormExpense> {
             maxLines: 3,
             decoration: InputDecoration(
               labelText: 'Description',
+              floatingLabelStyle: const TextStyle(
+                color: MyColors.green,
+              ),
               border: const OutlineInputBorder(),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(5),
@@ -142,6 +152,10 @@ class _FormExpenseState extends State<FormExpense> {
               ),
               filled: true,
               fillColor: Colors.white,
+              hintText: 'Description',
+              hintStyle: TextStyle(
+                color: Colors.grey.shade300,
+              ),
             ),
           ),
           const Gap(10),

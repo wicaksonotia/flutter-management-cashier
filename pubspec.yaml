@@ -43,6 +43,7 @@ dependencies:
   shimmer: ^3.0.0
   simple_month_year_picker: ^1.1.0
   sqflite: ^2.4.1
+  toggle_switch: ^2.3.0
 
 dev_dependencies:
   flutter_lints: ^4.0.0

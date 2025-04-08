@@ -1,4 +1,5 @@
 import 'package:financial_apps/controllers/transaction_controller.dart';
+import 'package:financial_apps/pages/master_categories/category_form.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,6 +22,26 @@ class _ExpenseFromListPageState extends State<ExpenseFromListPage> {
       appBar: AppBar(
         title: const Text('Income Category'),
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_box, color: MyColors.green),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    backgroundColor: Colors.white,
+                    contentPadding: const EdgeInsets.all(10),
+                    content: const CategoryForm(),
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       backgroundColor: Colors.grey.shade50,
       body: Obx(() {
