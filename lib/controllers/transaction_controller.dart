@@ -34,7 +34,7 @@ class TransactionController extends GetxController {
   void getListDataIncome() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.listCategories(['PEMASUKAN']);
+      final result = await RemoteDataSource.listCategories(['PEMASUKAN'], '');
       if (result != null) {
         resultDataIncome.assignAll(result);
       }
@@ -50,7 +50,7 @@ class TransactionController extends GetxController {
   void getListDataExpenseFrom() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.listCategories(['PEMASUKAN']);
+      final result = await RemoteDataSource.listCategories(['PEMASUKAN'], '');
       if (result != null) {
         resultDataExpenseFrom.assignAll(result);
       }
@@ -66,7 +66,7 @@ class TransactionController extends GetxController {
   void getListDataExpense() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.listCategories(['PENGELUARAN']);
+      final result = await RemoteDataSource.listCategories(['PENGELUARAN'], '');
       if (result != null) {
         resultDataExpense.assignAll(result);
       }

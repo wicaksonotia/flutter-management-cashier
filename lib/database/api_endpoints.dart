@@ -6,7 +6,6 @@ class ApiEndPoints {
 class _AuthEndPoints {
   final String login = 'loginkios';
   // CATEGORY
-  final String listcategoryfilter = 'financiallistcategoryfilter';
   final String savecategories = 'financialsavecategory';
   final String listcategories = 'financiallistcategories';
   final String detailcategory = 'financialdetailcategory';

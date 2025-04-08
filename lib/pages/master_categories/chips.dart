@@ -22,7 +22,7 @@ class _ChipsState extends State<Chips> {
       onChanged: (val) => setState(() {
         tags = val;
         categoryController.tags.value = val;
-        categoryController.getData(val);
+        categoryController.getData(val, '');
       }),
       choiceItems: C2Choice.listFrom<String, Map<String, String>>(
         source: tipeKategori,

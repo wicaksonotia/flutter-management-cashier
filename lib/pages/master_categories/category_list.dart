@@ -12,7 +12,7 @@ class ListCategories extends StatelessWidget {
     return Obx(() {
       return RefreshIndicator(
         onRefresh: () async {
-          categoryController.getData(categoryController.tags);
+          categoryController.getData(categoryController.tags, '');
         },
         child: ListView.separated(
           separatorBuilder: (context, index) {

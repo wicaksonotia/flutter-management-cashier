@@ -1,20 +1,19 @@
-import 'package:financial_apps/controllers/search_bar_controller.dart';
+import 'package:financial_apps/controllers/category_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SearchBarContainer extends StatelessWidget {
   SearchBarContainer({super.key});
-  final SearchBarController searchBarController =
-      Get.find<SearchBarController>();
+  final CategoryController _categoryController = Get.find<CategoryController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => SizedBox(
-        height: 50, // Set the desired height here
+        height: 50,
         child: TextField(
           cursorColor: Colors.black54,
-          controller: searchBarController.searchTextFieldController,
+          controller: _categoryController.searchBarController,
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
@@ -30,23 +29,32 @@ class SearchBarContainer extends StatelessWidget {
             hintText: "Search category",
             hintStyle: const TextStyle(color: Colors.black26),
             prefixIcon: const Icon(Icons.search),
-            suffixIcon: searchBarController.isEmptyValue.value
+            suffixIcon: _categoryController.isEmptyValueSearchBar.value
                 ? null
                 : IconButton(
-                    icon: const Icon(
-                      Icons.clear,
-                      size: 25,
-                    ),
+                    icon: const Icon(Icons.clear),
                     onPressed: () {
-                      searchBarController.searchTextFieldController.clear();
-                      searchBarController.isEmptyValue.value = true;
+                      _categoryController.searchBarController.clear();
+                      _categoryController.isEmptyValueSearchBar.value = true;
+                      _categoryController.processSearch('');
                     },
                   ),
           ),
           onChanged: (value) {
-            value.isEmpty
-                ? searchBarController.isEmptyValue.value = true
-                : searchBarController.isEmptyValue.value = false;
+            _categoryController.searchBarController.text = value.toUpperCase();
+            _categoryController.searchBarController.selection =
+                TextSelection.fromPosition(
+              TextPosition(
+                  offset: _categoryController.searchBarController.text.length),
+            );
+            if (value.isNotEmpty) {
+              _categoryController.isEmptyValueSearchBar.value = false;
+            } else {
+              _categoryController.isEmptyValueSearchBar.value = true;
+            }
+          },
+          onSubmitted: (value) {
+            _categoryController.processSearch(value);
           },
         ),
       ),

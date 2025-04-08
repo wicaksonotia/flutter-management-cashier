@@ -86,26 +86,14 @@ class RemoteDataSource {
     }
   }
 
-  // LIST CATEGORY FILTER
-  static Future<List<CategoryModel>?> listCategoryFilter() async {
-    try {
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcategoryfilter;
-      final response = await Dio().get(url);
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = response.data;
-        return jsonData.map((e) => CategoryModel.fromJson(e)).toList();
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
   // LIST CATEGORIES
-  static Future<List<CategoryModel>?> listCategories(Object kategori) async {
+  static Future<List<CategoryModel>?> listCategories(
+      Object kategori, String textSearch) async {
     try {
-      var rawFormat = jsonEncode({'kategori': kategori});
+      var rawFormat = jsonEncode({
+        'kategori': kategori,
+        'textSearch': textSearch,
+      });
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcategories;
       Response response = await Dio().post(url,

@@ -16,11 +16,17 @@ class CategoryController extends GetxController {
   RxList<dynamic> tags = [].obs;
   RxBool isLoading = false.obs;
   var dataStatus = true.obs;
+  RxBool isEmptyValueSearchBar = true.obs;
+  TextEditingController searchBarController = TextEditingController();
+
+  void processSearch(String value) {
+    getData(tags, value);
+  }
 
   @override
   void onInit() {
     super.onInit();
-    getData([]);
+    getData([], '');
   }
 
   void insertCategory() async {
@@ -35,7 +41,7 @@ class CategoryController extends GetxController {
         Get.snackbar('Notification', 'Data saved successfully',
             icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
         nameController.clear();
-        getData(tags);
+        getData(tags, '');
         _transactionController.getListDataIncome();
         _transactionController.getListDataExpense();
         _transactionController.getListDataExpenseFrom();
@@ -111,7 +117,7 @@ class CategoryController extends GetxController {
                       Get.snackbar('Notification', 'Data deleted successfully',
                           icon: const Icon(Icons.check),
                           snackPosition: SnackPosition.TOP);
-                      getData(tags);
+                      getData(tags, '');
                     } else {
                       Get.snackbar('Notification', 'Failed to delete data',
                           icon: const Icon(Icons.error),
@@ -157,7 +163,7 @@ class CategoryController extends GetxController {
         // NOTIF UPDATE SUCCESS
         Get.snackbar('Notification', 'Data updated successfully',
             icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-        getData(tags);
+        getData(tags, '');
       } else {
         // NOTIF UPDATE FAILED
         Get.snackbar('Notification', 'Failed to update data',
@@ -190,81 +196,6 @@ class CategoryController extends GetxController {
         );
       },
     );
-    // Get.bottomSheet(
-    //   backgroundColor: Colors.white,
-    //   shape: const RoundedRectangleBorder(
-    //     borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
-    //   ),
-    //   Container(
-    //     padding: const EdgeInsets.all(16),
-    //     child: Column(
-    //       mainAxisSize: MainAxisSize.min,
-    //       children: [
-    //         const Gap(10),
-    //         TextField(
-    //           controller: nameController,
-    //           decoration: const InputDecoration(
-    //             border: OutlineInputBorder(),
-    //             labelText: 'Category Name',
-    //           ),
-    //         ),
-    //         const Gap(20),
-    //         Row(
-    //           mainAxisAlignment: MainAxisAlignment.center,
-    //           children: [
-    //             ElevatedButton(
-    //               onPressed: () {
-    //                 Get.back();
-    //               },
-    //               style: ElevatedButton.styleFrom(
-    //                 shape: RoundedRectangleBorder(
-    //                   borderRadius: BorderRadius.circular(12),
-    //                   side: const BorderSide(color: MyColors.green),
-    //                 ),
-    //                 backgroundColor: Colors.white,
-    //                 padding: const EdgeInsets.symmetric(
-    //                     horizontal: 20, vertical: 10),
-    //                 minimumSize: const Size(100, 40), // Set width and height
-    //                 textStyle: const TextStyle(
-    //                   fontSize: 12,
-    //                   fontWeight: FontWeight.bold,
-    //                 ),
-    //               ),
-    //               child: const Text(
-    //                 'CANCEL',
-    //                 style: TextStyle(color: MyColors.green),
-    //               ),
-    //             ),
-    //             const Gap(10),
-    //             ElevatedButton(
-    //               onPressed: () async {
-    //                 updateCategory(id);
-    //                 Get.back();
-    //               },
-    //               style: ElevatedButton.styleFrom(
-    //                 shape: RoundedRectangleBorder(
-    //                   borderRadius: BorderRadius.circular(12),
-    //                 ),
-    //                 backgroundColor: MyColors.green,
-    //                 padding: const EdgeInsets.symmetric(
-    //                     horizontal: 20, vertical: 10),
-    //                 minimumSize: const Size(100, 40), // Set width and height
-    //                 textStyle: const TextStyle(
-    //                   fontSize: 12,
-    //                   fontWeight: FontWeight.bold,
-    //                 ),
-    //               ),
-    //               child: const Text(
-    //                 'SAVE',
-    //                 style: TextStyle(color: Colors.white),
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   void updateCategoryStatus(int id, bool status) async {
@@ -339,7 +270,7 @@ class CategoryController extends GetxController {
                       Get.snackbar('Notification', 'Data updated successfully',
                           icon: const Icon(Icons.check),
                           snackPosition: SnackPosition.TOP);
-                      getData(tags);
+                      getData(tags, '');
                     } else {
                       // NOTIF UPDATE FAILED
                       Get.snackbar('Notification', 'Failed to update data',
@@ -374,10 +305,11 @@ class CategoryController extends GetxController {
   }
 
   // LIST DATA CATEGORIES
-  void getData(Object kategori) async {
+  void getData(Object kategori, String textSearch) async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.listCategories(kategori);
+      final result =
+          await RemoteDataSource.listCategories(kategori, textSearch);
       if (result != null) {
         resultData.assignAll(result);
       }

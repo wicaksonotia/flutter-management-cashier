@@ -27,26 +27,6 @@ class HistoryController extends GetxController {
     super.onInit();
     monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
     getDataByFilter();
-    getDataListSubCategory();
-  }
-
-  void getDataListSubCategory() async {
-    try {
-      isLoading(true);
-      final result = await RemoteDataSource.listCategoryFilter();
-      if (result != null) {
-        listSubCategory.assignAll(result.map((category) => {
-              'value': category.id.toString(),
-              'nama': category.categoryName!,
-            }));
-      }
-    } catch (error) {
-      Get.snackbar('Error', error.toString(),
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      isLoading(false);
-    } finally {
-      isLoading(false);
-    }
   }
 
   void getDataSingleDate(selectedDate) async {
