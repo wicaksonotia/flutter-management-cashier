@@ -1,6 +1,8 @@
+import 'package:financial_apps/controllers/total_per_type_controller.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/currency.dart';
 import 'package:financial_apps/utils/routes.dart';
+import 'package:financial_apps/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +11,9 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TotalPerTypeController _totalPerTypeController =
+        Get.find<TotalPerTypeController>();
+
     return Container(
       decoration: const BoxDecoration(color: MyColors.green
           // image: DecorationImage(
@@ -34,15 +39,18 @@ class Header extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  Text(
-                    CurrencyFormat.convertToIdr(1000000000, 0),
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  Obx(
+                    () => Text(
+                      CurrencyFormat.convertToIdr(
+                          _totalPerTypeController.resultTotal.value, 0),
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: MySizes.fontSizeXl,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
               ElevatedButton.icon(

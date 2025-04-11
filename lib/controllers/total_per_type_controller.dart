@@ -4,21 +4,40 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TotalPerTypeController extends GetxController {
-  var resultData = <DataList>[].obs;
+  var resultTotalPerType = <DataList>[].obs;
+  var resultTotal = 0.obs;
   RxBool isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    getData();
+    getTotalPerType();
+    getTotal();
   }
 
-  void getData() async {
+  void getTotalPerType() async {
     try {
       isLoading(true);
       final result = await RemoteDataSource.totalPerType();
       if (result != null && result.data != null) {
-        resultData.assignAll(result.data!);
+        resultTotalPerType.assignAll(result.data!);
+      }
+    } catch (error) {
+      Get.snackbar('Error', error.toString(),
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      isLoading(false);
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  void getTotal() async {
+    try {
+      isLoading(true);
+      final result = await RemoteDataSource.total();
+      if (result != null) {
+        resultTotal.value = result.data!;
+        print(resultTotal.value);
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),

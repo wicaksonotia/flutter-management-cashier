@@ -20,6 +20,7 @@ class HistoryController extends GetxController {
   var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
+  var selectedDate = DateTime.now().obs;
   RxString filterBy = 'bulan'.obs;
   late RxString monthYear;
 
@@ -29,6 +30,7 @@ class HistoryController extends GetxController {
     monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
     getDataByFilter();
     getDataListCategory();
+    getDataSingleDate();
   }
 
   void getDataListCategory() async {
@@ -50,11 +52,11 @@ class HistoryController extends GetxController {
     }
   }
 
-  void getDataSingleDate(selectedDate) async {
+  void getDataSingleDate() async {
     try {
       isLoading(true);
       final result = await RemoteDataSource.historyByDateRange(
-          selectedDate, selectedDate, []);
+          selectedDate.value, selectedDate.value, []);
       if (result != null && result.data != null) {
         resultDataSingleDate.assignAll(result.data!);
       }

@@ -53,7 +53,8 @@ class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
           i
       ],
       onDateChange: (selectedDate) {
-        _historyController.getDataSingleDate(selectedDate);
+        _historyController.selectedDate.value = selectedDate;
+        _historyController.getDataSingleDate();
       },
       activeColor: MyColors.green,
       dayProps: const EasyDayProps(

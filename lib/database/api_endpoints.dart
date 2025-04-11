@@ -14,6 +14,7 @@ class _AuthEndPoints {
   final String deletecategory = 'financialdeletecategory';
 
   //TOTAL PER TYPE
+  final String total = 'financialtotalsaldo';
   final String totalpertype = 'financialtotalpertype';
 
   //HISTORY

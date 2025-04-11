@@ -21,7 +21,8 @@ class _HomePageState extends State<HomePage> {
   final HistoryController historyController = Get.find<HistoryController>();
 
   Future<void> _refresh() async {
-    totalPerTypeController.getData();
+    totalPerTypeController.getTotal();
+    totalPerTypeController.getTotalPerType();
     historyController.getDataByFilter();
   }
 

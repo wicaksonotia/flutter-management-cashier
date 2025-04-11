@@ -1,5 +1,7 @@
 import 'package:financial_apps/controllers/total_per_type_controller.dart';
 import 'package:financial_apps/utils/colors.dart';
+import 'package:financial_apps/utils/currency.dart';
+import 'package:financial_apps/utils/sizes.dart';
 // import 'package:financial_apps/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -16,8 +18,8 @@ class PlanningAhead extends StatelessWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -100,7 +102,7 @@ class PlanningAhead extends StatelessWidget {
               } else {
                 return ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: totalPerTypeController.resultData.length,
+                  itemCount: totalPerTypeController.resultTotalPerType.length,
                   itemBuilder: (context, int index) {
                     return SizedBox(
                       width: 120,
@@ -118,22 +120,26 @@ class PlanningAhead extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Image.asset(
-                                  'assets/${totalPerTypeController.resultData[index].gambar}',
+                                  'assets/${totalPerTypeController.resultTotalPerType[index].gambar}',
                                   height: 50,
                                 ),
                                 Text(
-                                  totalPerTypeController.resultData[index].total
-                                      .toString(),
+                                  CurrencyFormat.convertToIdr(
+                                      totalPerTypeController
+                                          .resultTotalPerType[index].total,
+                                      0),
                                   style: const TextStyle(
                                       color: MyColors.green,
-                                      fontSize: 18,
+                                      fontSize: MySizes.fontSizeLg,
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
                                   totalPerTypeController
-                                          .resultData[index].kategori ??
+                                          .resultTotalPerType[index].kategori ??
                                       '',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                  style: const TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: MySizes.fontSizeSm),
                                 )
                               ],
                             ),
