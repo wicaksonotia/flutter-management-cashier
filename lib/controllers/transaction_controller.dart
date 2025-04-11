@@ -1,3 +1,4 @@
+import 'package:financial_apps/controllers/history_controller.dart';
 import 'package:financial_apps/database/api_request.dart';
 import 'package:financial_apps/models/category_model.dart';
 import 'package:financial_apps/utils/colors.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TransactionController extends GetxController {
+  HistoryController _historyController = Get.find<HistoryController>();
   TextEditingController amountController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   var selectTransactionExpenseDate = DateTime.now().obs;
@@ -194,6 +196,7 @@ class TransactionController extends GetxController {
         if (result) {
           Get.snackbar('Success', 'Transaction added successfully',
               icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+          _historyController.getDataByFilter();
         }
       } catch (error) {
         Get.snackbar('Error', error.toString(),

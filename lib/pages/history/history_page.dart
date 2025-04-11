@@ -31,6 +31,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: const Text(
           'Riwayat Transaksi',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

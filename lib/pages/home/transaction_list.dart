@@ -62,6 +62,17 @@ class _TransactionListState extends State<TransactionList> {
           },
         );
       } else {
+        if (historyController.resultDataSingleDate.isEmpty) {
+          return const Center(
+            child: Text(
+              'There is no transaction data',
+              style: TextStyle(
+                fontSize: MySizes.fontSizeLg,
+                color: MyColors.grey,
+              ),
+            ),
+          );
+        }
         return ListView.separated(
           padding: EdgeInsets.zero,
           itemCount: historyController.resultDataSingleDate.length,
@@ -83,6 +94,29 @@ class _TransactionListState extends State<TransactionList> {
             String transactionDate =
                 historyController.resultDataSingleDate[index].transactionDate!;
             return ListTile(
+              leading: Container(
+                height: 40,
+                width: 40,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      blurRadius: 2,
+                      spreadRadius: 0.5,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Image.asset(
+                    'assets/${historyController.resultDataSingleDate[index].imageIcon.toLowerCase()}',
+                    height: 25,
+                    width: 25,
+                  ),
+                ),
+              ),
               title: Text(
                   historyController.resultDataSingleDate[index].categoryName!),
               subtitle: Text(

@@ -23,13 +23,9 @@ class PlanningAhead extends StatelessWidget {
             children: [
               Text(
                 "Total Saldo per Type",
-                style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               // Row(
-              //   // ignore: prefer_const_literals_to_create_immutables
               //   children: [
               //     GestureDetector(
               //       onTap: () {
@@ -109,6 +105,7 @@ class PlanningAhead extends StatelessWidget {
                     return SizedBox(
                       width: 120,
                       child: Card(
+                        color: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -128,7 +125,7 @@ class PlanningAhead extends StatelessWidget {
                                   totalPerTypeController.resultData[index].total
                                       .toString(),
                                   style: const TextStyle(
-                                      color: MyColors.primary,
+                                      color: MyColors.green,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -136,9 +133,7 @@ class PlanningAhead extends StatelessWidget {
                                   totalPerTypeController
                                           .resultData[index].kategori ??
                                       '',
-                                  style: TextStyle(
-                                      color: Colors.grey[500],
-                                      fontStyle: FontStyle.italic),
+                                  style: TextStyle(fontStyle: FontStyle.italic),
                                 )
                               ],
                             ),

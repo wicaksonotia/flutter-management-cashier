@@ -10,7 +10,7 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(color: MyColors.primary
+      decoration: const BoxDecoration(color: MyColors.green
           // image: DecorationImage(
           //     fit: BoxFit.fill, image: AssetImage('assets/background.png')),
           ),
@@ -38,9 +38,10 @@ class Header extends StatelessWidget {
                     CurrencyFormat.convertToIdr(1000000000, 0),
                     textAlign: TextAlign.left,
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold),
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   )
                 ],
               ),
@@ -59,7 +60,7 @@ class Header extends StatelessWidget {
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white, // Background color
-                  foregroundColor: MyColors.primary, // Text colo
+                  foregroundColor: MyColors.green, // Text colo
                   // shape: new RoundedRectangleBorder(
                   //   borderRadius: new BorderRadius.circular(20.0),
                   // ),

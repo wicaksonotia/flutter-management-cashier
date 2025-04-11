@@ -1,8 +1,7 @@
-import 'package:calendar_appbar/calendar_appbar.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:financial_apps/controllers/history_controller.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class CalendarWeeklyView extends StatefulWidget {
@@ -14,7 +13,7 @@ class CalendarWeeklyView extends StatefulWidget {
 
 class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
   // int? groupValue = 0;
-  final HistoryController historyController = Get.find<HistoryController>();
+  final HistoryController _historyController = Get.find<HistoryController>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,55 +44,31 @@ class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
     //   );
     // }
 
-    return Column(
-      children: [
-        // calendarBox(context),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Last Week's Transaction",
-                style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600),
-              ),
-              // Row(
-              //   children: [
-              //     Text(
-              //       CurrencyFormat.convertToIdr(10000, 0),
-              //       style: TextStyle(
-              //           color: Colors.grey[700], fontWeight: FontWeight.w500),
-              //     ),
-              //     const Icon(
-              //       Icons.arrow_forward_ios,
-              //       size: 12,
-              //     )
-              //   ],
-              // )
-            ],
-          ),
-        ),
-        const Gap(15),
-        CalendarAppBar(
-          accent: Colors.transparent,
-          white: MyColors.primary,
-          backButton: false,
-          onDateChanged: (value) {
-            // historyController.singleDate.value = value;
-            // DateTime date = DateTime(
-            //     value.year,
-            //     value.month,
-            //     value.day);
-            // var convertedDateBackToInt = date.millisecondsSinceEpoch;
-            historyController.getDataSingleDate(value);
-          },
-          firstDate: DateTime.now().subtract(const Duration(days: 366)),
-          lastDate: DateTime.now(),
-        ),
+    return EasyDateTimeLine(
+      initialDate: DateTime.now(),
+      disabledDates: [
+        for (var i = DateTime.now().add(const Duration(days: 1));
+            i.isBefore(DateTime(2100));
+            i = i.add(const Duration(days: 1)))
+          i
       ],
+      onDateChange: (selectedDate) {
+        _historyController.getDataSingleDate(selectedDate);
+      },
+      activeColor: MyColors.green,
+      dayProps: const EasyDayProps(
+        todayHighlightStyle: TodayHighlightStyle.withBackground,
+        todayHighlightColor: Color(0xffE1ECC8),
+      ),
+      headerProps: const EasyHeaderProps(
+        monthPickerType: MonthPickerType.switcher,
+        monthStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+        showMonthPicker: true,
+        // selectedDateFormat: SelectedDateFormat.fullDateDMY,
+      ),
     );
   }
 }

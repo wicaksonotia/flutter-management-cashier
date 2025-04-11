@@ -30,6 +30,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: Stack(
         children: [
+          Container(
+            color: Colors.grey[50], // Set background color
+          ),
           RefreshIndicator(
             onRefresh: _refresh,
             child: ListView(

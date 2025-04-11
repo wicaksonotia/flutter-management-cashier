@@ -29,13 +29,14 @@ class _ChipsCategoryState extends State<ChipsCategory> {
         value: (i, v) => v['value']!,
         label: (i, v) => v['nama']!,
       ),
-      choiceStyle: C2ChoiceStyle(
-        showCheckmark: true,
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      choiceActiveStyle: const C2ChoiceStyle(
-        color: MyColors.green,
+      choiceCheckmark: true,
+      choiceStyle: C2ChipStyle.filled(
+        selectedStyle: const C2ChipStyle(
+          backgroundColor: MyColors.green,
+          borderRadius: BorderRadius.all(
+            Radius.circular(5),
+          ),
+        ),
       ),
     );
   }

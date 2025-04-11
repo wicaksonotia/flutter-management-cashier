@@ -28,14 +28,14 @@ class _ChipsFilterCategoryState extends State<ChipsFilterCategory> {
         value: (i, v) => v['value']!,
         label: (i, v) => v['nama']!,
       ),
-      choiceStyle: C2ChoiceStyle(
-        // showCheckmark: true,
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(5),
-        borderWidth: 1,
-      ),
-      choiceActiveStyle: const C2ChoiceStyle(
-        color: MyColors.green,
+      choiceCheckmark: false,
+      choiceStyle: C2ChipStyle.filled(
+        selectedStyle: const C2ChipStyle(
+          backgroundColor: MyColors.green,
+          borderRadius: BorderRadius.all(
+            Radius.circular(5),
+          ),
+        ),
       ),
     );
   }

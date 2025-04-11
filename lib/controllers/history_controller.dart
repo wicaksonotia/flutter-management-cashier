@@ -15,7 +15,8 @@ class HistoryController extends GetxController {
   RxList<dynamic> temporaryTagCategory = [].obs;
   RxList<dynamic> tagSubCategory = [].obs;
   RxList<dynamic> temporaryTagSubCategory = [].obs;
-  RxList<Map<String, String>> listSubCategory = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> listCategory = <Map<String, String>>[].obs;
+  var weeklyDateHome = DateTime.now().obs;
   var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
@@ -27,15 +28,33 @@ class HistoryController extends GetxController {
     super.onInit();
     monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
     getDataByFilter();
+    getDataListCategory();
+  }
+
+  void getDataListCategory() async {
+    try {
+      isLoading(true);
+      final result = await RemoteDataSource.listCategories(['PEMASUKAN'], '');
+      if (result != null) {
+        listCategory.assignAll(result.map((category) => {
+              'value': category.id.toString(),
+              'nama': category.categoryName!,
+            }));
+      }
+    } catch (error) {
+      Get.snackbar('Error', error.toString(),
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      isLoading(false);
+    } finally {
+      isLoading(false);
+    }
   }
 
   void getDataSingleDate(selectedDate) async {
     try {
       isLoading(true);
-      // final result = await RemoteDataSource.historyByDateRange(
-      //     startDate.value, endDate.value, ["PEMASUKAN", "PENGELUARAN"], []);
       final result = await RemoteDataSource.historyByDateRange(
-          startDate.value, endDate.value, []);
+          selectedDate, selectedDate, []);
       if (result != null && result.data != null) {
         resultDataSingleDate.assignAll(result.data!);
       }

@@ -17,8 +17,9 @@ class _CategoryPageState extends State<CategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: const Text(
           'Categories',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

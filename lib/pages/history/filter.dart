@@ -21,7 +21,7 @@ class _FilterReportState extends State<FilterReport> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: .4,
+      initialChildSize: .33,
       maxChildSize: 1,
       minChildSize: .2,
       builder: (BuildContext context, ScrollController scrollController) {
@@ -43,12 +43,12 @@ class _FilterReportState extends State<FilterReport> {
                 Divider(
                   color: Colors.grey.shade300,
                 ),
-                const Text(
-                  'Category',
-                  style: TextStyle(
-                    fontSize: MySizes.fontSizeMd,
-                  ),
-                ),
+                // const Text(
+                //   'Category',
+                //   style: TextStyle(
+                //     fontSize: MySizes.fontSizeMd,
+                //   ),
+                // ),
                 const ChipsSubCategory(),
                 const Gap(10),
                 SizedBox(
