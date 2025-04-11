@@ -1,3 +1,6 @@
+import 'package:financial_apps/controllers/category_controller.dart';
+import 'package:financial_apps/controllers/history_controller.dart';
+import 'package:financial_apps/controllers/total_per_type_controller.dart';
 import 'package:financial_apps/controllers/transaction_controller.dart';
 import 'package:financial_apps/pages/add_transaction/category/expense_from_list.dart';
 import 'package:financial_apps/pages/add_transaction/form_transaction.dart';
@@ -25,8 +28,20 @@ class RouterClass {
   // static String goToPastTransaction() => pastTransaction;
 
   static List<GetPage> routes = [
-    GetPage(page: () => NavigationPage(), name: navigation),
-    GetPage(page: () => const HomePage(), name: home),
+    GetPage(
+      page: () => NavigationPage(),
+      name: navigation,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => TransactionController());
+        Get.lazyPut(() => CategoryController());
+        Get.lazyPut(() => HistoryController());
+        Get.lazyPut(() => TotalPerTypeController());
+      }),
+    ),
+    GetPage(
+      page: () => const HomePage(),
+      name: home,
+    ),
     GetPage(
       page: () => const AddTransactionPage(),
       name: addtransaction,
