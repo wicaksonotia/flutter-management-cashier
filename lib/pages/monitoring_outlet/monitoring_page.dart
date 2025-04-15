@@ -1,28 +1,28 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/pages/history/filter.dart';
-import 'package:financial_apps/pages/history/filter_date_range.dart';
-import 'package:financial_apps/pages/history/filter_month.dart';
-import 'package:financial_apps/pages/history/history_list.dart';
-import 'package:financial_apps/pages/history/total_transaction.dart';
+import 'package:financial_apps/controllers/monitoring_outlet_controller.dart';
+import 'package:financial_apps/pages/monitoring_outlet/filter.dart';
+import 'package:financial_apps/pages/monitoring_outlet/filter_date_range.dart';
+import 'package:financial_apps/pages/monitoring_outlet/filter_month.dart';
+import 'package:financial_apps/pages/monitoring_outlet/history_list.dart';
+import 'package:financial_apps/pages/monitoring_outlet/total_transaction.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/lists.dart';
-import 'package:financial_apps/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class TransactionHistoryPage extends StatefulWidget {
-  const TransactionHistoryPage({super.key});
+class MonitoringPage extends StatefulWidget {
+  const MonitoringPage({super.key});
 
   @override
-  State<TransactionHistoryPage> createState() => _TransactionHistoryPageState();
+  State<MonitoringPage> createState() => _MonitoringPageState();
 }
 
-class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
-  final HistoryController _historyController = Get.find<HistoryController>();
+class _MonitoringPageState extends State<MonitoringPage> {
+  final MonitoringOutletController _monitoringOutletController =
+      Get.find<MonitoringOutletController>();
   int? groupValue = 1;
   Future<void> _refresh() async {
-    _historyController.getDataByFilter();
+    _monitoringOutletController.getDataByFilter();
   }
 
   @override
@@ -33,60 +33,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         title: const Text(
-          'Transaction History',
+          'Monitoring Outlet',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
-        actions: [
-          // PopupMenuButton<int>(
-          //   icon: const Icon(Icons.more_vert),
-          //   onSelected: (value) {
-          //     if (value == 1) {
-          //       // Handle Add action
-          //     } else if (value == 2) {
-          //       // Handle Filter action
-          //       showModalBottomSheet(
-          //         context: context,
-          //         builder: (context) => const FilterReport(),
-          //         isScrollControlled: true,
-          //         backgroundColor: Colors.white,
-          //         shape: const RoundedRectangleBorder(
-          //           borderRadius:
-          //               BorderRadius.vertical(top: Radius.circular(20)),
-          //         ),
-          //       );
-          //     }
-          //   },
-          //   itemBuilder: (context) => [
-          //     const PopupMenuItem(
-          //       value: 1,
-          //       child: Row(
-          //         children: [
-          //           Icon(Icons.add_box, color: MyColors.green),
-          //           SizedBox(width: 10),
-          //           Text('Add Transaction'),
-          //         ],
-          //       ),
-          //     ),
-          //     const PopupMenuItem(
-          //       value: 2,
-          //       child: Row(
-          //         children: [
-          //           Icon(Icons.filter_alt_outlined, color: MyColors.green),
-          //           SizedBox(width: 10),
-          //           Text('Filter'),
-          //         ],
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          IconButton(
-            icon: const Icon(Icons.add_box, color: MyColors.green),
-            onPressed: () {
-              Get.toNamed(RouterClass.addtransaction);
-            },
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,
@@ -117,9 +67,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                           setState(() {
                             groupValue = index;
                           });
-                          _historyController.filterBy.value =
+                          _monitoringOutletController.filterBy.value =
                               filterKategori[index]['value']!;
-                          _historyController.getDataByFilter();
+                          _monitoringOutletController.getDataByFilter();
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -189,9 +139,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
               color: Colors.white,
               width: MediaQuery.of(context).size.width,
               height: context.height * 0.05,
-              child: Obx(() => _historyController.filterBy.value == 'bulan'
-                  ? const FilterMonth()
-                  : const FilterDateRange()),
+              child: Obx(() =>
+                  _monitoringOutletController.filterBy.value == 'bulan'
+                      ? const FilterMonth()
+                      : const FilterDateRange()),
             ),
             const Gap(5),
             // INCOME, EXPENSE, AND BALANCE

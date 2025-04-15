@@ -1,44 +1,38 @@
 import 'package:financial_apps/database/api_request.dart';
+import 'package:financial_apps/models/monitoring_outlet_model.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:financial_apps/models/history_model.dart';
 
-class HistoryController extends GetxController {
-  var resultData = <DataHistory>[].obs;
-  var resultDataSingleDate = <DataHistory>[].obs;
+class MonitoringOutletController extends GetxController {
+  var resultData = <DataTransaction>[].obs;
   RxBool isLoading = false.obs;
   RxInt totalIncome = 0.obs;
   RxInt totalExpense = 0.obs;
   RxInt totalBalance = 0.obs;
-  RxList<dynamic> tagCategory = [].obs;
-  RxList<dynamic> temporaryTagCategory = [].obs;
-  RxList<dynamic> tagSubCategory = [].obs;
-  RxList<dynamic> temporaryTagSubCategory = [].obs;
-  RxList<Map<String, String>> listCategory = <Map<String, String>>[].obs;
-  var singleDate = DateTime.now().obs;
+  RxList<Map<String, String>> listOutlet = <Map<String, String>>[].obs;
+  var monthDate = DateTime.now().obs;
+  late RxString monthYear;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
-  var selectedDate = DateTime.now().obs;
-  RxString filterBy = 'bulan'.obs;
-  late RxString monthYear;
+  var filterBy = 'bulan'.obs;
+  var kios = 'STMJ-STG'.obs;
 
   @override
   void onInit() {
     super.onInit();
-    monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
+    monthYear = "${monthDate.value.month}-${monthDate.value.year}".obs;
     getDataByFilter();
-    getDataListCategory();
-    getDataSingleDate();
+    getDataListOutlet();
   }
 
-  void getDataListCategory() async {
+  void getDataListOutlet() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.listCategories(['PEMASUKAN'], '');
+      final result = await RemoteDataSource.listOutlet();
       if (result != null) {
-        listCategory.assignAll(result.map((category) => {
-              'value': category.id.toString(),
+        listOutlet.assignAll(result.map((category) => {
+              'value': category.categoryName!,
               'nama': category.categoryName!,
             }));
       }
@@ -51,54 +45,23 @@ class HistoryController extends GetxController {
     }
   }
 
-  void getDataSingleDate() async {
-    try {
-      isLoading(true);
-      final result = await RemoteDataSource.historyByDateRange(
-          selectedDate.value, selectedDate.value, []);
-      if (result != null && result.data != null) {
-        resultDataSingleDate.assignAll(result.data!);
-      }
-    } catch (error) {
-      Get.snackbar('Error', error.toString(),
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      isLoading(false);
-    } finally {
-      isLoading(false);
-    }
-  }
-
-  void setDataByFilter() {
-    // tagCategory.assignAll(temporaryTagCategory);
-    tagSubCategory.assignAll(temporaryTagSubCategory);
-    getDataByFilter();
-  }
-
   void getDataByFilter() async {
     try {
       isLoading(true);
-
-      FinancialHistoryModel? result;
+      MonitoringOutletModel? result;
       if (filterBy.value == 'bulan') {
-        result = await RemoteDataSource.historyByMonth(
-          monthYear.value,
-          // tagCategory,
-          tagSubCategory,
-        );
+        result = await RemoteDataSource.monitoringByMonth(
+            monthYear.value, kios.value);
       } else {
-        result = await RemoteDataSource.historyByDateRange(
-          startDate.value,
-          endDate.value,
-          // tagCategory,
-          tagSubCategory,
-        );
+        result = await RemoteDataSource.monitoringByDateRange(
+            startDate.value, endDate.value, kios.value);
       }
 
       if (result != null && result.data != null) {
         totalIncome.value = result.income ?? 0;
         totalExpense.value = result.expense ?? 0;
         totalBalance.value = totalIncome.value - totalExpense.value;
-        resultData.assignAll(result.data!);
+        resultData.assignAll(result.data ?? []);
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),
@@ -113,18 +76,16 @@ class HistoryController extends GetxController {
   /// FILTER DATE, MONTH
   /// ===================================
   void goToNextMonth() {
-    singleDate.value =
-        DateTime(singleDate.value.year, singleDate.value.month + 1);
+    monthDate.value = DateTime(monthDate.value.year, monthDate.value.month + 1);
     monthYear.value =
-        "${singleDate.value.month.toString()}-${singleDate.value.year.toString()}";
+        "${monthDate.value.month.toString()}-${monthDate.value.year.toString()}";
     getDataByFilter();
   }
 
   void goToPreviousMonth() {
-    singleDate.value =
-        DateTime(singleDate.value.year, singleDate.value.month - 1);
+    monthDate.value = DateTime(monthDate.value.year, monthDate.value.month - 1);
     monthYear.value =
-        "${singleDate.value.month.toString()}-${singleDate.value.year.toString()}";
+        "${monthDate.value.month.toString()}-${monthDate.value.year.toString()}";
     getDataByFilter();
   }
 

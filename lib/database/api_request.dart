@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:financial_apps/database/api_endpoints.dart';
 import 'package:financial_apps/models/category_model.dart';
 import 'package:financial_apps/models/history_model.dart';
+import 'package:financial_apps/models/monitoring_outlet_model.dart';
 import 'package:financial_apps/models/total_model.dart';
 import 'package:financial_apps/models/total_per_type_model.dart';
 
@@ -276,6 +277,73 @@ class RemoteDataSource {
       return false;
     } catch (error) {
       return false;
+    }
+  }
+
+  static Future<MonitoringOutletModel?> monitoringByDateRange(
+      DateTime startdate, DateTime enddate, String kios) async {
+    try {
+      var rawFormat = (jsonEncode({
+        'startDate': startdate.toString(),
+        'endDate': enddate.toString(),
+        'kios': kios,
+      }));
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.monitoringbydaterange;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        final MonitoringOutletModel res =
+            MonitoringOutletModel.fromJson(response.data);
+        return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<MonitoringOutletModel?> monitoringByMonth(
+      String monthYear, String kios) async {
+    try {
+      var rawFormat = (jsonEncode({
+        'monthYear': monthYear,
+        'kios': kios,
+      }));
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.monitoringbymonth;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        final MonitoringOutletModel res =
+            MonitoringOutletModel.fromJson(response.data);
+        // print(res.toJson());
+        return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // LIST CATEGORIES
+  static Future<List<CategoryModel>?> listOutlet() async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listoutlet;
+      final response = await Dio().get(url);
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => CategoryModel.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 }

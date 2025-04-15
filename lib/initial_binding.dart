@@ -1,7 +1,7 @@
 import 'package:financial_apps/controllers/category_controller.dart';
 import 'package:financial_apps/controllers/history_controller.dart';
+import 'package:financial_apps/controllers/monitoring_outlet_controller.dart';
 import 'package:financial_apps/controllers/total_per_type_controller.dart';
-import 'package:financial_apps/controllers/transaction_controller.dart';
 import 'package:get/get.dart';
 
 class InitialBinding implements Bindings {
@@ -15,5 +15,6 @@ class InitialBinding implements Bindings {
     Get.lazyPut(() => CategoryController());
     Get.lazyPut(() => HistoryController());
     Get.lazyPut(() => TotalPerTypeController());
+    Get.lazyPut(() => MonitoringOutletController());
   }
 }

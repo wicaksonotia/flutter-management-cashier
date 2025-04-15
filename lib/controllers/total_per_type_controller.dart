@@ -37,7 +37,6 @@ class TotalPerTypeController extends GetxController {
       final result = await RemoteDataSource.total();
       if (result != null) {
         resultTotal.value = result.data!;
-        print(resultTotal.value);
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),

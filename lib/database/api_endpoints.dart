@@ -23,4 +23,9 @@ class _AuthEndPoints {
   final String historybyyear = 'financialhistorybyyear';
   final String saveTransactionExpense = 'financialsavetransactionexpense';
   final String saveTransactionIncome = 'financialsavetransactionincome';
+
+  //MONITORING
+  final String monitoringbydaterange = 'financialmonitoringoutletbydaterange';
+  final String monitoringbymonth = 'financialmonitoringoutletbymonth';
+  final String listoutlet = 'financialmonitoringoutletlist';
 }

@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TransactionController extends GetxController {
-  HistoryController _historyController = Get.find<HistoryController>();
+  final HistoryController _historyController = Get.find<HistoryController>();
   TextEditingController amountController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   var selectTransactionExpenseDate = DateTime.now().obs;

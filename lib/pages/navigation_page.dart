@@ -1,7 +1,7 @@
-import 'package:financial_apps/pages/AccountPage.dart';
 import 'package:financial_apps/pages/home/home_page.dart';
 import 'package:financial_apps/pages/master_categories/category_page.dart';
 import 'package:financial_apps/pages/history/history_page.dart';
+import 'package:financial_apps/pages/monitoring_outlet/monitoring_page.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,7 @@ class _NavigationPageState extends State<NavigationPage> {
     const HomePage(),
     const TransactionHistoryPage(),
     const CategoryPage(),
-    const AccountPage(),
+    const MonitoringPage(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class _NavigationPageState extends State<NavigationPage> {
             BottomNavigationBarItem(icon: Icon(Icons.money), label: "History"),
             BottomNavigationBarItem(
                 icon: Icon(Icons.credit_card), label: "Category"),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: "Account"),
+            BottomNavigationBarItem(icon: Icon(Icons.outlet), label: "Outlet"),
           ],
         ));
   }

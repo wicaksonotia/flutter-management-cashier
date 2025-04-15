@@ -1,10 +1,7 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/pages/history/chips_sub_category.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:financial_apps/pages/monitoring_outlet/chips_outlet.dart';
 import 'package:financial_apps/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get.dart';
 
 class FilterReport extends StatefulWidget {
   const FilterReport({super.key});
@@ -14,13 +11,11 @@ class FilterReport extends StatefulWidget {
 }
 
 class _FilterReportState extends State<FilterReport> {
-  final HistoryController _historyController = Get.find<HistoryController>();
-
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: .33,
+      initialChildSize: .2,
       maxChildSize: 1,
       minChildSize: .2,
       builder: (BuildContext context, ScrollController scrollController) {
@@ -32,7 +27,7 @@ class _FilterReportState extends State<FilterReport> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Transaction History Filter',
+                  'Filter By Outlet',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontSize: MySizes.fontSizeLg,
@@ -43,27 +38,7 @@ class _FilterReportState extends State<FilterReport> {
                   color: Colors.grey.shade300,
                 ),
                 const Gap(10),
-                const ChipsSubCategory(),
-                const Gap(10),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MyColors.green,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      _historyController.setDataByFilter();
-                      Get.back();
-                    },
-                    child: const Text(
-                      'Apply Filter',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
+                const ChipsOutlet(),
               ],
             ),
           ),
