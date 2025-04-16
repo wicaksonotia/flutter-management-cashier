@@ -51,8 +51,8 @@ class _HistoryListState extends State<HistoryList> {
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border(
-                top: BorderSide(color: Colors.grey[100]!, width: 1),
-                bottom: BorderSide(color: Colors.grey[100]!, width: 1),
+                top: BorderSide(color: Colors.grey[50]!, width: 1),
+                bottom: BorderSide(color: Colors.grey[50]!, width: 1),
               ),
             ),
             child: Row(
