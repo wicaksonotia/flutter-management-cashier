@@ -159,4 +159,17 @@ class HistoryController extends GetxController {
       getDataByFilter();
     }
   }
+
+  void delete(int id) async {
+    var resultUpdate = await RemoteDataSource.deleteHistory(id);
+    if (resultUpdate) {
+      Get.back();
+      Get.snackbar('Notification', 'Data deleted successfully',
+          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      getDataByFilter();
+    } else {
+      Get.snackbar('Notification', 'Failed to delete data',
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+    }
+  }
 }

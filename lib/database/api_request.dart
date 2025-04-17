@@ -129,7 +129,7 @@ class RemoteDataSource {
     }
   }
 
-  // ===================== TRANSACTION =====================
+  // ===================== HISTORY =====================
   static Future<TotalModel?> total() async {
     try {
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.total;
@@ -212,6 +212,25 @@ class RemoteDataSource {
     }
   }
 
+  static Future<bool> deleteHistory(int id) async {
+    try {
+      var rawFormat = jsonEncode({'id': id});
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deletehistory;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // ===================== TRANSACTION =====================
   static Future<bool> saveTransactionExpense(
       int incomeId,
       int expenseId,

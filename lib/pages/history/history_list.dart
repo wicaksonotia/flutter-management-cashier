@@ -1,4 +1,5 @@
 import 'package:financial_apps/controllers/history_controller.dart';
+import 'package:financial_apps/pages/history/confirm_delete.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/currency.dart';
 import 'package:financial_apps/utils/sizes.dart';
@@ -104,7 +105,19 @@ class _HistoryListState extends State<HistoryList> {
                   motion: const ScrollMotion(),
                   children: [
                     SlidableAction(
-                      onPressed: (context) {},
+                      onPressed: (context) {
+                        Get.back();
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) => ConfirmDelete(id: items.id!),
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                        );
+                      },
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
                       icon: Icons.delete,
