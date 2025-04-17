@@ -5,7 +5,7 @@ import 'package:financial_apps/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:grouped_list/grouped_list.dart';
+import 'package:group_list_view/group_list_view.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -39,120 +39,38 @@ class _HistoryListState extends State<HistoryList> {
           ),
         );
       } else {
-        return GroupedListView<dynamic, String>(
-          elements: _monitoringOutletController.resultData,
-          groupBy: (element) => DateFormat('dd MMMM yyyy')
-              .format(DateTime.parse(element.transactionDate!)),
-          groupComparator: (value1, value2) => value2.compareTo(value1),
-          groupSeparatorBuilder: (String groupByValue) => Container(
-            width: double.infinity,
-            height: 60,
-            padding: const EdgeInsets.only(left: 16, right: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(color: Colors.grey[50]!, width: 1),
-                bottom: BorderSide(color: Colors.grey[50]!, width: 1),
-              ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  DateFormat('dd').format(
-                    DateFormat('dd MMMM yyyy').parse(groupByValue),
-                  ),
-                  style: const TextStyle(
-                      fontSize: 33, fontWeight: FontWeight.bold),
-                ),
-                const Gap(10),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      DateFormat('EEEE').format(
-                        DateFormat('dd MMMM yyyy').parse(groupByValue),
-                      ),
-                      style: const TextStyle(
-                        fontSize: MySizes.fontSizeMd,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      DateFormat('MMMM yyyy').format(
-                        DateFormat('dd MMMM yyyy').parse(groupByValue),
-                      ),
-                      style: const TextStyle(
-                        fontSize: MySizes.fontSizeSm,
-                        color: MyColors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: MyColors.green,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    CurrencyFormat.convertToIdr(
-                      _monitoringOutletController.resultData
-                          .where((element) =>
-                              DateFormat('dd MMMM yyyy').format(DateTime.parse(
-                                      element.transactionDate!)) ==
-                                  groupByValue &&
-                              !element.deleteStatus!)
-                          .fold<int>(
-                            0,
-                            (sum, element) => sum + element.grandTotal!,
-                          ),
-                      0,
-                    ),
-                    style: const TextStyle(
-                      fontSize: MySizes.fontSizeLg,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          itemBuilder: (context, dynamic element) {
-            var transactionItem = element;
-            var numerator = transactionItem.numerator!;
-            var transactionDate = transactionItem.transactionDate!;
-            var kios = transactionItem.kios!;
-            var grandtotal = transactionItem.grandTotal;
-            var details = transactionItem.details;
+        Map<String, List<dynamic>> resultDataMap = {};
+        for (var item in _monitoringOutletController.resultData) {
+          String formattedDate = DateFormat('dd MMMM yyyy')
+              .format(DateTime.parse(item.transactionDate!));
+          if (!resultDataMap.containsKey(formattedDate)) {
+            resultDataMap[formattedDate] = [];
+          }
+          resultDataMap[formattedDate]!.add(item);
+        }
+        // resultDataMap.forEach((key, value) {
+        // print(
+        //     'Date: $key, Transactions: ${value.map((item) => item.toJson()).toList()}');
+        // });
+        return GroupListView(
+          sectionsCount: resultDataMap.keys.toList().length,
+          countOfItemInSection: (int section) {
+            return resultDataMap.values.toList()[section].length;
+          },
+          itemBuilder: (BuildContext context, IndexPath index) {
+            var items =
+                resultDataMap.values.toList()[index.section][index.index];
             return Container(
               color: Colors.white,
-              margin: EdgeInsets.only(
-                bottom: _monitoringOutletController.resultData
-                            .where((element2) =>
-                                DateFormat('dd MMMM yyyy').format(
-                                    DateTime.parse(
-                                        element2.transactionDate!)) ==
-                                DateFormat('dd MMMM yyyy').format(
-                                    DateTime.parse(element.transactionDate!)))
-                            .last ==
-                        element
-                    ? 20
-                    : 0,
-              ),
               child: ExpansionTile(
                 leading: const Icon(Icons.receipt),
                 title: Text(
-                  '${kios.toUpperCase()}-${numerator.toString().padLeft(4, '0').toUpperCase()}',
+                  '${items.kios.toUpperCase()}-${items.numerator.toString().padLeft(4, '0').toUpperCase()}',
                   style: const TextStyle(fontSize: MySizes.fontSizeMd),
                 ),
                 subtitle: Text(
                     DateFormat('dd MMM yyyy HH:mm')
-                        .format(DateTime.parse(transactionDate)),
+                        .format(DateTime.parse(items.transactionDate)),
                     style: const TextStyle(
                       color: MyColors.grey,
                       fontSize: MySizes.fontSizeSm,
@@ -160,14 +78,14 @@ class _HistoryListState extends State<HistoryList> {
                 trailing: Column(
                   children: [
                     Text(
-                      CurrencyFormat.convertToIdr(grandtotal, 0),
+                      CurrencyFormat.convertToIdr(items.grandTotal, 0),
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: MySizes.fontSizeMd,
                           color: MyColors.green),
                     ),
                     Text(
-                      transactionItem.deleteStatus! ? 'Deleted' : '',
+                      items.deleteStatus! ? 'Deleted' : '',
                       style: const TextStyle(
                         color: Colors.red,
                         fontSize: MySizes.fontSizeSm,
@@ -190,7 +108,7 @@ class _HistoryListState extends State<HistoryList> {
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: details!.length,
+                          itemCount: items.details!.length,
                           itemBuilder: (context, detailIndex) {
                             return Row(
                               children: [
@@ -199,22 +117,23 @@ class _HistoryListState extends State<HistoryList> {
                                   width:
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: Text(
-                                      details[detailIndex].productName ??
+                                      items.details[detailIndex].productName ??
                                           'Unknown Product'),
                                 ),
                                 Container(
                                   alignment: Alignment.center,
                                   width:
                                       MediaQuery.of(context).size.width * 0.1,
-                                  child:
-                                      Text('${details[detailIndex].quantity}'),
+                                  child: Text(
+                                      '${items.details[detailIndex].quantity}'),
                                 ),
                                 Container(
                                   width:
                                       MediaQuery.of(context).size.width * 0.25,
                                   alignment: Alignment.centerRight,
                                   child: Text(CurrencyFormat.convertToIdr(
-                                      details[detailIndex].totalPrice, 0)),
+                                      items.details[detailIndex].totalPrice,
+                                      0)),
                                 ),
                               ],
                             );
@@ -227,13 +146,92 @@ class _HistoryListState extends State<HistoryList> {
               ),
             );
           },
-          separator: Divider(
-            color: Colors.grey[200],
-            thickness: 1,
-            height: 1,
-          ),
-          useStickyGroupSeparators: true,
-          floatingHeader: true,
+          groupHeaderBuilder: (BuildContext context, int section) {
+            return Container(
+              width: double.infinity,
+              height: 60,
+              padding: const EdgeInsets.only(left: 16, right: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: Colors.grey[100]!, width: 1),
+                  bottom: BorderSide(color: Colors.grey[100]!, width: 1),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    DateFormat('dd').format(
+                      DateFormat('dd MMMM yyyy')
+                          .parse(resultDataMap.keys.toList()[section]),
+                    ),
+                    style: const TextStyle(
+                        fontSize: 33, fontWeight: FontWeight.bold),
+                  ),
+                  const Gap(10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DateFormat('EEEE').format(
+                          DateFormat('dd MMMM yyyy')
+                              .parse(resultDataMap.keys.toList()[section]),
+                        ),
+                        style: const TextStyle(
+                          fontSize: MySizes.fontSizeMd,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        DateFormat('MMMM yyyy').format(
+                          DateFormat('dd MMMM yyyy')
+                              .parse(resultDataMap.keys.toList()[section]),
+                        ),
+                        style: const TextStyle(
+                          fontSize: MySizes.fontSizeSm,
+                          color: MyColors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: MyColors.green,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      CurrencyFormat.convertToIdr(
+                        _monitoringOutletController.resultData
+                            .where((element) =>
+                                DateFormat('dd MMMM yyyy').format(
+                                        DateTime.parse(
+                                            element.transactionDate!)) ==
+                                    resultDataMap.keys.toList()[section] &&
+                                !element.deleteStatus!)
+                            .fold<int>(
+                              0,
+                              (sum, element) => sum + element.grandTotal!,
+                            ),
+                        0,
+                      ),
+                      style: const TextStyle(
+                        fontSize: MySizes.fontSizeLg,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+          separatorBuilder: (context, index) => SizedBox(height: 2),
+          sectionSeparatorBuilder: (context, section) => SizedBox(height: 20),
         );
       }
     });
