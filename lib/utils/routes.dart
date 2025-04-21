@@ -1,4 +1,5 @@
 import 'package:financial_apps/controllers/transaction_controller.dart';
+import 'package:financial_apps/pages/add_transaction/calculator.dart';
 import 'package:financial_apps/pages/add_transaction/category/expense_from_list.dart';
 import 'package:financial_apps/pages/add_transaction/form_transaction.dart';
 import 'package:financial_apps/pages/add_transaction/category/expense_list.dart';
@@ -17,6 +18,7 @@ class RouterClass {
   static String expense = '/expense';
   static String expensefrom = '/expensefrom';
   static String income = '/income';
+  static String calculator = '/calculator';
 
   // static String navigations() => navigation;
   // static String goToHome() => home;
@@ -57,5 +59,6 @@ class RouterClass {
         name: income,
         transition: Transition.rightToLeft,
         transitionDuration: const Duration(milliseconds: 500)),
+    GetPage(page: () => const CalculatorPage(), name: calculator),
   ];
 }

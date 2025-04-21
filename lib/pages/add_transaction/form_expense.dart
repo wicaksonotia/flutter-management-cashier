@@ -1,5 +1,6 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:financial_apps/controllers/transaction_controller.dart';
+import 'package:financial_apps/pages/add_transaction/calculator.dart';
 import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/routes.dart';
 import 'package:financial_apps/utils/sizes.dart';
@@ -126,6 +127,19 @@ class _FormExpenseState extends State<FormExpense> {
               ),
               filled: true,
               fillColor: Colors.white,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.calculate),
+                onPressed: () {
+                  showModalBottomSheet(
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            child: const CalculatorPage());
+                      });
+                },
+              ),
             ),
           ),
           const Gap(10),
