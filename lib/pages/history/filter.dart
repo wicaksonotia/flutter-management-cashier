@@ -1,10 +1,7 @@
-import 'package:financial_apps/controllers/history_controller.dart';
 import 'package:financial_apps/pages/history/chips_sub_category.dart';
-import 'package:financial_apps/utils/colors.dart';
 import 'package:financial_apps/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get.dart';
 
 class FilterReport extends StatefulWidget {
   const FilterReport({super.key});
@@ -14,8 +11,6 @@ class FilterReport extends StatefulWidget {
 }
 
 class _FilterReportState extends State<FilterReport> {
-  final HistoryController _historyController = Get.find<HistoryController>();
-
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(

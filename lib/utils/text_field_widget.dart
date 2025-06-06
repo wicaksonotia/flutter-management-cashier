@@ -2,7 +2,7 @@ import 'package:financial_apps/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class TextFieldWidget extends StatelessWidget {
-  TextFieldWidget(
+  const TextFieldWidget(
       {super.key,
       this.controller,
       required this.labelText,
@@ -19,23 +19,23 @@ class TextFieldWidget extends StatelessWidget {
       this.initialValue,
       this.keyboardType = TextInputType.text,
       this.maxLines = 1});
-  String labelText;
-  String hint;
-  IconData? prefixIcon;
-  IconData? suffixIcon;
-  VoidCallback? onTapSuffixIcon;
-  bool obscureText;
-  bool filled;
-  bool enabled;
-  String? initialValue;
-  TextInputType keyboardType;
-  int maxLines;
+  final String labelText;
+  final String hint;
+  final IconData? prefixIcon;
+  final IconData? suffixIcon;
+  final VoidCallback? onTapSuffixIcon;
+  final bool obscureText;
+  final bool filled;
+  final bool enabled;
+  final String? initialValue;
+  final TextInputType keyboardType;
+  final int maxLines;
 
-  TextEditingController? controller;
-  Function()? onEditingComplete;
+  final TextEditingController? controller;
+  final Function()? onEditingComplete;
 
-  String? Function(String?)? validator;
-  Function(String)? onChanged;
+  final String? Function(String?)? validator;
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
