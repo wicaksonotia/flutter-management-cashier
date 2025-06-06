@@ -23,6 +23,7 @@ class _ChipsSubCategoryState extends State<ChipsSubCategory> {
         value: _historyController.temporaryTagSubCategory,
         onChanged: (val) => setState(() {
           _historyController.temporaryTagSubCategory.value = val.cast<String>();
+          _historyController.setDataByFilter();
         }),
         choiceItems: C2Choice.listFrom<String, Map<String, String>>(
           source: _historyController.listCategory,

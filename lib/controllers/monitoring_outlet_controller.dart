@@ -32,8 +32,8 @@ class MonitoringOutletController extends GetxController {
       final result = await RemoteDataSource.listOutlet();
       if (result != null) {
         listOutlet.assignAll(result.map((category) => {
-              'value': category.categoryName!,
-              'nama': category.categoryName!,
+              'value': category.username!,
+              'nama': category.username!,
             }));
       }
     } catch (error) {

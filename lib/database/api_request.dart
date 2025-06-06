@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:financial_apps/database/api_endpoints.dart';
 import 'package:financial_apps/models/category_model.dart';
 import 'package:financial_apps/models/history_model.dart';
+import 'package:financial_apps/models/kios_model.dart';
 import 'package:financial_apps/models/monitoring_outlet_model.dart';
 import 'package:financial_apps/models/total_model.dart';
 import 'package:financial_apps/models/total_per_type_model.dart';
@@ -352,13 +353,13 @@ class RemoteDataSource {
   }
 
   // LIST CATEGORIES
-  static Future<List<CategoryModel>?> listOutlet() async {
+  static Future<List<KiosModel>?> listOutlet() async {
     try {
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listoutlet;
       final response = await Dio().get(url);
       if (response.statusCode == 200) {
         List<dynamic> jsonData = response.data;
-        return jsonData.map((e) => CategoryModel.fromJson(e)).toList();
+        return jsonData.map((e) => KiosModel.fromJson(e)).toList();
       }
       return null;
     } catch (e) {

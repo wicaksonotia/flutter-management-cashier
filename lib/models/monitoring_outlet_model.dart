@@ -43,6 +43,7 @@ class DataTransaction {
   bool? deleteStatus;
   int? discount;
   int? total;
+  String? orderType;
   List<DataTransactionDetails>? details;
 
   DataTransaction(
@@ -54,7 +55,8 @@ class DataTransaction {
       this.deleteStatus,
       this.discount,
       this.total,
-      this.details});
+      this.details,
+      this.orderType});
 
   DataTransaction.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -65,6 +67,7 @@ class DataTransaction {
     deleteStatus = json['delete_status'];
     discount = json['discount'];
     total = json['total'];
+    orderType = json['order_type'];
     if (json['details'] != null) {
       details = <DataTransactionDetails>[];
       json['details'].forEach((v) {
@@ -83,6 +86,7 @@ class DataTransaction {
     data['delete_status'] = deleteStatus;
     data['discount'] = discount;
     data['total'] = total;
+    data['order_type'] = orderType;
     if (details != null) {
       data['details'] = details!.map((v) => v.toJson()).toList();
     }

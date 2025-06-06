@@ -48,10 +48,6 @@ class _HistoryListState extends State<HistoryList> {
           }
           resultDataMap[formattedDate]!.add(item);
         }
-        // resultDataMap.forEach((key, value) {
-        // print(
-        //     'Date: $key, Transactions: ${value.map((item) => item.toJson()).toList()}');
-        // });
         return GroupListView(
           sectionsCount: resultDataMap.keys.toList().length,
           countOfItemInSection: (int section) {

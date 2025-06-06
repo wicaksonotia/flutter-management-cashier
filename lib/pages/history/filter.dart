@@ -44,26 +44,26 @@ class _FilterReportState extends State<FilterReport> {
                 ),
                 const Gap(10),
                 const ChipsSubCategory(),
-                const Gap(10),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MyColors.green,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      _historyController.setDataByFilter();
-                      Get.back();
-                    },
-                    child: const Text(
-                      'Apply Filter',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
+                // const Gap(10),
+                // SizedBox(
+                //   width: double.infinity,
+                //   child: ElevatedButton(
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: MyColors.green,
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(12),
+                //       ),
+                //     ),
+                //     onPressed: () {
+                //       _historyController.setDataByFilter();
+                //       Get.back();
+                //     },
+                //     child: const Text(
+                //       'Apply Filter',
+                //       style: TextStyle(color: Colors.white),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

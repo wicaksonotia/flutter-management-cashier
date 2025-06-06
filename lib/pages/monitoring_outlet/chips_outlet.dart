@@ -23,7 +23,7 @@ class _ChipsOutletState extends State<ChipsOutlet> {
         padding: EdgeInsets.zero,
         value: _monitoringOutletController.kios,
         onChanged: (val) => setState(() {
-          _monitoringOutletController.kios.value = val as String;
+          _monitoringOutletController.kios.value = val.toString();
           _monitoringOutletController.getDataByFilter();
         }),
         choiceItems: C2Choice.listFrom<String, Map<String, String>>(
