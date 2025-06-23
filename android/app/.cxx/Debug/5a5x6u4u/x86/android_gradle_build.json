@@ -6,14 +6,14 @@
     [
       "/Users/tiawicaksono/Library/Android/sdk/cmake/3.22.1/bin/ninja",
       "-C",
-      "/Users/tiawicaksono/Documents/DEVELOPMENT/FLUTTER/financial_apps/android/app/.cxx/Debug/5a5x6u4u/x86",
+      "/Users/tiawicaksono/Documents/DEVELOPMENT/FLUTTER/cashier_management/android/app/.cxx/Debug/5a5x6u4u/x86",
       "clean"
     ]
   ],
   "buildTargetsCommandComponents": [
     "/Users/tiawicaksono/Library/Android/sdk/cmake/3.22.1/bin/ninja",
     "-C",
-    "/Users/tiawicaksono/Documents/DEVELOPMENT/FLUTTER/financial_apps/android/app/.cxx/Debug/5a5x6u4u/x86",
+    "/Users/tiawicaksono/Documents/DEVELOPMENT/FLUTTER/cashier_management/android/app/.cxx/Debug/5a5x6u4u/x86",
     "{LIST_OF_TARGETS_TO_BUILD}"
   ],
   "libraries": {},

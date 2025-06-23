@@ -1,7 +1,7 @@
 import 'package:chips_choice/chips_choice.dart';
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/lists.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,7 +32,7 @@ class _ChipsCategoryState extends State<ChipsCategory> {
       choiceCheckmark: true,
       choiceStyle: C2ChipStyle.filled(
         selectedStyle: const C2ChipStyle(
-          backgroundColor: MyColors.green,
+          backgroundColor: MyColors.primary,
           borderRadius: BorderRadius.all(
             Radius.circular(5),
           ),

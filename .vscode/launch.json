@@ -11,18 +11,18 @@
       "program": "lib/main.dart"
     },
     {
-      "name": "financial_apps",
+      "name": "cashier_management",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "financial_apps (profile mode)",
+      "name": "cashier_management (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "financial_apps (release mode)",
+      "name": "cashier_management (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

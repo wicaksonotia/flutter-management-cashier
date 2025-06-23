@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:financial_apps/models/category_model.dart';
-import 'package:financial_apps/models/transaction_model.dart';
-import 'package:financial_apps/database/api_endpoints.dart';
+import 'package:cashier_management/models/category_model.dart';
+import 'package:cashier_management/models/transaction_model.dart';
+import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

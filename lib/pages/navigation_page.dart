@@ -1,9 +1,9 @@
-import 'package:financial_apps/pages/home/home_page.dart';
-import 'package:financial_apps/pages/master_categories/category_page.dart';
-import 'package:financial_apps/pages/history/history_page.dart';
-import 'package:financial_apps/pages/monitoring_outlet/monitoring_page.dart';
-import 'package:financial_apps/utils/colors.dart';
-// import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/pages/home/home_page.dart';
+import 'package:cashier_management/pages/master_categories/category_page.dart';
+import 'package:cashier_management/pages/history/history_page.dart';
+import 'package:cashier_management/pages/monitoring_outlet/monitoring_page.dart';
+import 'package:cashier_management/utils/colors.dart';
+// import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -19,9 +19,9 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   final screens = [
     const HomePage(),
-    const TransactionHistoryPage(),
-    const MonitoringPage(),
-    const CategoryPage(),
+    // const TransactionHistoryPage(),
+    // const MonitoringPage(),
+    // const CategoryPage(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -52,8 +52,8 @@ class _NavigationPageState extends State<NavigationPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               duration: const Duration(milliseconds: 400),
               // tabBackgroundColor: Colors.grey[100]!,
-              tabBackgroundColor: MyColors.green,
-              color: MyColors.green,
+              tabBackgroundColor: MyColors.primary,
+              color: MyColors.primary,
               tabs: const [
                 GButton(
                   icon: Icons.home,

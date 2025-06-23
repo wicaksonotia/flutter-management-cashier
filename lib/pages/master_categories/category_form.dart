@@ -1,8 +1,8 @@
-import 'package:financial_apps/controllers/category_controller.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/sizes.dart';
+import 'package:cashier_management/controllers/category_controller.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
-// import 'package:financial_apps/utils/lists.dart';
+// import 'package:cashier_management/utils/lists.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -61,7 +61,7 @@ class _CategoryFormState extends State<CategoryForm> {
                 labels: const ['Income', 'Expense'],
                 icons: const [Icons.download, Icons.upload],
                 activeBgColors: const [
-                  [MyColors.green],
+                  [MyColors.primary],
                   [MyColors.red]
                 ],
                 onToggle: (index) {
@@ -77,7 +77,7 @@ class _CategoryFormState extends State<CategoryForm> {
             TextFormField(
               controller: categoryController.nameController,
               decoration: InputDecoration(
-                focusColor: MyColors.green,
+                focusColor: MyColors.primary,
                 fillColor: Colors.white,
                 filled: true,
                 enabledBorder: OutlineInputBorder(
@@ -97,11 +97,11 @@ class _CategoryFormState extends State<CategoryForm> {
                   color: Colors.grey.shade300,
                 ),
                 border: const OutlineInputBorder(
-                  borderSide: BorderSide(color: MyColors.green),
+                  borderSide: BorderSide(color: MyColors.primary),
                 ),
                 labelText: "Category Name",
                 floatingLabelStyle: const TextStyle(
-                  color: MyColors.green,
+                  color: MyColors.primary,
                 ),
               ),
               autocorrect: false,
@@ -125,7 +125,7 @@ class _CategoryFormState extends State<CategoryForm> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor: MyColors.green,
+                  backgroundColor: MyColors.primary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   minimumSize:

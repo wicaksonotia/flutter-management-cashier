@@ -1,7 +1,7 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/currency.dart';
-import 'package:financial_apps/utils/sizes.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/currency.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -82,45 +82,56 @@ class _TransactionListState extends State<TransactionList> {
             height: 1,
           ),
           itemBuilder: (context, index) {
-            warna =
-                historyController.resultDataSingleDate[index].categoryType ==
-                        "PENGELUARAN"
-                    ? MyColors.red
-                    : MyColors.green;
             String kategori =
-                historyController.resultDataSingleDate[index].categoryType!;
+                historyController.resultDataSingleDate[index].transactionType!;
+            warna = kategori == "PENGELUARAN" ? MyColors.red : Colors.green;
+
             int dataPrice =
                 historyController.resultDataSingleDate[index].amount ?? 0;
             String transactionDate =
                 historyController.resultDataSingleDate[index].transactionDate!;
+            String transactionName =
+                historyController.resultDataSingleDate[index].transactionName!;
+            String cabang =
+                historyController.resultDataSingleDate[index].cabang!;
+            String note = historyController.resultDataSingleDate[index].note ==
+                    '-'
+                ? cabang
+                : '${transactionName} : ${historyController.resultDataSingleDate[index].note!}';
             return ListTile(
               leading: Container(
-                height: 40,
-                width: 40,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  color: warna,
+                ),
+                padding: const EdgeInsets.all(3),
+                child: Icon(
+                  kategori == "PENGELUARAN"
+                      ? Icons.arrow_upward
+                      : Icons.arrow_downward,
                   color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 2,
-                      spreadRadius: 0.5,
-                      offset: Offset(0, 1),
+                ),
+              ),
+              title: RichText(
+                text: TextSpan(
+                  text: kategori,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: MySizes.fontSizeMd,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: kategori == "PENGELUARAN" ? ' $cabang' : '',
+                      style: const TextStyle(
+                        color: MyColors.grey,
+                        fontSize: MySizes.fontSizeSm,
+                      ),
                     ),
                   ],
                 ),
-                child: Center(
-                  child: Image.asset(
-                    'assets/${historyController.resultDataSingleDate[index].imageIcon.toLowerCase()}',
-                    height: 25,
-                    width: 25,
-                  ),
-                ),
               ),
-              title: Text(
-                  historyController.resultDataSingleDate[index].categoryName!),
               subtitle: Text(
-                historyController.resultDataSingleDate[index].note ?? '',
+                note,
                 style: const TextStyle(
                   color: MyColors.grey,
                 ),
@@ -132,21 +143,12 @@ class _TransactionListState extends State<TransactionList> {
                   children: [
                     Text.rich(
                       TextSpan(
-                        text: kategori == "PEMASUKAN" ? '+ ' : '- ',
+                        text: kategori == "PENGELUARAN" ? '- ' : '',
                         style: TextStyle(
-                          color: kategori == "PEMASUKAN"
-                              ? MyColors.green
-                              : MyColors.red,
+                          color: warna,
                           fontSize: MySizes.fontSizeLg,
                         ),
                         children: [
-                          TextSpan(
-                            text: 'Rp',
-                            style: TextStyle(
-                              color: warna,
-                              fontSize: MySizes.fontSizeSm,
-                            ),
-                          ),
                           TextSpan(
                             text: CurrencyFormat.convertToIdr(dataPrice, 0),
                             style: TextStyle(

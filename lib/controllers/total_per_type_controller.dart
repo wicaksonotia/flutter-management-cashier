@@ -1,26 +1,31 @@
-import 'package:financial_apps/database/api_request.dart';
-import 'package:financial_apps/models/total_per_type_model.dart';
+import 'package:cashier_management/database/api_request.dart';
+import 'package:cashier_management/models/chart_model.dart';
+import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TotalPerTypeController extends GetxController {
-  var resultTotalPerType = <DataList>[].obs;
+  var resultItem = <DataListOutletBranch>[].obs;
+  var resultChartItem = <DataListChart>[].obs;
   var resultTotal = 0.obs;
   RxBool isLoading = false.obs;
+  RxBool isLoadingChart = false.obs;
+  RxInt indexSlider = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
-    getTotalPerType();
-    getTotal();
+    getTotalBranchSaldo();
+    getTotalSaldo();
+    getTotalPerMonth();
   }
 
-  void getTotalPerType() async {
+  void getTotalBranchSaldo() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.totalPerType();
+      final result = await RemoteDataSource.homeTotalBranchSaldo();
       if (result != null && result.data != null) {
-        resultTotalPerType.assignAll(result.data!);
+        resultItem.assignAll(result.data!);
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),
@@ -31,10 +36,10 @@ class TotalPerTypeController extends GetxController {
     }
   }
 
-  void getTotal() async {
+  void getTotalSaldo() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.total();
+      final result = await RemoteDataSource.homeTotalSaldo();
       if (result != null) {
         resultTotal.value = result.data!;
       }
@@ -44,6 +49,22 @@ class TotalPerTypeController extends GetxController {
       isLoading(false);
     } finally {
       isLoading(false);
+    }
+  }
+
+  void getTotalPerMonth() async {
+    try {
+      isLoadingChart(true);
+      final result = await RemoteDataSource.homeTotalPerMonth();
+      if (result != null && result.data != null) {
+        resultChartItem.assignAll(result.data!);
+      }
+    } catch (error) {
+      Get.snackbar('Error', error.toString(),
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      isLoadingChart(false);
+    } finally {
+      isLoadingChart(false);
     }
   }
 }

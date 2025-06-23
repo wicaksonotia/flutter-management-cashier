@@ -1,6 +1,6 @@
-import 'package:financial_apps/database/database_helper.dart';
-import 'package:financial_apps/models/transaction_model.dart';
-import 'package:financial_apps/utils/lists.dart';
+import 'package:cashier_management/database/database_helper.dart';
+import 'package:cashier_management/models/transaction_model.dart';
+import 'package:cashier_management/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -1,7 +1,7 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/database/api_request.dart';
-import 'package:financial_apps/models/category_model.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/database/api_request.dart';
+import 'package:cashier_management/models/category_model.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -111,7 +111,7 @@ class TransactionController extends GetxController {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: MyColors.green,
+              primary: MyColors.primary,
               onPrimary: Colors.white,
               outlineVariant: Colors.grey.shade200,
             ),
@@ -134,10 +134,10 @@ class TransactionController extends GetxController {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: MyColors.green,
+              primary: MyColors.primary,
               onPrimary: Colors.white,
               tertiary:
-                  MyColors.green, // Background color for am/pm when selected
+                  MyColors.primary, // Background color for am/pm when selected
               onSurfaceVariant: Colors.black, // Text color for am/pm
               onTertiary: Colors.white, // Text color for am/pm when selected
               onPrimaryContainer: Colors
@@ -238,7 +238,7 @@ class TransactionController extends GetxController {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: MyColors.green,
+              primary: MyColors.primary,
               onPrimary: Colors.white,
               outlineVariant: Colors.grey.shade200,
             ),
@@ -260,10 +260,10 @@ class TransactionController extends GetxController {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: MyColors.green,
+              primary: MyColors.primary,
               onPrimary: Colors.white,
               tertiary:
-                  MyColors.green, // Background color for am/pm when selected
+                  MyColors.primary, // Background color for am/pm when selected
               onSurfaceVariant: Colors.black, // Text color for am/pm
               onTertiary: Colors.white, // Text color for am/pm when selected
               onPrimaryContainer: Colors

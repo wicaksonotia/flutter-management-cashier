@@ -1,18 +1,13 @@
 class FinancialHistoryModel {
   String? status;
   String? message;
-  int? income;
-  int? expense;
   List<DataHistory>? data;
 
-  FinancialHistoryModel(
-      {this.status, this.message, this.income, this.expense, this.data});
+  FinancialHistoryModel({this.status, this.message, this.data});
 
   FinancialHistoryModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
-    income = json['income'];
-    expense = json['expense'];
     if (json['data'] != null) {
       data = <DataHistory>[];
       json['data'].forEach((v) {
@@ -25,8 +20,6 @@ class FinancialHistoryModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['status'] = status;
     data['message'] = message;
-    data['income'] = income;
-    data['expense'] = expense;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -36,53 +29,73 @@ class FinancialHistoryModel {
 
 class DataHistory {
   int? id;
-  int? categoryId;
-  String? categoryName;
-  String? categoryType;
   String? note;
   int? amount;
   String? transactionDate;
-  int? expenseFromCategoryId;
-  String? expenseFromCategoryName;
-  String imageIcon;
+  String? transactionType;
+  bool? deleteStatus;
+  String? deleteReason;
+  int? transactionCategoryId;
+  String? transactionName;
+  int? idKios;
+  String? kios;
+  int? idCabang;
+  String? cabang;
+  int? idKasir;
+  String? namaKasir;
 
   DataHistory(
       {this.id,
-      this.categoryId,
-      this.categoryName,
-      this.categoryType,
       this.note,
       this.amount,
       this.transactionDate,
-      this.expenseFromCategoryId,
-      this.expenseFromCategoryName,
-      required this.imageIcon});
+      this.transactionType,
+      this.deleteStatus,
+      this.deleteReason,
+      this.transactionCategoryId,
+      this.transactionName,
+      this.idKios,
+      this.kios,
+      this.idCabang,
+      this.cabang,
+      this.idKasir,
+      this.namaKasir});
 
-  DataHistory.fromJson(Map<String, dynamic> json)
-      : imageIcon = json['image_icon'] ?? 'stmj.png' {
+  DataHistory.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    categoryId = json['category_id'];
-    categoryName = json['category_name'];
-    categoryType = json['category_type'];
     note = json['note'];
     amount = json['amount'];
     transactionDate = json['transaction_date'];
-    expenseFromCategoryId = json['expense_from_category_id'];
-    expenseFromCategoryName = json['expense_from_category_name'];
+    transactionType = json['transaction_type'];
+    deleteStatus = json['delete_status'];
+    deleteReason = json['delete_reason'];
+    transactionCategoryId = json['transaction_category_id'];
+    transactionName = json['transaction_name'];
+    idKios = json['id_kios'];
+    kios = json['kios'];
+    idCabang = json['id_cabang'];
+    cabang = json['cabang'];
+    idKasir = json['id_kasir'];
+    namaKasir = json['nama_kasir'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['category_id'] = categoryId;
-    data['category_name'] = categoryName;
-    data['category_type'] = categoryType;
     data['note'] = note;
     data['amount'] = amount;
     data['transaction_date'] = transactionDate;
-    data['expense_from_category_id'] = expenseFromCategoryId;
-    data['expense_from_category_name'] = expenseFromCategoryName;
-    data['image_icon'] = imageIcon;
+    data['transaction_type'] = transactionType;
+    data['delete_status'] = deleteStatus;
+    data['delete_reason'] = deleteReason;
+    data['transaction_category_id'] = transactionCategoryId;
+    data['transaction_name'] = transactionName;
+    data['id_kios'] = idKios;
+    data['kios'] = kios;
+    data['id_cabang'] = idCabang;
+    data['cabang'] = cabang;
+    data['id_kasir'] = idKasir;
+    data['nama_kasir'] = namaKasir;
     return data;
   }
 }

@@ -1,4 +1,4 @@
-import 'package:financial_apps/pages/master_categories/multi_select.dart';
+import 'package:cashier_management/pages/master_categories/multi_select.dart';
 import 'package:flutter/material.dart';
 
 class MultiSelectHome extends StatefulWidget {

@@ -1,21 +1,21 @@
 class CategoryModel {
   int? id;
   String? categoryName;
-  String? categoryType;
+  String? transactionType;
   bool? status;
   String? createdAt;
 
   CategoryModel(
       {this.id,
       this.categoryName,
-      this.categoryType,
+      this.transactionType,
       this.status,
       this.createdAt});
 
   CategoryModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     categoryName = json['category_name'];
-    categoryType = json['category_type'];
+    transactionType = json['category_type'];
     status = json['status'] == true;
     createdAt = json['created_at'];
   }
@@ -23,7 +23,7 @@ class CategoryModel {
   Map<String, dynamic> toMapInsert() {
     return {
       'category_name': categoryName,
-      'category_type': categoryType,
+      'category_type': transactionType,
     };
   }
 
@@ -31,7 +31,7 @@ class CategoryModel {
     return {
       'id': id,
       'category_name': categoryName,
-      'category_type': categoryType,
+      'category_type': transactionType,
     };
   }
 
@@ -39,7 +39,7 @@ class CategoryModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['category_name'] = categoryName;
-    data['category_type'] = categoryType;
+    data['category_type'] = transactionType;
     data['status'] = status;
     data['created_at'] = createdAt;
     return data;

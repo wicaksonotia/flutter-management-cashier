@@ -1,5 +1,5 @@
-import 'package:financial_apps/controllers/category_controller.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/controllers/category_controller.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -30,11 +30,11 @@ class ListCategories extends StatelessWidget {
           itemCount: categoryController.resultData.length,
           itemBuilder: (context, index) {
             return ListTile(
-              leading: categoryController.resultData[index].categoryType ==
+              leading: categoryController.resultData[index].transactionType ==
                       "PEMASUKAN"
                   ? const Icon(
                       Icons.download,
-                      color: MyColors.green,
+                      color: MyColors.primary,
                     )
                   : const Icon(
                       Icons.upload,
@@ -49,7 +49,7 @@ class ListCategories extends StatelessWidget {
                     : 'inactive',
                 style: TextStyle(
                     color: categoryController.resultData[index].status == true
-                        ? MyColors.green
+                        ? MyColors.primary
                         : MyColors.red),
               ),
               trailing: PopupMenuButton<String>(

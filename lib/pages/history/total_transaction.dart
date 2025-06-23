@@ -1,5 +1,5 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/utils/currency.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/utils/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';

@@ -1,11 +1,11 @@
-import 'package:financial_apps/controllers/monitoring_outlet_controller.dart';
-import 'package:financial_apps/pages/monitoring_outlet/filter.dart';
-import 'package:financial_apps/pages/monitoring_outlet/filter_date_range.dart';
-import 'package:financial_apps/pages/monitoring_outlet/filter_month.dart';
-import 'package:financial_apps/pages/monitoring_outlet/history_list.dart';
-import 'package:financial_apps/pages/monitoring_outlet/total_transaction.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/lists.dart';
+import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
+import 'package:cashier_management/pages/monitoring_outlet/filter.dart';
+import 'package:cashier_management/pages/monitoring_outlet/filter_date_range.dart';
+import 'package:cashier_management/pages/monitoring_outlet/filter_month.dart';
+import 'package:cashier_management/pages/monitoring_outlet/history_list.dart';
+import 'package:cashier_management/pages/monitoring_outlet/total_transaction.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -19,7 +19,7 @@ class MonitoringPage extends StatefulWidget {
 
 class _MonitoringPageState extends State<MonitoringPage> {
   final MonitoringOutletController _monitoringOutletController =
-      Get.find<MonitoringOutletController>();
+      Get.put(MonitoringOutletController());
   int? groupValue = 1;
   Future<void> _refresh() async {
     _monitoringOutletController.getDataByFilter();
@@ -87,7 +87,7 @@ class _MonitoringPageState extends State<MonitoringPage> {
                               filterKategori[index]['nama']!,
                               style: TextStyle(
                                 color: groupValue == index
-                                    ? MyColors.green
+                                    ? MyColors.primary
                                     : Colors.black,
                                 fontWeight: groupValue == index
                                     ? FontWeight.bold
@@ -127,7 +127,7 @@ class _MonitoringPageState extends State<MonitoringPage> {
                       padding: const EdgeInsets.only(right: 10),
                       child: const Icon(
                         Icons.filter_list,
-                        color: MyColors.green,
+                        color: MyColors.primary,
                       ),
                     ),
                   ),

@@ -1,6 +1,6 @@
-import 'package:financial_apps/controllers/transaction_controller.dart';
-import 'package:financial_apps/pages/master_categories/category_form.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/controllers/transaction_controller.dart';
+import 'package:cashier_management/pages/master_categories/category_form.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -24,7 +24,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_box, color: MyColors.green),
+            icon: const Icon(Icons.add_box, color: MyColors.primary),
             onPressed: () {
               showDialog(
                 context: context,
@@ -92,7 +92,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                       color:
                           _transactionController.dataCategoryExpenseId.value ==
                                   category.id
-                              ? MyColors.green
+                              ? MyColors.primary
                               : Colors.grey.shade300,
                     ),
                   );

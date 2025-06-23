@@ -1,8 +1,8 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/pages/history/confirm_delete.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/currency.dart';
-import 'package:financial_apps/utils/sizes.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/pages/history/confirm_delete.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/currency.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -94,7 +94,7 @@ class _HistoryListState extends State<HistoryList> {
           itemBuilder: (BuildContext context, IndexPath index) {
             var items =
                 resultDataMap.values.toList()[index.section][index.index];
-            String kategori = items.categoryType!;
+            String kategori = items.transactionType ?? "PENGELUARAN";
             Color warna = kategori == "PENGELUARAN" ? Colors.red : Colors.green;
             String plusminus = kategori == "PENGELUARAN" ? "-" : "+";
             int dataPrice = items.amount ?? 0;
@@ -149,12 +149,12 @@ class _HistoryListState extends State<HistoryList> {
                       ],
                     ),
                     child: Center(
-                      child: Image.asset(
-                        'assets/${items.imageIcon.toLowerCase()}',
-                        height: 25,
-                        width: 25,
-                      ),
-                    ),
+                        child: Icon(
+                      kategori == "PENGELUARAN"
+                          ? Icons.arrow_downward
+                          : Icons.arrow_upward,
+                      color: warna,
+                    )),
                   ),
                   title: Text(
                       kategori == "PENGELUARAN"
@@ -259,13 +259,14 @@ class _HistoryListState extends State<HistoryList> {
                                     0,
                                     (sum, element) =>
                                         sum +
-                                        (element.categoryType == "PENGELUARAN"
+                                        (element.transactionType ==
+                                                "PENGELUARAN"
                                             ? -element.amount!
                                             : element.amount!),
                                   ) <
                               0
                           ? const Color.fromARGB(255, 241, 97, 97)
-                          : MyColors.green,
+                          : MyColors.primary,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -279,7 +280,7 @@ class _HistoryListState extends State<HistoryList> {
                               0,
                               (sum, element) =>
                                   sum +
-                                  (element.categoryType == "PENGELUARAN"
+                                  (element.transactionType == "PENGELUARAN"
                                       ? -element.amount!
                                       : element.amount!),
                             ),

@@ -1,9 +1,10 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/controllers/total_per_type_controller.dart';
-import 'package:financial_apps/pages/home/calendar_weekly_view.dart';
-import 'package:financial_apps/pages/home/header.dart';
-import 'package:financial_apps/pages/home/planning_ahead.dart';
-import 'package:financial_apps/pages/home/transaction_list.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/controllers/total_per_type_controller.dart';
+import 'package:cashier_management/pages/home/bar_chart.dart';
+import 'package:cashier_management/pages/home/calendar_weekly_view.dart';
+import 'package:cashier_management/pages/home/header.dart';
+import 'package:cashier_management/pages/home/branch_saldo.dart';
+import 'package:cashier_management/pages/home/transaction_list.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,9 +22,8 @@ class _HomePageState extends State<HomePage> {
   final HistoryController historyController = Get.find<HistoryController>();
 
   Future<void> _refresh() async {
-    totalPerTypeController.getTotal();
-    totalPerTypeController.getTotalPerType();
-    historyController.getDataByFilter();
+    totalPerTypeController.getTotalSaldo();
+    totalPerTypeController.getTotalBranchSaldo();
   }
 
   @override
@@ -43,8 +43,9 @@ class _HomePageState extends State<HomePage> {
               children: const [
                 Header(),
                 Gap(15),
-                PlanningAhead(),
-                Gap(15),
+                BranchSaldo(),
+                Gap(20),
+                BarChartSample3(),
                 CalendarWeeklyView(),
                 SizedBox(
                   height: 260,

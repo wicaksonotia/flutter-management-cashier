@@ -1,6 +1,6 @@
-import 'package:financial_apps/pages/add_transaction/form_expense.dart';
-import 'package:financial_apps/pages/add_transaction/form_income.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/pages/add_transaction/form_expense.dart';
+import 'package:cashier_management/pages/add_transaction/form_income.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class AddTransactionPage extends StatefulWidget {
@@ -65,7 +65,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
                     ),
                     color: ColorTween(
                       begin: MyColors.red,
-                      end: MyColors.green,
+                      end: MyColors.primary,
                     )
                         .animate(
                           CurvedAnimation(

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "financial_apps" "\0"
+            VALUE "FileDescription", "cashier_management" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "financial_apps" "\0"
+            VALUE "InternalName", "cashier_management" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "financial_apps.exe" "\0"
-            VALUE "ProductName", "financial_apps" "\0"
+            VALUE "OriginalFilename", "cashier_management.exe" "\0"
+            VALUE "ProductName", "cashier_management" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

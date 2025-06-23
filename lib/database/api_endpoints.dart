@@ -1,10 +1,15 @@
 class ApiEndPoints {
-  static const String baseUrl = 'http://103.184.181.9/api/';
+  static const String baseUrl = 'http://103.184.181.9/apiGlobal/';
   static _AuthEndPoints authEndpoints = _AuthEndPoints();
 }
 
 class _AuthEndPoints {
-  final String login = 'loginkios';
+  final String login = 'loginadmin';
+  final String homeHistorybydate = 'FinancialHistoryByDate';
+  final String homeTotalSaldo = 'FinancialTotalSaldo';
+  final String homeTotalBranchSaldo = 'FinancialTotalBranchSaldo';
+  final String homeTotalPerMonth = 'FinanciaGetSaldoPerBulan';
+
   // CATEGORY
   final String savecategories = 'financialsavecategory';
   final String listcategories = 'financiallistcategories';
@@ -12,10 +17,6 @@ class _AuthEndPoints {
   final String updateCategory = 'financialupdatecategory';
   final String updatecategorystatus = 'financialupdatecategorystatus';
   final String deletecategory = 'financialdeletecategory';
-
-  //TOTAL PER TYPE
-  final String total = 'financialtotalsaldo';
-  final String totalpertype = 'financialtotalpertype';
 
   //HISTORY
   final String historybydaterange = 'financialhistorybydaterange';

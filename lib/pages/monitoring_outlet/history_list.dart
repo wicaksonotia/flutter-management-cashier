@@ -1,7 +1,7 @@
-import 'package:financial_apps/controllers/monitoring_outlet_controller.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/currency.dart';
-import 'package:financial_apps/utils/sizes.dart';
+import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/currency.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -78,7 +78,7 @@ class _HistoryListState extends State<HistoryList> {
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: MySizes.fontSizeMd,
-                          color: MyColors.green),
+                          color: MyColors.primary),
                     ),
                     Text(
                       items.deleteStatus! ? 'Deleted' : '',
@@ -89,7 +89,7 @@ class _HistoryListState extends State<HistoryList> {
                     ),
                   ],
                 ),
-                iconColor: MyColors.green,
+                iconColor: MyColors.primary,
                 children: [
                   ListTile(
                     title: const Text(
@@ -197,7 +197,7 @@ class _HistoryListState extends State<HistoryList> {
                     padding:
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                     decoration: BoxDecoration(
-                      color: MyColors.green,
+                      color: MyColors.primary,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

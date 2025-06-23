@@ -1,5 +1,5 @@
-import 'package:financial_apps/pages/history/chips_sub_category.dart';
-import 'package:financial_apps/utils/sizes.dart';
+import 'package:cashier_management/pages/history/chips_sub_category.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -44,7 +44,7 @@ class _FilterReportState extends State<FilterReport> {
                 //   width: double.infinity,
                 //   child: ElevatedButton(
                 //     style: ElevatedButton.styleFrom(
-                //       backgroundColor: MyColors.green,
+                //       backgroundColor: MyColors.primary,
                 //       shape: RoundedRectangleBorder(
                 //         borderRadius: BorderRadius.circular(12),
                 //       ),

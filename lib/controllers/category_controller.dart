@@ -1,8 +1,8 @@
-import 'package:financial_apps/controllers/transaction_controller.dart';
-import 'package:financial_apps/database/api_request.dart';
-import 'package:financial_apps/models/category_model.dart';
-import 'package:financial_apps/pages/master_categories/category_form.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/controllers/transaction_controller.dart';
+import 'package:cashier_management/database/api_request.dart';
+import 'package:cashier_management/models/category_model.dart';
+import 'package:cashier_management/pages/master_categories/category_form.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -33,7 +33,8 @@ class CategoryController extends GetxController {
     try {
       isLoading(true);
       final model = CategoryModel(
-          categoryName: nameController.text, categoryType: tipeContoller.value);
+          categoryName: nameController.text,
+          transactionType: tipeContoller.value);
       var resultSave = await RemoteDataSource.saveCategory(model.toJson());
       if (resultSave) {
         // NOTIF SAVE SUCCESS
@@ -91,7 +92,7 @@ class CategoryController extends GetxController {
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: MyColors.green),
+                      side: const BorderSide(color: MyColors.primary),
                     ),
                     backgroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
@@ -104,7 +105,7 @@ class CategoryController extends GetxController {
                   ),
                   child: const Text(
                     'No',
-                    style: TextStyle(color: MyColors.green),
+                    style: TextStyle(color: MyColors.primary),
                   ),
                 ),
                 const Gap(10),
@@ -128,7 +129,7 @@ class CategoryController extends GetxController {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    backgroundColor: MyColors.green,
+                    backgroundColor: MyColors.primary,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
                     minimumSize: const Size(100, 40), // Set width and height
@@ -155,7 +156,7 @@ class CategoryController extends GetxController {
       isLoading(true);
       final model = CategoryModel(
           categoryName: nameController.text,
-          categoryType: tipeContoller.value,
+          transactionType: tipeContoller.value,
           status: dataStatus.value);
       var resultUpdate =
           await RemoteDataSource.updateCategory(id, model.toJson());
@@ -181,7 +182,7 @@ class CategoryController extends GetxController {
   void detailCategory(int id) async {
     final data = await RemoteDataSource.detailCategory(id);
     nameController.text = data?.categoryName ?? '';
-    tipeContoller.value = data?.categoryType ?? '';
+    tipeContoller.value = data?.transactionType ?? '';
     dataStatus.value = data?.status ?? true;
     showDialog(
       context: Get.context!,
@@ -243,7 +244,7 @@ class CategoryController extends GetxController {
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: MyColors.green),
+                      side: const BorderSide(color: MyColors.primary),
                     ),
                     backgroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
@@ -256,7 +257,7 @@ class CategoryController extends GetxController {
                   ),
                   child: const Text(
                     'NO',
-                    style: TextStyle(color: MyColors.green),
+                    style: TextStyle(color: MyColors.primary),
                   ),
                 ),
                 const Gap(10),
@@ -282,7 +283,7 @@ class CategoryController extends GetxController {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    backgroundColor: MyColors.green,
+                    backgroundColor: MyColors.primary,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
                     minimumSize: const Size(100, 40), // Set width and height

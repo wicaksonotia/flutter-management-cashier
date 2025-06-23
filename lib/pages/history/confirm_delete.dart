@@ -1,5 +1,5 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -42,7 +42,7 @@ class _ConfirmDeleteState extends State<ConfirmDelete> {
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(color: MyColors.green),
+                    side: const BorderSide(color: MyColors.primary),
                   ),
                   backgroundColor: Colors.white,
                   padding:
@@ -55,7 +55,7 @@ class _ConfirmDeleteState extends State<ConfirmDelete> {
                 ),
                 child: const Text(
                   'No',
-                  style: TextStyle(color: MyColors.green),
+                  style: TextStyle(color: MyColors.primary),
                 ),
               ),
               const Gap(10),
@@ -67,7 +67,7 @@ class _ConfirmDeleteState extends State<ConfirmDelete> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor: MyColors.green,
+                  backgroundColor: MyColors.primary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   minimumSize: const Size(100, 40), // Set width and height

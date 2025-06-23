@@ -1,9 +1,9 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
-import 'package:financial_apps/controllers/transaction_controller.dart';
-import 'package:financial_apps/pages/add_transaction/calculator.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/routes.dart';
-import 'package:financial_apps/utils/sizes.dart';
+import 'package:cashier_management/controllers/transaction_controller.dart';
+import 'package:cashier_management/pages/add_transaction/calculator.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/routes.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -55,7 +55,7 @@ class _FormIncomeState extends State<FormIncome> {
                     ),
                   ),
                   const Icon(Icons.arrow_forward_ios,
-                      size: 16, color: MyColors.green),
+                      size: 16, color: MyColors.primary),
                 ],
               ),
             ),
@@ -225,7 +225,7 @@ class _FormIncomeState extends State<FormIncome> {
                 _transactionController.saveTransactionIncome();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: MyColors.green, // Button color
+                backgroundColor: MyColors.primary, // Button color
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),

@@ -1,4 +1,4 @@
-# financial_apps
+# cashier_management
 
 A new Flutter project.
 

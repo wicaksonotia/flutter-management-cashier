@@ -1,12 +1,12 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/pages/history/filter.dart';
-import 'package:financial_apps/pages/history/filter_date_range.dart';
-import 'package:financial_apps/pages/history/filter_month.dart';
-import 'package:financial_apps/pages/history/history_list.dart';
-import 'package:financial_apps/pages/history/total_transaction.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/lists.dart';
-import 'package:financial_apps/utils/routes.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/pages/history/filter.dart';
+import 'package:cashier_management/pages/history/filter_date_range.dart';
+import 'package:cashier_management/pages/history/filter_month.dart';
+import 'package:cashier_management/pages/history/history_list.dart';
+import 'package:cashier_management/pages/history/total_transaction.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/lists.dart';
+import 'package:cashier_management/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -62,7 +62,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           //       value: 1,
           //       child: Row(
           //         children: [
-          //           Icon(Icons.add_box, color: MyColors.green),
+          //           Icon(Icons.add_box, color: MyColors.primary),
           //           SizedBox(width: 10),
           //           Text('Add Transaction'),
           //         ],
@@ -72,7 +72,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           //       value: 2,
           //       child: Row(
           //         children: [
-          //           Icon(Icons.filter_alt_outlined, color: MyColors.green),
+          //           Icon(Icons.filter_alt_outlined, color: MyColors.primary),
           //           SizedBox(width: 10),
           //           Text('Filter'),
           //         ],
@@ -81,7 +81,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           //   ],
           // ),
           IconButton(
-            icon: const Icon(Icons.add_box, color: MyColors.green),
+            icon: const Icon(Icons.add_box, color: MyColors.primary),
             onPressed: () {
               Get.toNamed(RouterClass.addtransaction);
             },
@@ -137,7 +137,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               filterKategori[index]['nama']!,
                               style: TextStyle(
                                 color: groupValue == index
-                                    ? MyColors.green
+                                    ? MyColors.primary
                                     : Colors.black,
                                 fontWeight: groupValue == index
                                     ? FontWeight.bold
@@ -177,7 +177,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       padding: const EdgeInsets.only(right: 10),
                       child: const Icon(
                         Icons.filter_list,
-                        color: MyColors.green,
+                        color: MyColors.primary,
                       ),
                     ),
                   ),

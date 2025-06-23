@@ -1,4 +1,4 @@
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class TextFieldWidget extends StatelessWidget {

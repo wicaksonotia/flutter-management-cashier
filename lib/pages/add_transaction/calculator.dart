@@ -1,4 +1,4 @@
-import 'package:financial_apps/controllers/transaction_controller.dart';
+import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:get/get.dart';

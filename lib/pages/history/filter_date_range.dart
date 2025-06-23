@@ -1,5 +1,5 @@
-import 'package:financial_apps/controllers/history_controller.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -22,7 +22,7 @@ class _FilterDateRangeState extends State<FilterDateRange> {
       children: [
         const Icon(
           Icons.date_range,
-          color: MyColors.green,
+          color: MyColors.primary,
         ),
         const SizedBox(width: 10),
         Obx(() => GestureDetector(

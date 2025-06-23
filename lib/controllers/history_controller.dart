@@ -1,8 +1,8 @@
-import 'package:financial_apps/database/api_request.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/database/api_request.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:financial_apps/models/history_model.dart';
+import 'package:cashier_management/models/history_model.dart';
 
 class HistoryController extends GetxController {
   var resultData = <DataHistory>[].obs;
@@ -27,8 +27,8 @@ class HistoryController extends GetxController {
   void onInit() {
     super.onInit();
     monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
-    getDataByFilter();
-    getDataListCategory();
+    // getDataByFilter();
+    // getDataListCategory();
     getDataSingleDate();
   }
 
@@ -54,7 +54,7 @@ class HistoryController extends GetxController {
   void getDataSingleDate() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.historyByDateRange(
+      final result = await RemoteDataSource.homeHistoryByDate(
           selectedDate.value, selectedDate.value, []);
       if (result != null && result.data != null) {
         resultDataSingleDate.assignAll(result.data!);
@@ -95,8 +95,8 @@ class HistoryController extends GetxController {
       }
 
       if (result != null && result.data != null) {
-        totalIncome.value = result.income ?? 0;
-        totalExpense.value = result.expense ?? 0;
+        totalIncome.value = 0;
+        totalExpense.value = 0;
         totalBalance.value = totalIncome.value - totalExpense.value;
         resultData.assignAll(result.data!);
       }
@@ -141,10 +141,10 @@ class HistoryController extends GetxController {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: MyColors.green,
+              primary: MyColors.primary,
               onPrimary: Colors.white,
               outlineVariant: Colors.grey.shade200,
-              // onSurfaceVariant: MyColors.green,
+              // onSurfaceVariant: MyColors.primary,
               outline: Colors.grey.shade300,
               secondaryContainer: Colors.green.shade50,
             ),

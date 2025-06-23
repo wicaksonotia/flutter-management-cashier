@@ -1,7 +1,7 @@
-import 'package:financial_apps/database/database_helper.dart';
-import 'package:financial_apps/models/category_model.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/lists.dart';
+import 'package:cashier_management/database/database_helper.dart';
+import 'package:cashier_management/models/category_model.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -14,7 +14,7 @@ class CategorySqliteController extends GetxController {
   RxList<dynamic> tags = [].obs;
   RxBool isLoading = false.obs;
   var dataCategoryName = ''.obs;
-  var dataCategoryType = ''.obs;
+  var datatransactionType = ''.obs;
   var dataStatus = true.obs;
 
   closeDialog() {
@@ -30,7 +30,7 @@ class CategorySqliteController extends GetxController {
   void insertCategory() async {
     final model = CategoryModel(
         categoryName: nameController.text,
-        categoryType: tipeContoller.value,
+        transactionType: tipeContoller.value,
         id: resultData.length);
     DatabaseHelper().insertCategories(model);
     nameController.clear();
@@ -60,7 +60,7 @@ class CategorySqliteController extends GetxController {
   void detailCategory(int id) async {
     final data = await DatabaseHelper.instance.detailCategories(id);
     nameController.text = data?.categoryName ?? '';
-    dataCategoryType.value = data?.categoryType ?? '';
+    datatransactionType.value = data?.transactionType ?? '';
     dataStatus.value = data?.status ?? true;
     Get.defaultDialog(
         title: "Detail Category",
@@ -73,7 +73,7 @@ class CategorySqliteController extends GetxController {
                       contentPadding: EdgeInsets.fromLTRB(10, 3, 3, 3)),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton(
-                      value: dataCategoryType.value,
+                      value: datatransactionType.value,
                       items: dropDownKategori.map(
                         (String value) {
                           return DropdownMenuItem(
@@ -83,7 +83,7 @@ class CategorySqliteController extends GetxController {
                         },
                       ).toList(),
                       onChanged: (value) {
-                        dataCategoryType.value = value!;
+                        datatransactionType.value = value!;
                       },
                       isExpanded: true,
                       style: const TextStyle(
@@ -120,7 +120,7 @@ class CategorySqliteController extends GetxController {
   void updateCategory(int id) async {
     final model = CategoryModel(
         categoryName: nameController.text,
-        categoryType: dataCategoryType.value,
+        transactionType: datatransactionType.value,
         id: id);
     DatabaseHelper().updateCategories(id, model);
     getData(kategoriSearch.value);
@@ -145,7 +145,7 @@ class CategorySqliteController extends GetxController {
             CategoryModel(
                 id: element.id,
                 categoryName: element.categoryName,
-                categoryType: element.categoryType,
+                transactionType: element.transactionType,
                 status: element.status),
           );
         }

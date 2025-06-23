@@ -1,7 +1,7 @@
 import 'package:chips_choice/chips_choice.dart';
-import 'package:financial_apps/controllers/category_controller.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/lists.dart';
+import 'package:cashier_management/controllers/category_controller.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/lists.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -34,7 +34,7 @@ class _ChipsState extends State<Chips> {
         borderRadius: BorderRadius.circular(25),
         color: Colors.grey.shade300,
         selectedStyle: const C2ChipStyle(
-          backgroundColor: MyColors.green,
+          backgroundColor: MyColors.primary,
           borderRadius: BorderRadius.all(
             Radius.circular(25),
           ),

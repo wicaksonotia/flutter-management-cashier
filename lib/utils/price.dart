@@ -1,5 +1,5 @@
-import 'package:financial_apps/utils/currency.dart';
-import 'package:financial_apps/utils/sizes.dart';
+import 'package:cashier_management/utils/currency.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/cupertino.dart';
 
 class Price extends StatelessWidget {

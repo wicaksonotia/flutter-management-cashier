@@ -1,15 +1,133 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cashier_management/models/chart_model.dart';
+import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:dio/dio.dart';
-import 'package:financial_apps/database/api_endpoints.dart';
-import 'package:financial_apps/models/category_model.dart';
-import 'package:financial_apps/models/history_model.dart';
-import 'package:financial_apps/models/kios_model.dart';
-import 'package:financial_apps/models/monitoring_outlet_model.dart';
-import 'package:financial_apps/models/total_model.dart';
-import 'package:financial_apps/models/total_per_type_model.dart';
+import 'package:cashier_management/database/api_endpoints.dart';
+import 'package:cashier_management/models/category_model.dart';
+import 'package:cashier_management/models/history_model.dart';
+import 'package:cashier_management/models/kios_model.dart';
+import 'package:cashier_management/models/monitoring_outlet_model.dart';
+import 'package:cashier_management/models/total_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RemoteDataSource {
+  static Future<bool> login(FormData data) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.login;
+      Response response = await Dio().post(
+        url,
+        data: data,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('statusLogin', true);
+          await prefs.setInt('id', response.data['id']);
+          await prefs.setString('kios', response.data['kios']);
+          await prefs.setString('phone', response.data['phone'] ?? '');
+          await prefs.setString('alamat', response.data['alamat']);
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ===================== HOME =====================
+  static Future<TotalModel?> homeTotalSaldo() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id')});
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.homeTotalSaldo;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        final TotalModel res = TotalModel.fromJson(response.data);
+        return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<OutletBranchModel?> homeTotalBranchSaldo() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id')});
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.homeTotalBranchSaldo;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        final OutletBranchModel res = OutletBranchModel.fromJson(response.data);
+        return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<FinancialHistoryModel?> homeHistoryByDate(
+      DateTime startdate, DateTime enddate, Object subKategori) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var rawFormat = (jsonEncode({
+        'startDate': startdate.toString(),
+        'endDate': enddate.toString(),
+        'id_kios': prefs.getInt('id')
+      }));
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.homeHistorybydate;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        final FinancialHistoryModel res =
+            FinancialHistoryModel.fromJson(response.data);
+        return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<ChartModel?> homeTotalPerMonth() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id')});
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.homeTotalPerMonth;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        final ChartModel res = ChartModel.fromJson(response.data);
+        return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   // ===================== CATEGORY =====================
   // SAVE CATEGORY
   static Future<bool> saveCategory(dynamic data) async {
@@ -131,34 +249,6 @@ class RemoteDataSource {
   }
 
   // ===================== HISTORY =====================
-  static Future<TotalModel?> total() async {
-    try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.total;
-      final response = await Dio().get(url);
-      if (response.statusCode == 200) {
-        final TotalModel res = TotalModel.fromJson(response.data);
-        return res;
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  static Future<TotalPerTypeModel?> totalPerType() async {
-    try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.totalpertype;
-      final response = await Dio().get(url);
-      if (response.statusCode == 200) {
-        final TotalPerTypeModel res = TotalPerTypeModel.fromJson(response.data);
-        return res;
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
   static Future<FinancialHistoryModel?> historyByDateRange(
       DateTime startdate, DateTime enddate, Object subKategori) async {
     try {
@@ -204,7 +294,6 @@ class RemoteDataSource {
       if (response.statusCode == 200) {
         final FinancialHistoryModel res =
             FinancialHistoryModel.fromJson(response.data);
-        // print(res.toJson());
         return res;
       }
       return null;
@@ -343,7 +432,6 @@ class RemoteDataSource {
       if (response.statusCode == 200) {
         final MonitoringOutletModel res =
             MonitoringOutletModel.fromJson(response.data);
-        // print(res.toJson());
         return res;
       }
       return null;

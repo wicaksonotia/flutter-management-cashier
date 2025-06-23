@@ -1,6 +1,6 @@
-import 'package:financial_apps/database/api_request.dart';
-import 'package:financial_apps/models/monitoring_outlet_model.dart';
-import 'package:financial_apps/utils/colors.dart';
+import 'package:cashier_management/database/api_request.dart';
+import 'package:cashier_management/models/monitoring_outlet_model.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -102,10 +102,10 @@ class MonitoringOutletController extends GetxController {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: MyColors.green,
+              primary: MyColors.primary,
               onPrimary: Colors.white,
               outlineVariant: Colors.grey.shade200,
-              // onSurfaceVariant: MyColors.green,
+              // onSurfaceVariant: MyColors.primary,
               outline: Colors.grey.shade300,
               secondaryContainer: Colors.green.shade50,
             ),

@@ -1,8 +1,8 @@
-import 'package:financial_apps/pages/master_categories/category_form.dart';
-import 'package:financial_apps/pages/master_categories/chips.dart';
-import 'package:financial_apps/pages/master_categories/category_list.dart';
-import 'package:financial_apps/utils/colors.dart';
-import 'package:financial_apps/utils/search_bar_container.dart';
+import 'package:cashier_management/pages/master_categories/category_form.dart';
+import 'package:cashier_management/pages/master_categories/chips.dart';
+import 'package:cashier_management/pages/master_categories/category_list.dart';
+import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/search_bar_container.dart';
 import 'package:flutter/material.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _CategoryPageState extends State<CategoryPage> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_box, color: MyColors.green),
+            icon: const Icon(Icons.add_box, color: MyColors.primary),
             onPressed: () {
               showDialog(
                 context: context,

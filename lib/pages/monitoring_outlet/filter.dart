@@ -1,5 +1,5 @@
-import 'package:financial_apps/pages/monitoring_outlet/chips_outlet.dart';
-import 'package:financial_apps/utils/sizes.dart';
+import 'package:cashier_management/pages/monitoring_outlet/chips_outlet.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
