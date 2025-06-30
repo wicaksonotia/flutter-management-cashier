@@ -8,14 +8,16 @@ class HistoryController extends GetxController {
   var resultData = <DataHistory>[].obs;
   var resultDataSingleDate = <DataHistory>[].obs;
   RxBool isLoading = false.obs;
+  RxBool isLoadingCategoryPemasukan = false.obs;
+  RxBool isLoadingCategoryPengeluaran = false.obs;
   RxInt totalIncome = 0.obs;
   RxInt totalExpense = 0.obs;
   RxInt totalBalance = 0.obs;
   RxList<dynamic> tagCategory = [].obs;
-  RxList<dynamic> temporaryTagCategory = [].obs;
-  RxList<dynamic> tagSubCategory = [].obs;
-  RxList<dynamic> temporaryTagSubCategory = [].obs;
-  RxList<Map<String, String>> listCategory = <Map<String, String>>[].obs;
+  RxList<Map<String, dynamic>> listCategoryPemasukan =
+      <Map<String, dynamic>>[].obs;
+  RxList<Map<String, dynamic>> listCategoryPengeluaran =
+      <Map<String, dynamic>>[].obs;
   var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
@@ -27,35 +29,52 @@ class HistoryController extends GetxController {
   void onInit() {
     super.onInit();
     monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
-    // getDataByFilter();
-    // getDataListCategory();
-    getDataSingleDate();
+    getHistoriesBySingleDate();
   }
 
-  void getDataListCategory() async {
+  void getDataListCategoryPemasukan() async {
     try {
-      isLoading(true);
+      isLoadingCategoryPemasukan(true);
       final result = await RemoteDataSource.listCategories(['PEMASUKAN'], '');
       if (result != null) {
-        listCategory.assignAll(result.map((category) => {
-              'value': category.id.toString(),
+        listCategoryPemasukan.assignAll(result.map((category) => {
+              'value': category.id,
               'nama': category.categoryName!,
             }));
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      isLoading(false);
+      isLoadingCategoryPemasukan(false);
     } finally {
-      isLoading(false);
+      isLoadingCategoryPemasukan(false);
     }
   }
 
-  void getDataSingleDate() async {
+  void getDataListCategoryPengeluaran() async {
+    try {
+      isLoadingCategoryPengeluaran(true);
+      final result = await RemoteDataSource.listCategories(['PENGELUARAN'], '');
+      if (result != null) {
+        listCategoryPengeluaran.assignAll(result.map((category) => {
+              'value': category.id,
+              'nama': category.categoryName!,
+            }));
+      }
+    } catch (error) {
+      Get.snackbar('Error', error.toString(),
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      isLoadingCategoryPengeluaran(false);
+    } finally {
+      isLoadingCategoryPengeluaran(false);
+    }
+  }
+
+  void getHistoriesBySingleDate() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.homeHistoryByDate(
-          selectedDate.value, selectedDate.value, []);
+      final result = await RemoteDataSource.histories(selectedDate.value,
+          selectedDate.value, monthYear.value, 'tanggal', []);
       if (result != null && result.data != null) {
         resultDataSingleDate.assignAll(result.data!);
       }
@@ -68,37 +87,20 @@ class HistoryController extends GetxController {
     }
   }
 
-  void setDataByFilter() {
-    // tagCategory.assignAll(temporaryTagCategory);
-    tagSubCategory.assignAll(temporaryTagSubCategory);
-    getDataByFilter();
-  }
-
-  void getDataByFilter() async {
+  void getHistoriesByFilter() async {
     try {
       isLoading(true);
-
-      FinancialHistoryModel? result;
-      if (filterBy.value == 'bulan') {
-        result = await RemoteDataSource.historyByMonth(
-          monthYear.value,
-          // tagCategory,
-          tagSubCategory,
-        );
-      } else {
-        result = await RemoteDataSource.historyByDateRange(
-          startDate.value,
-          endDate.value,
-          // tagCategory,
-          tagSubCategory,
-        );
-      }
-
+      final result = await RemoteDataSource.histories(startDate.value,
+          endDate.value, monthYear.value, filterBy.value, tagCategory);
       if (result != null && result.data != null) {
-        totalIncome.value = 0;
-        totalExpense.value = 0;
-        totalBalance.value = totalIncome.value - totalExpense.value;
         resultData.assignAll(result.data!);
+        totalIncome.value = resultData
+            .where((history) => history.transactionType == 'PEMASUKAN')
+            .fold(0, (sum, history) => sum + (history.amount ?? 0));
+        totalExpense.value = resultData
+            .where((history) => history.transactionType == 'PENGELUARAN')
+            .fold(0, (sum, history) => sum + (history.amount ?? 0));
+        totalBalance.value = totalIncome.value - totalExpense.value;
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),
@@ -117,7 +119,7 @@ class HistoryController extends GetxController {
         DateTime(singleDate.value.year, singleDate.value.month + 1);
     monthYear.value =
         "${singleDate.value.month.toString()}-${singleDate.value.year.toString()}";
-    getDataByFilter();
+    getHistoriesByFilter();
   }
 
   void goToPreviousMonth() {
@@ -125,7 +127,7 @@ class HistoryController extends GetxController {
         DateTime(singleDate.value.year, singleDate.value.month - 1);
     monthYear.value =
         "${singleDate.value.month.toString()}-${singleDate.value.year.toString()}";
-    getDataByFilter();
+    getHistoriesByFilter();
   }
 
   void showDialogDateRangePicker() async {
@@ -156,7 +158,7 @@ class HistoryController extends GetxController {
     if (pickedDate != null) {
       startDate.value = pickedDate.start;
       endDate.value = pickedDate.end;
-      getDataByFilter();
+      getHistoriesByFilter();
     }
   }
 
@@ -166,7 +168,7 @@ class HistoryController extends GetxController {
       Get.back();
       Get.snackbar('Notification', 'Data deleted successfully',
           icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-      getDataByFilter();
+      getHistoriesByFilter();
     } else {
       Get.snackbar('Notification', 'Failed to delete data',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);

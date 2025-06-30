@@ -19,7 +19,7 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   final screens = [
     const HomePage(),
-    // const TransactionHistoryPage(),
+    const TransactionHistoryPage(),
     // const MonitoringPage(),
     // const CategoryPage(),
   ];

@@ -82,7 +82,8 @@ class TotalTransaction extends StatelessWidget {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  '+${CurrencyFormat.convertToIdr(historyController.totalIncome.value, 0)}',
+                                  CurrencyFormat.convertToIdr(
+                                      historyController.totalIncome.value, 0),
                                   style: const TextStyle(
                                       color: Colors.green,
                                       fontStyle: FontStyle.italic),

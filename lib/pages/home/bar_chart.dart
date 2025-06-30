@@ -36,7 +36,7 @@ class _BarChart extends StatelessWidget {
             barGroups: getBarGroups(chartController),
             gridData: const FlGridData(show: false),
             alignment: BarChartAlignment.spaceAround,
-            maxY: 100000,
+            maxY: 200000,
           )));
   }
 
@@ -67,45 +67,24 @@ class _BarChart extends StatelessWidget {
       fontSize: MySizes.fontSizeXsm,
     );
     String text;
-    switch (value.toInt()) {
-      case 0:
-        text = 'JAN';
-        break;
-      case 1:
-        text = 'FEB';
-        break;
-      case 2:
-        text = 'MAR';
-        break;
-      case 3:
-        text = 'APR';
-        break;
-      case 4:
-        text = 'MAY';
-        break;
-      case 5:
-        text = 'JUN';
-        break;
-      case 6:
-        text = 'JUL';
-        break;
-      case 7:
-        text = 'AUG';
-        break;
-      case 8:
-        text = 'SEP';
-        break;
-      case 9:
-        text = 'OCT';
-        break;
-      case 10:
-        text = 'NOV';
-        break;
-      case 11:
-        text = 'DEC';
-        break;
-      default:
-        text = '';
+    if (value.toInt() >= 0 && value.toInt() < 12) {
+      const months = [
+        'JAN',
+        'FEB',
+        'MAR',
+        'APR',
+        'MAY',
+        'JUN',
+        'JUL',
+        'AUG',
+        'SEP',
+        'OCT',
+        'NOV',
+        'DEC'
+      ];
+      text = months[value.toInt()];
+    } else {
+      text = '';
     }
     return SideTitleWidget(
       meta: meta,
@@ -174,9 +153,10 @@ class BarChartSample3 extends StatefulWidget {
 class BarChartSample3State extends State<BarChartSample3> {
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       height: 150,
-      child: _BarChart(),
+      child: const _BarChart(),
     );
   }
 }

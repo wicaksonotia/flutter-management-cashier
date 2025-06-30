@@ -22,6 +22,14 @@ class _HistoryListState extends State<HistoryList> {
   final HistoryController historyController = Get.find<HistoryController>();
 
   @override
+  void initState() {
+    super.initState();
+    historyController.getHistoriesByFilter();
+    historyController.getDataListCategoryPemasukan();
+    historyController.getDataListCategoryPengeluaran();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Obx(() {
       if (historyController.isLoading.value) {
@@ -82,10 +90,7 @@ class _HistoryListState extends State<HistoryList> {
           }
           resultDataMap[formattedDate]!.add(item);
         }
-        // resultDataMap.forEach((key, value) {
-        // print(
-        //     'Date: $key, Transactions: ${value.map((item) => item.toJson()).toList()}');
-        // });
+
         return GroupListView(
           sectionsCount: resultDataMap.keys.toList().length,
           countOfItemInSection: (int section) {
@@ -96,102 +101,54 @@ class _HistoryListState extends State<HistoryList> {
                 resultDataMap.values.toList()[index.section][index.index];
             String kategori = items.transactionType ?? "PENGELUARAN";
             Color warna = kategori == "PENGELUARAN" ? Colors.red : Colors.green;
-            String plusminus = kategori == "PENGELUARAN" ? "-" : "+";
+            String plusminus = kategori == "PENGELUARAN" ? "-" : "";
             int dataPrice = items.amount ?? 0;
             return Container(
               color: Colors.white,
-              child: Slidable(
-                endActionPane: ActionPane(
-                  motion: const ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                      onPressed: (context) {
-                        Get.back();
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (context) => ConfirmDelete(id: items.id!),
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20)),
+              child: kategori == "PEMASUKAN"
+                  ? ListTileHistories(
+                      warna: warna,
+                      items: items,
+                      plusminus: plusminus,
+                      dataPrice: dataPrice)
+                  : Slidable(
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            onPressed: (context) {
+                              Get.back();
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) =>
+                                    ConfirmDelete(id: items.id!),
+                                isScrollControlled: true,
+                                backgroundColor: Colors.white,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20)),
+                                ),
+                              );
+                            },
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                            label: 'Delete',
                           ),
-                        );
-                      },
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      icon: Icons.delete,
-                      label: 'Delete',
-                    ),
-                    SlidableAction(
-                      onPressed: (context) {},
-                      backgroundColor: const Color(0xFF21B7CA),
-                      foregroundColor: Colors.white,
-                      icon: Icons.edit,
-                      label: 'Edit',
-                    ),
-                  ],
-                ),
-                child: ListTile(
-                  leading: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 2,
-                          spreadRadius: 0.5,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                        child: Icon(
-                      kategori == "PENGELUARAN"
-                          ? Icons.arrow_downward
-                          : Icons.arrow_upward,
-                      color: warna,
-                    )),
-                  ),
-                  title: Text(
-                      kategori == "PENGELUARAN"
-                          ? '[${items.expenseFromCategoryName}] ${items.categoryName!}'
-                          : items.categoryName!,
-                      style: const TextStyle(fontSize: MySizes.fontSizeMd)),
-                  subtitle: Text(
-                    items.note ?? '',
-                    style: const TextStyle(
-                        color: MyColors.grey, fontSize: MySizes.fontSizeSm),
-                  ),
-                  trailing: Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          plusminus + CurrencyFormat.convertToIdr(dataPrice, 0),
-                          style: TextStyle(
-                            color: warna,
-                            fontSize: MySizes.fontSizeMd,
+                          SlidableAction(
+                            onPressed: (context) {},
+                            backgroundColor: const Color(0xFF21B7CA),
+                            foregroundColor: Colors.white,
+                            icon: Icons.edit,
+                            label: 'Edit',
                           ),
-                        ),
-                        Text(
-                          DateFormat('HH:mm').format(
-                            DateTime.parse(items.transactionDate!),
-                          ),
-                          style: const TextStyle(
-                            color: MyColors.grey,
-                            fontSize: MySizes.fontSizeSm,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+                        ],
+                      ),
+                      child: ListTileHistories(
+                          warna: warna,
+                          items: items,
+                          plusminus: plusminus,
+                          dataPrice: dataPrice)),
             );
           },
           groupHeaderBuilder: (BuildContext context, int section) {
@@ -297,10 +254,74 @@ class _HistoryListState extends State<HistoryList> {
               ),
             );
           },
-          separatorBuilder: (context, index) => SizedBox(height: 2),
-          sectionSeparatorBuilder: (context, section) => SizedBox(height: 20),
+          separatorBuilder: (context, index) => const SizedBox(height: 2),
+          sectionSeparatorBuilder: (context, section) =>
+              const SizedBox(height: 20),
         );
       }
     });
+  }
+}
+
+class ListTileHistories extends StatelessWidget {
+  const ListTileHistories({
+    super.key,
+    required this.warna,
+    required this.items,
+    required this.plusminus,
+    required this.dataPrice,
+  });
+
+  final Color warna;
+  final dynamic items;
+  final String plusminus;
+  final int dataPrice;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: warna,
+        ),
+        padding: const EdgeInsets.all(3),
+        child: Icon(
+          Icons.arrow_downward,
+          color: Colors.white,
+        ),
+      ),
+      title: Text('${items.cabang} - ${items.transactionName!}',
+          style: const TextStyle(fontSize: MySizes.fontSizeMd)),
+      subtitle: Text(
+        items.note ?? "",
+        style:
+            const TextStyle(color: MyColors.grey, fontSize: MySizes.fontSizeSm),
+      ),
+      trailing: Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              plusminus + CurrencyFormat.convertToIdr(dataPrice, 0),
+              style: TextStyle(
+                color: warna,
+                fontSize: MySizes.fontSizeMd,
+              ),
+            ),
+            Text(
+              DateFormat('HH:mm').format(
+                DateTime.parse(items.transactionDate!),
+              ),
+              style: const TextStyle(
+                color: MyColors.grey,
+                fontSize: MySizes.fontSizeSm,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

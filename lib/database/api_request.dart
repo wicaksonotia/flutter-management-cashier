@@ -80,17 +80,24 @@ class RemoteDataSource {
     }
   }
 
-  static Future<FinancialHistoryModel?> homeHistoryByDate(
-      DateTime startdate, DateTime enddate, Object subKategori) async {
+  static Future<FinancialHistoryModel?> histories(
+      DateTime startdate,
+      DateTime enddate,
+      String monthYear,
+      String filterBy,
+      Object kategori) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       var rawFormat = (jsonEncode({
         'startDate': startdate.toString(),
         'endDate': enddate.toString(),
-        'id_kios': prefs.getInt('id')
+        'monthYear': monthYear,
+        'filter_by_date_or_month': filterBy,
+        'id_kios': prefs.getInt('id'),
+        'kategori': kategori
       }));
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.homeHistorybydate;
+      print(rawFormat);
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.histories;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
@@ -125,6 +132,25 @@ class RemoteDataSource {
       return null;
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  // ===================== HISTORY =====================
+  static Future<bool> deleteHistory(int id) async {
+    try {
+      var rawFormat = jsonEncode({'id': id});
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deletehistory;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
     }
   }
 
@@ -245,78 +271,6 @@ class RemoteDataSource {
       return null;
     } catch (e) {
       throw Exception(e.toString());
-    }
-  }
-
-  // ===================== HISTORY =====================
-  static Future<FinancialHistoryModel?> historyByDateRange(
-      DateTime startdate, DateTime enddate, Object subKategori) async {
-    try {
-      var rawFormat = (jsonEncode({
-        'startDate': startdate.toString(),
-        'endDate': enddate.toString(),
-        // 'kategori': kategori,
-        'subKategori': subKategori,
-      }));
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybydaterange;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        final FinancialHistoryModel res =
-            FinancialHistoryModel.fromJson(response.data);
-        return res;
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  static Future<FinancialHistoryModel?> historyByMonth(
-      String monthYear, Object subKategori) async {
-    try {
-      var rawFormat = (jsonEncode({
-        'monthYear': monthYear,
-        // 'kategori': kategori,
-        'subKategori': subKategori,
-      }));
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.historybymonth;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        final FinancialHistoryModel res =
-            FinancialHistoryModel.fromJson(response.data);
-        return res;
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  static Future<bool> deleteHistory(int id) async {
-    try {
-      var rawFormat = jsonEncode({'id': id});
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deletehistory;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
     }
   }
 

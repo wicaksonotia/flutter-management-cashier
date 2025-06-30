@@ -45,7 +45,7 @@ class _FilterMonthState extends State<FilterMonth> {
                   historyController.singleDate.value = selectedDate;
                   historyController.monthYear.value =
                       "${selectedDate.month.toString()}-${selectedDate.year.toString()}";
-                  historyController.getDataByFilter();
+                  historyController.getHistoriesByFilter();
                 }
                 // Use the selected date as needed.
                 // debugPrint("month :" + selectedDate.month.toString());

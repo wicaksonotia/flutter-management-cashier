@@ -196,7 +196,7 @@ class TransactionController extends GetxController {
         if (result) {
           Get.snackbar('Success', 'Transaction added successfully',
               icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-          _historyController.getDataByFilter();
+          _historyController.getHistoriesByFilter();
         }
       } catch (error) {
         Get.snackbar('Error', error.toString(),

@@ -6,7 +6,6 @@ import 'package:cashier_management/pages/history/history_list.dart';
 import 'package:cashier_management/pages/history/total_transaction.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/lists.dart';
-import 'package:cashier_management/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -22,7 +21,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   final HistoryController _historyController = Get.find<HistoryController>();
   int? groupValue = 1;
   Future<void> _refresh() async {
-    _historyController.getDataByFilter();
+    _historyController.getHistoriesByFilter();
   }
 
   @override
@@ -33,58 +32,38 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         title: const Text(
-          'Transaction History',
+          'Riwayat Transaksi',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         actions: [
-          // PopupMenuButton<int>(
-          //   icon: const Icon(Icons.more_vert),
-          //   onSelected: (value) {
-          //     if (value == 1) {
-          //       // Handle Add action
-          //     } else if (value == 2) {
-          //       // Handle Filter action
-          //       showModalBottomSheet(
-          //         context: context,
-          //         builder: (context) => const FilterReport(),
-          //         isScrollControlled: true,
-          //         backgroundColor: Colors.white,
-          //         shape: const RoundedRectangleBorder(
-          //           borderRadius:
-          //               BorderRadius.vertical(top: Radius.circular(20)),
-          //         ),
-          //       );
-          //     }
-          //   },
-          //   itemBuilder: (context) => [
-          //     const PopupMenuItem(
-          //       value: 1,
-          //       child: Row(
-          //         children: [
-          //           Icon(Icons.add_box, color: MyColors.primary),
-          //           SizedBox(width: 10),
-          //           Text('Add Transaction'),
-          //         ],
-          //       ),
-          //     ),
-          //     const PopupMenuItem(
-          //       value: 2,
-          //       child: Row(
-          //         children: [
-          //           Icon(Icons.filter_alt_outlined, color: MyColors.primary),
-          //           SizedBox(width: 10),
-          //           Text('Filter'),
-          //         ],
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          IconButton(
-            icon: const Icon(Icons.add_box, color: MyColors.primary),
-            onPressed: () {
-              Get.toNamed(RouterClass.addtransaction);
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => FilterReport(_historyController),
+                isScrollControlled: true,
+                backgroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+              );
             },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(
+                    width: 0.5,
+                    color: Colors.grey[300]!,
+                  ),
+                ),
+              ),
+              padding: const EdgeInsets.only(right: 10),
+              child: const Icon(
+                Icons.filter_list,
+                color: MyColors.primary,
+              ),
+            ),
           ),
         ],
       ),
@@ -94,54 +73,49 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  bottom: BorderSide(
-                    width: 0.5,
-                    color: Colors.grey[300]!,
-                  ),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+              color: Colors.white,
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // SHOW DISPLAY BY DATE, MONTH, YEAR
-                  ...List.generate(
-                    filterKategori.length,
-                    (index) => Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            groupValue = index;
-                          });
-                          _historyController.filterBy.value =
-                              filterKategori[index]['value']!;
-                          _historyController.getDataByFilter();
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              right: BorderSide(
-                                width: 0.5,
-                                color: Colors.grey[300]!,
+                  SizedBox(
+                    width: context.width * .5,
+                    height: context.height * .05,
+                    child: Row(
+                      children: List.generate(
+                        filterKategori.length,
+                        (index) => Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                groupValue = index;
+                              });
+                              _historyController.filterBy.value =
+                                  filterKategori[index]['value']!;
+                              _historyController.getHistoriesByFilter();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  right: BorderSide(
+                                    width: 0.5,
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          child: Center(
-                            child: Text(
-                              filterKategori[index]['nama']!,
-                              style: TextStyle(
-                                color: groupValue == index
-                                    ? MyColors.primary
-                                    : Colors.black,
-                                fontWeight: groupValue == index
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              child: Center(
+                                child: Text(
+                                  filterKategori[index]['nama']!,
+                                  style: TextStyle(
+                                    color: groupValue == index
+                                        ? MyColors.primary
+                                        : Colors.black,
+                                    fontWeight: groupValue == index
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -149,50 +123,19 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       ),
                     ),
                   ),
-                  const Spacer(),
-
-                  // FILTER
-                  GestureDetector(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) => const FilterReport(),
-                        isScrollControlled: true,
-                        backgroundColor: Colors.white,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(20)),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          right: BorderSide(
-                            width: 0.5,
-                            color: Colors.grey[300]!,
-                          ),
-                        ),
-                      ),
-                      padding: const EdgeInsets.only(right: 10),
-                      child: const Icon(
-                        Icons.filter_list,
-                        color: MyColors.primary,
-                      ),
-                    ),
+                  // NEXT AND PREVIOUS MONTH YEAR
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: context.height * 0.05,
+                    child: Obx(() =>
+                        _historyController.filterBy.value == 'bulan'
+                            ? const FilterMonth()
+                            : const FilterDateRange()),
                   ),
                 ],
               ),
             ),
-            // NEXT AND PREVIOUS MONTH YEAR
-            Container(
-              color: Colors.white,
-              width: MediaQuery.of(context).size.width,
-              height: context.height * 0.05,
-              child: Obx(() => _historyController.filterBy.value == 'bulan'
-                  ? const FilterMonth()
-                  : const FilterDateRange()),
-            ),
+
             const Gap(5),
             // INCOME, EXPENSE, AND BALANCE
             const TotalTransaction(),

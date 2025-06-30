@@ -97,7 +97,7 @@ class _TransactionListState extends State<TransactionList> {
             String note = historyController.resultDataSingleDate[index].note ==
                     '-'
                 ? cabang
-                : '${transactionName} : ${historyController.resultDataSingleDate[index].note!}';
+                : '$transactionName : ${historyController.resultDataSingleDate[index].note!}';
             return ListTile(
               leading: Container(
                 decoration: BoxDecoration(
