@@ -36,7 +36,7 @@ class _BarChart extends StatelessWidget {
             barGroups: getBarGroups(chartController),
             gridData: const FlGridData(show: false),
             alignment: BarChartAlignment.spaceAround,
-            maxY: 200000,
+            maxY: 10000000,
           )));
   }
 

@@ -24,7 +24,8 @@ class RemoteDataSource {
         if (response.data['status'] == 'ok') {
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setBool('statusLogin', true);
-          await prefs.setInt('id', response.data['id']);
+          await prefs.setInt('id_owner', response.data['id_owner']);
+          await prefs.setInt('id_kios', response.data['id_kios']);
           await prefs.setString('kios', response.data['kios']);
           await prefs.setString('phone', response.data['phone'] ?? '');
           await prefs.setString('alamat', response.data['alamat']);
@@ -41,7 +42,7 @@ class RemoteDataSource {
   static Future<TotalModel?> homeTotalSaldo() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id')});
+      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id_kios')});
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.homeTotalSaldo;
       Response response = await Dio().post(
@@ -62,7 +63,7 @@ class RemoteDataSource {
   static Future<OutletBranchModel?> homeTotalBranchSaldo() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id')});
+      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id_kios')});
       var url = ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.homeTotalBranchSaldo;
       Response response = await Dio().post(
@@ -81,22 +82,8 @@ class RemoteDataSource {
   }
 
   static Future<FinancialHistoryModel?> histories(
-      DateTime startdate,
-      DateTime enddate,
-      String monthYear,
-      String filterBy,
-      Object kategori) async {
+      Map<String, dynamic> rawFormat) async {
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var rawFormat = (jsonEncode({
-        'startDate': startdate.toString(),
-        'endDate': enddate.toString(),
-        'monthYear': monthYear,
-        'filter_by_date_or_month': filterBy,
-        'id_kios': prefs.getInt('id'),
-        'kategori': kategori
-      }));
-      print(rawFormat);
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.histories;
       Response response = await Dio().post(url,
           data: rawFormat,
@@ -117,7 +104,7 @@ class RemoteDataSource {
   static Future<ChartModel?> homeTotalPerMonth() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id')});
+      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id_kios')});
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.homeTotalPerMonth;
       Response response = await Dio().post(
@@ -151,6 +138,48 @@ class RemoteDataSource {
       return false;
     } catch (error) {
       return false;
+    }
+  }
+
+// ===================== KIOS =====================
+  static Future<List<KiosModel>?> getListKios(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listkios;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => KiosModel.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<List<DataListOutletBranch>?> getListCabangKios(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcabangkios;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => DataListOutletBranch.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 
@@ -276,25 +305,8 @@ class RemoteDataSource {
 
   // ===================== TRANSACTION =====================
   static Future<bool> saveTransactionExpense(
-      int incomeId,
-      int expenseId,
-      String incomeName,
-      String expenseName,
-      int amount,
-      String description,
-      String transactionDate,
-      String transactionTime) async {
+      Map<String, dynamic> rawFormat) async {
     try {
-      var rawFormat = (jsonEncode({
-        'incomeId': incomeId,
-        'expenseId': expenseId,
-        'incomeName': incomeName,
-        'expenseName': expenseName,
-        'amount': amount,
-        'description': description,
-        'transactionDate': transactionDate,
-        'transactionTime': transactionTime,
-      }));
       var url = ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.saveTransactionExpense;
       Response response = await Dio().post(url,
@@ -312,21 +324,8 @@ class RemoteDataSource {
   }
 
   static Future<bool> saveTransactionIncome(
-      int incomeId,
-      String incomeName,
-      int amount,
-      String description,
-      String transactionDate,
-      String transactionTime) async {
+      Map<String, dynamic> rawFormat) async {
     try {
-      var rawFormat = (jsonEncode({
-        'incomeId': incomeId,
-        'incomeName': incomeName,
-        'amount': amount,
-        'description': description,
-        'transactionDate': transactionDate,
-        'transactionTime': transactionTime,
-      }));
       var url = ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.saveTransactionIncome;
       Response response = await Dio().post(url,
@@ -344,13 +343,8 @@ class RemoteDataSource {
   }
 
   static Future<MonitoringOutletModel?> monitoringByDateRange(
-      DateTime startdate, DateTime enddate, String kios) async {
+      Map<String, dynamic> rawFormat) async {
     try {
-      var rawFormat = (jsonEncode({
-        'startDate': startdate.toString(),
-        'endDate': enddate.toString(),
-        'kios': kios,
-      }));
       var url = ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.monitoringbydaterange;
       Response response = await Dio().post(url,
@@ -370,12 +364,8 @@ class RemoteDataSource {
   }
 
   static Future<MonitoringOutletModel?> monitoringByMonth(
-      String monthYear, String kios) async {
+      Map<String, dynamic> rawFormat) async {
     try {
-      var rawFormat = (jsonEncode({
-        'monthYear': monthYear,
-        'kios': kios,
-      }));
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.monitoringbymonth;
       Response response = await Dio().post(url,
@@ -387,21 +377,6 @@ class RemoteDataSource {
         final MonitoringOutletModel res =
             MonitoringOutletModel.fromJson(response.data);
         return res;
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  // LIST CATEGORIES
-  static Future<List<KiosModel>?> listOutlet() async {
-    try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listoutlet;
-      final response = await Dio().get(url);
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = response.data;
-        return jsonData.map((e) => KiosModel.fromJson(e)).toList();
       }
       return null;
     } catch (e) {

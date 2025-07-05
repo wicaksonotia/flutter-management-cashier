@@ -15,7 +15,7 @@ class CategoryForm extends StatefulWidget {
 }
 
 class _CategoryFormState extends State<CategoryForm> {
-  final CategoryController categoryController = Get.find<CategoryController>();
+  final CategoryController categoryController = Get.put(CategoryController());
 
   @override
   Widget build(BuildContext context) {

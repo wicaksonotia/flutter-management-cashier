@@ -3,17 +3,20 @@ import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cashier_management/models/history_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoryController extends GetxController {
   var resultData = <DataHistory>[].obs;
+  RxBool isLoadingHistory = false.obs;
   var resultDataSingleDate = <DataHistory>[].obs;
-  RxBool isLoading = false.obs;
+  RxBool isLoadingSingleDate = false.obs;
   RxBool isLoadingCategoryPemasukan = false.obs;
   RxBool isLoadingCategoryPengeluaran = false.obs;
   RxInt totalIncome = 0.obs;
   RxInt totalExpense = 0.obs;
   RxInt totalBalance = 0.obs;
-  RxList<dynamic> tagCategory = [].obs;
+  var tagCategory = [].obs;
+  var tagCabangKios = [].obs;
   RxList<Map<String, dynamic>> listCategoryPemasukan =
       <Map<String, dynamic>>[].obs;
   RxList<Map<String, dynamic>> listCategoryPengeluaran =
@@ -24,22 +27,38 @@ class HistoryController extends GetxController {
   var selectedDate = DateTime.now().obs;
   RxString filterBy = 'bulan'.obs;
   late RxString monthYear;
+  var idKios = 0.obs;
+  var namaKios = ''.obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    idKios.value = prefs.getInt('id_kios')!;
+    namaKios.value = prefs.getString('kios')!;
     monthYear = "${singleDate.value.month}-${singleDate.value.year}".obs;
     getHistoriesBySingleDate();
+  }
+
+  void changeBranchOutlet() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    idKios.value = prefs.getInt('id_kios')!;
+    namaKios.value = prefs.getString('kios')!;
+    getHistoriesBySingleDate();
+    getHistoriesByFilter();
+    getDataListCategoryPemasukan();
+    getDataListCategoryPengeluaran();
   }
 
   void getDataListCategoryPemasukan() async {
     try {
       isLoadingCategoryPemasukan(true);
-      final result = await RemoteDataSource.listCategories(['PEMASUKAN'], '');
+      var rawFormat = {'id_kios': idKios.value};
+      final result = await RemoteDataSource.getListCabangKios(rawFormat);
       if (result != null) {
         listCategoryPemasukan.assignAll(result.map((category) => {
               'value': category.id,
-              'nama': category.categoryName!,
+              'nama': category.cabang!,
             }));
       }
     } catch (error) {
@@ -72,26 +91,42 @@ class HistoryController extends GetxController {
 
   void getHistoriesBySingleDate() async {
     try {
-      isLoading(true);
-      final result = await RemoteDataSource.histories(selectedDate.value,
-          selectedDate.value, monthYear.value, 'tanggal', []);
+      isLoadingSingleDate(true);
+      var rawFormat = {
+        'startDate': selectedDate.value.toString(),
+        'endDate': selectedDate.value.toString(),
+        'monthYear': monthYear.value,
+        'filter_by_date_or_month': 'tanggal',
+        'id_kios': idKios.value,
+        'kategori': [],
+        'cabang_kios': []
+      };
+      final result = await RemoteDataSource.histories(rawFormat);
       if (result != null && result.data != null) {
         resultDataSingleDate.assignAll(result.data!);
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      isLoading(false);
+      isLoadingSingleDate(false);
     } finally {
-      isLoading(false);
+      isLoadingSingleDate(false);
     }
   }
 
   void getHistoriesByFilter() async {
     try {
-      isLoading(true);
-      final result = await RemoteDataSource.histories(startDate.value,
-          endDate.value, monthYear.value, filterBy.value, tagCategory);
+      isLoadingHistory(true);
+      var rawFormat = {
+        'startDate': startDate.value.toString(),
+        'endDate': endDate.value.toString(),
+        'monthYear': monthYear.value,
+        'filter_by_date_or_month': filterBy.value,
+        'id_kios': idKios.value,
+        'kategori': tagCategory,
+        'cabang_kios': tagCabangKios
+      };
+      final result = await RemoteDataSource.histories(rawFormat);
       if (result != null && result.data != null) {
         resultData.assignAll(result.data!);
         totalIncome.value = resultData
@@ -105,9 +140,9 @@ class HistoryController extends GetxController {
     } catch (error) {
       Get.snackbar('Error', error.toString(),
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      isLoading(false);
+      isLoadingHistory(false);
     } finally {
-      isLoading(false);
+      isLoadingHistory(false);
     }
   }
 

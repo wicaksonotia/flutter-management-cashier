@@ -20,7 +20,7 @@ class TotalTransaction extends StatelessWidget {
             child: SizedBox(
               height: 100,
               child: Obx(
-                () => historyController.isLoading.value
+                () => historyController.isLoadingHistory.value
                     ? Card(
                         color: Colors.white,
                         shape: RoundedRectangleBorder(
@@ -100,7 +100,7 @@ class TotalTransaction extends StatelessWidget {
             child: SizedBox(
               height: 100,
               child: Obx(
-                () => historyController.isLoading.value
+                () => historyController.isLoadingHistory.value
                     ? Card(
                         color: Colors.white,
                         shape: RoundedRectangleBorder(
@@ -179,7 +179,7 @@ class TotalTransaction extends StatelessWidget {
             child: SizedBox(
               height: 100,
               child: Obx(
-                () => historyController.isLoading.value
+                () => historyController.isLoadingHistory.value
                     ? Card(
                         color: Colors.white,
                         shape: RoundedRectangleBorder(

@@ -15,6 +15,10 @@ class _AuthEndPoints {
   final String saveTransactionIncome = 'financialsavetransactionincome';
   final String deletehistory = 'financialdeletehistory';
 
+  // KIOS
+  final String listkios = 'FinancialListKios';
+  final String listcabangkios = 'FinancialListCabangKios';
+
   // CATEGORY
   final String listcategories = 'FinancialListCategories';
   final String savecategories = 'financialsavecategory';
@@ -26,5 +30,4 @@ class _AuthEndPoints {
   //MONITORING
   final String monitoringbydaterange = 'financialmonitoringoutletbydaterange';
   final String monitoringbymonth = 'financialmonitoringoutletbymonth';
-  final String listoutlet = 'financialmonitoringoutletlist';
 }

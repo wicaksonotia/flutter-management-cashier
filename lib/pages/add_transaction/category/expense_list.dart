@@ -81,19 +81,18 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                   return ListTile(
                     title: Text(category.categoryName!),
                     onTap: () {
-                      _transactionController.dataCategoryExpenseId.value =
+                      _transactionController.idKategoriTransaksi.value =
                           category.id!;
-                      _transactionController.dataCategoryExpenseName.value =
+                      _transactionController.namaKategori.value =
                           category.categoryName!;
                       Get.back(result: category);
                     },
                     trailing: Icon(
                       Icons.check_circle,
-                      color:
-                          _transactionController.dataCategoryExpenseId.value ==
-                                  category.id
-                              ? MyColors.primary
-                              : Colors.grey.shade300,
+                      color: _transactionController.idKategoriTransaksi.value ==
+                              category.id
+                          ? MyColors.primary
+                          : Colors.grey.shade300,
                     ),
                   );
                 },

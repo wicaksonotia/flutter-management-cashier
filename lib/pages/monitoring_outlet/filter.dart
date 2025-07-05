@@ -1,10 +1,12 @@
+import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
 import 'package:cashier_management/pages/monitoring_outlet/chips_outlet.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class FilterReport extends StatefulWidget {
-  const FilterReport({super.key});
+  final MonitoringOutletController monitoringOutletController;
+  const FilterReport(this.monitoringOutletController, {super.key});
 
   @override
   State<FilterReport> createState() => _FilterReportState();
@@ -38,7 +40,7 @@ class _FilterReportState extends State<FilterReport> {
                   color: Colors.grey.shade300,
                 ),
                 const Gap(10),
-                const ChipsOutlet(),
+                ChipsOutlet(widget.monitoringOutletController),
               ],
             ),
           ),

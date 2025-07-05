@@ -8,20 +8,20 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 // ignore: must_be_immutable
-class NavigationPage extends StatefulWidget {
-  NavigationPage({super.key});
+class NavigationBottomPage extends StatefulWidget {
+  NavigationBottomPage({super.key});
 
   int currentIndex = 0;
   @override
-  State<NavigationPage> createState() => _NavigationPageState();
+  State<NavigationBottomPage> createState() => _NavigationBottomPageState();
 }
 
-class _NavigationPageState extends State<NavigationPage> {
+class _NavigationBottomPageState extends State<NavigationBottomPage> {
   final screens = [
     const HomePage(),
     const TransactionHistoryPage(),
-    // const MonitoringPage(),
-    // const CategoryPage(),
+    const MonitoringPage(),
+    const CategoryPage(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,6 @@ class _NavigationPageState extends State<NavigationPage> {
               iconSize: 24,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               duration: const Duration(milliseconds: 400),
-              // tabBackgroundColor: Colors.grey[100]!,
               tabBackgroundColor: MyColors.primary,
               color: MyColors.primary,
               tabs: const [
@@ -82,6 +81,17 @@ class _NavigationPageState extends State<NavigationPage> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/add-transaction');
+        },
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: MyColors.primary,
+      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

@@ -5,29 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChipsOutlet extends StatefulWidget {
-  const ChipsOutlet({super.key});
+  final MonitoringOutletController monitoringOutletController;
+  const ChipsOutlet(this.monitoringOutletController, {super.key});
 
   @override
   _ChipsOutletState createState() => _ChipsOutletState();
 }
 
 class _ChipsOutletState extends State<ChipsOutlet> {
-  final MonitoringOutletController _monitoringOutletController =
-      Get.find<MonitoringOutletController>();
-
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       return ChipsChoice.single(
         wrapped: true,
         padding: EdgeInsets.zero,
-        value: _monitoringOutletController.kios,
+        value: widget.monitoringOutletController.idCabangKios.value,
         onChanged: (val) => setState(() {
-          _monitoringOutletController.kios.value = val.toString();
-          _monitoringOutletController.getDataByFilter();
+          widget.monitoringOutletController.idCabangKios.value = val;
+          widget.monitoringOutletController.getDataByFilter();
         }),
-        choiceItems: C2Choice.listFrom<String, Map<String, String>>(
-          source: _monitoringOutletController.listOutlet,
+        choiceItems: C2Choice.listFrom<int, Map<String, dynamic>>(
+          source: widget.monitoringOutletController.listOutlet,
           value: (i, v) => v['value']!,
           label: (i, v) => v['nama']!,
         ),

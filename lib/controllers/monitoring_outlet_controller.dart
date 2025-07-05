@@ -3,45 +3,62 @@ import 'package:cashier_management/models/monitoring_outlet_model.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MonitoringOutletController extends GetxController {
   var resultData = <DataTransaction>[].obs;
   RxBool isLoading = false.obs;
+  RxBool isLoadingOutlet = false.obs;
   RxInt totalIncome = 0.obs;
   RxInt totalExpense = 0.obs;
   RxInt totalBalance = 0.obs;
-  RxList<Map<String, String>> listOutlet = <Map<String, String>>[].obs;
+  RxList<Map<String, dynamic>> listOutlet = <Map<String, dynamic>>[].obs;
   var monthDate = DateTime.now().obs;
   late RxString monthYear;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
   var filterBy = 'bulan'.obs;
-  var kios = 'STMJ-STG'.obs;
+  var namaKios = ''.obs;
+  var idKios = 0.obs;
+  var idCabangKios = 0.obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    idKios.value = prefs.getInt('id_kios')!;
     monthYear = "${monthDate.value.month}-${monthDate.value.year}".obs;
-    getDataByFilter();
     getDataListOutlet();
+  }
+
+  void changeBranchOutlet() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    idKios.value = prefs.getInt('id_kios')!;
+    namaKios.value = prefs.getString('kios')!;
+    getDataListOutlet();
+    getDataByFilter();
   }
 
   void getDataListOutlet() async {
     try {
-      isLoading(true);
-      final result = await RemoteDataSource.listOutlet();
+      isLoadingOutlet(true);
+      var rawFormat = {'id_kios': idKios.value};
+      final result = await RemoteDataSource.getListCabangKios(rawFormat);
       if (result != null) {
         listOutlet.assignAll(result.map((category) => {
-              'value': category.username!,
-              'nama': category.username!,
+              'value': category.id,
+              'nama': category.cabang!,
             }));
+        idCabangKios.value =
+            listOutlet.isNotEmpty ? listOutlet.first['value'] as int : 0;
+        getDataByFilter();
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      isLoading(false);
+      isLoadingOutlet(false);
     } finally {
-      isLoading(false);
+      isLoadingOutlet(false);
     }
   }
 
@@ -50,11 +67,20 @@ class MonitoringOutletController extends GetxController {
       isLoading(true);
       MonitoringOutletModel? result;
       if (filterBy.value == 'bulan') {
-        result = await RemoteDataSource.monitoringByMonth(
-            monthYear.value, kios.value);
+        var rawFormat = {
+          'monthYear': monthYear.value,
+          'id_kios': idKios.value,
+          'id_cabang': idCabangKios.value
+        };
+        result = await RemoteDataSource.monitoringByMonth(rawFormat);
       } else {
-        result = await RemoteDataSource.monitoringByDateRange(
-            startDate.value, endDate.value, kios.value);
+        var rawFormat = {
+          'startDate': startDate.value.toString(),
+          'endDate': endDate.value.toString(),
+          'id_kios': idKios.value,
+          'id_cabang': idCabangKios.value
+        };
+        result = await RemoteDataSource.monitoringByDateRange(rawFormat);
       }
 
       if (result != null && result.data != null) {

@@ -1,10 +1,12 @@
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/category_model.dart';
+import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionController extends GetxController {
   final HistoryController _historyController = Get.find<HistoryController>();
@@ -14,20 +16,25 @@ class TransactionController extends GetxController {
   var selectTransactionExpenseTime = TimeOfDay.now().obs;
   var selectTransactionIncomeDate = DateTime.now().obs;
   var selectTransactionIncomeTime = TimeOfDay.now().obs;
-  var dataCategoryExpenseId = 0.obs;
-  var dataCategoryExpenseName = ''.obs;
-  var dataCategoryExpenseFromId = 0.obs;
-  var dataCategoryExpenseFromName = ''.obs;
   var dataCategoryIncomeId = 0.obs;
   var dataCategoryIncomeName = ''.obs;
   RxBool isLoading = false.obs;
   var resultDataIncome = <CategoryModel>[].obs;
   var resultDataExpense = <CategoryModel>[].obs;
-  var resultDataExpenseFrom = <CategoryModel>[].obs;
+  var resultDataExpenseFrom = <DataListOutletBranch>[].obs;
+  var namaKios = ''.obs;
+  var idKios = 0.obs;
+  var idCabang = 0.obs;
+  var cabang = ''.obs;
+  var idKategoriTransaksi = 0.obs;
+  var namaKategori = ''.obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    idKios.value = prefs.getInt('id_kios')!;
+    namaKios.value = prefs.getString('kios')!;
     getListDataIncome();
     getListDataExpense();
     getListDataExpenseFrom();
@@ -52,7 +59,8 @@ class TransactionController extends GetxController {
   void getListDataExpenseFrom() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.listCategories(['PEMASUKAN'], '');
+      var rawFormat = {'id_kios': idKios.value};
+      final result = await RemoteDataSource.getListCabangKios(rawFormat);
       if (result != null) {
         resultDataExpenseFrom.assignAll(result);
       }
@@ -160,30 +168,31 @@ class TransactionController extends GetxController {
   }
 
   void saveTransactionExpense() async {
-    if (dataCategoryExpenseFromId.value == 0) {
-      Get.snackbar('Error', 'Please select category',
+    if (idKategoriTransaksi.value == 0) {
+      Get.snackbar('Error', 'Silakan pilih kategori belanja',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-    } else if (dataCategoryExpenseId.value == 0) {
-      Get.snackbar('Error', 'Please select category',
+    } else if (idCabang.value == 0) {
+      Get.snackbar('Error', 'Silakan pilih cabang kios',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     } else if (amountController.text.isEmpty) {
-      Get.snackbar('Error', 'Please enter amount',
+      Get.snackbar('Error', 'Silakan isi total belanja',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     } else if (descriptionController.text.isEmpty) {
-      Get.snackbar('Error', 'Please enter description',
+      Get.snackbar('Error', 'Silakan isi deskripsi-nya',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     } else {
       isLoading(true);
       try {
-        final result = await RemoteDataSource.saveTransactionExpense(
-          dataCategoryExpenseFromId.value,
-          dataCategoryExpenseId.value,
-          dataCategoryExpenseFromName.value,
-          dataCategoryExpenseName.value,
-          int.parse(amountController.text.replaceAll(RegExp('[^0-9]'), '')),
-          descriptionController.text,
-          selectTransactionExpenseDate.value.toString(),
-          DateFormat('HH:mm:ss').format(
+        var rawFormat = {
+          'id_kios': idKios.value,
+          'id_cabang': idCabang.value,
+          'id_kategori_transaksi': idKategoriTransaksi.value,
+          'nama_kategori': namaKategori.value,
+          'amount':
+              int.parse(amountController.text.replaceAll(RegExp('[^0-9]'), '')),
+          'description': descriptionController.text,
+          'transactionDate': selectTransactionExpenseDate.value.toString(),
+          'transactionTime': DateFormat('HH:mm:ss').format(
             DateTime(
               DateTime.now().year,
               DateTime.now().month,
@@ -192,7 +201,8 @@ class TransactionController extends GetxController {
               selectTransactionExpenseTime.value.minute,
             ),
           ),
-        );
+        };
+        final result = await RemoteDataSource.saveTransactionExpense(rawFormat);
         if (result) {
           Get.snackbar('Success', 'Transaction added successfully',
               icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
@@ -204,12 +214,11 @@ class TransactionController extends GetxController {
       } finally {
         isLoading(false);
       }
+      idCabang.value = 0;
+      idKategoriTransaksi.value = 0;
+      namaKategori.value = '';
       amountController.clear();
       descriptionController.clear();
-      dataCategoryExpenseFromId.value = 0;
-      dataCategoryExpenseFromName.value = '';
-      dataCategoryExpenseId.value = 0;
-      dataCategoryExpenseName.value = '';
       selectTransactionExpenseDate.value = DateTime.now();
       selectTransactionExpenseTime.value = TimeOfDay.now();
     }
@@ -295,40 +304,59 @@ class TransactionController extends GetxController {
       Get.snackbar('Error', 'Please enter description',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     } else {
-      isLoading(true);
-      try {
-        final result = await RemoteDataSource.saveTransactionIncome(
-          dataCategoryIncomeId.value,
-          dataCategoryIncomeName.value,
-          int.parse(amountController.text.replaceAll(RegExp('[^0-9]'), '')),
-          descriptionController.text,
-          selectTransactionIncomeDate.value.toString(),
-          DateFormat('HH:mm:ss').format(
-            DateTime(
-              DateTime.now().year,
-              DateTime.now().month,
-              DateTime.now().day,
-              selectTransactionIncomeTime.value.hour,
-              selectTransactionIncomeTime.value.minute,
-            ),
-          ),
-        );
-        if (result) {
-          Get.snackbar('Success', 'Transaction added successfully',
-              icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-        }
-      } catch (error) {
-        Get.snackbar('Error', error.toString(),
-            icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      } finally {
-        isLoading(false);
-      }
-      amountController.clear();
-      descriptionController.clear();
-      dataCategoryIncomeId.value = 0;
-      dataCategoryIncomeName.value = '';
-      selectTransactionIncomeDate.value = DateTime.now();
-      selectTransactionIncomeTime.value = TimeOfDay.now();
+      //   isLoading(true);
+      //   try {
+      //     var rawFormat = {
+      //       'id_kios': idKios.value,
+      //       'id_cabang': idCabang.value,
+      //       'id_kategori_transaksi': idKategoriTransaksi.value,
+      //       'nama_kategori': namaKategori.value,
+      //       'amount':
+      //           int.parse(amountController.text.replaceAll(RegExp('[^0-9]'), '')),
+      //       'description': descriptionController.text,
+      //       'transactionDate': selectTransactionExpenseDate.value.toString(),
+      //       'transactionTime': DateFormat('HH:mm:ss').format(
+      //         DateTime(
+      //           DateTime.now().year,
+      //           DateTime.now().month,
+      //           DateTime.now().day,
+      //           selectTransactionExpenseTime.value.hour,
+      //           selectTransactionExpenseTime.value.minute,
+      //         ),
+      //       ),
+      //     };
+      //     final result = await RemoteDataSource.saveTransactionIncome(
+      //       dataCategoryIncomeId.value,
+      //       dataCategoryIncomeName.value,
+      //       int.parse(amountController.text.replaceAll(RegExp('[^0-9]'), '')),
+      //       descriptionController.text,
+      //       selectTransactionIncomeDate.value.toString(),
+      //       DateFormat('HH:mm:ss').format(
+      //         DateTime(
+      //           DateTime.now().year,
+      //           DateTime.now().month,
+      //           DateTime.now().day,
+      //           selectTransactionIncomeTime.value.hour,
+      //           selectTransactionIncomeTime.value.minute,
+      //         ),
+      //       ),
+      //     );
+      //     if (result) {
+      //       Get.snackbar('Success', 'Transaction added successfully',
+      //           icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      //     }
+      //   } catch (error) {
+      //     Get.snackbar('Error', error.toString(),
+      //         icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      //   } finally {
+      //     isLoading(false);
+      //   }
+      //   amountController.clear();
+      //   descriptionController.clear();
+      //   dataCategoryIncomeId.value = 0;
+      //   dataCategoryIncomeName.value = '';
+      //   selectTransactionIncomeDate.value = DateTime.now();
+      //   selectTransactionIncomeTime.value = TimeOfDay.now();
     }
   }
 }

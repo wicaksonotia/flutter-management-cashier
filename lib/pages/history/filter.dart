@@ -28,18 +28,6 @@ class _FilterReportState extends State<FilterReport> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // const Text(
-                //   'Filter',
-                //   textAlign: TextAlign.left,
-                //   style: TextStyle(
-                //     fontSize: MySizes.fontSizeLg,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
-                // Divider(
-                //   color: Colors.grey.shade300,
-                // ),
-                // const Gap(10),
                 DefaultTabController(
                   length: 2,
                   child: Column(

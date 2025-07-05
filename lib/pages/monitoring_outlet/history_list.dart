@@ -61,7 +61,10 @@ class _HistoryListState extends State<HistoryList> {
               child: ExpansionTile(
                 leading: const Icon(Icons.receipt),
                 title: Text(
-                  '${items.kios.toUpperCase()}-${items.numerator.toString().padLeft(4, '0').toUpperCase()}',
+                  items.numerator.toString().padLeft(
+                        4,
+                        '0',
+                      ),
                   style: const TextStyle(fontSize: MySizes.fontSizeMd),
                 ),
                 subtitle: Text(
@@ -170,18 +173,31 @@ class _HistoryListState extends State<HistoryList> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        DateFormat('EEEE').format(
-                          DateFormat('dd MMMM yyyy')
-                              .parse(resultDataMap.keys.toList()[section]),
-                        ),
-                        style: const TextStyle(
-                          fontSize: MySizes.fontSizeMd,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            DateFormat('EEEE', 'id_ID').format(
+                              DateFormat('dd MMMM yyyy').parse(
+                                resultDataMap.keys.toList()[section],
+                              ),
+                            ),
+                            style: const TextStyle(
+                              fontSize: MySizes.fontSizeMd,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Gap(5),
+                          Text(
+                            '[${_monitoringOutletController.resultData.where((element) => DateFormat('dd MMMM yyyy').format(DateTime.parse(element.transactionDate!)) == resultDataMap.keys.toList()[section] && !element.deleteStatus!).fold<int>(0, (sum, element) => sum + (element.details?.fold<int>(0, (dSum, d) => dSum + (d.quantity ?? 0)) ?? 0)).toString()} items]',
+                            style: const TextStyle(
+                              fontSize: MySizes.fontSizeSm,
+                              color: MyColors.grey,
+                            ),
+                          ),
+                        ],
                       ),
                       Text(
-                        DateFormat('MMMM yyyy').format(
+                        DateFormat('MMMM yyyy', 'id_ID').format(
                           DateFormat('dd MMMM yyyy')
                               .parse(resultDataMap.keys.toList()[section]),
                         ),

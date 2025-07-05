@@ -20,7 +20,7 @@ class _TransactionListState extends State<TransactionList> {
   Widget build(BuildContext context) {
     Color warna;
     return Obx(() {
-      if (historyController.isLoading.value) {
+      if (historyController.isLoadingSingleDate.value) {
         return ListView.separated(
           padding: EdgeInsets.zero,
           itemCount: 5, // Placeholder shimmer items
@@ -65,7 +65,7 @@ class _TransactionListState extends State<TransactionList> {
         if (historyController.resultDataSingleDate.isEmpty) {
           return const Center(
             child: Text(
-              'There is no transaction data',
+              'Tidak ada transaksi pada tanggal ini',
               style: TextStyle(
                 fontSize: MySizes.fontSizeLg,
                 color: MyColors.grey,

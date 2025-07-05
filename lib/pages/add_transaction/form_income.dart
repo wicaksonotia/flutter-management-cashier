@@ -2,7 +2,7 @@ import 'package:currency_text_input_formatter/currency_text_input_formatter.dart
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
 import 'package:cashier_management/utils/colors.dart';
-import 'package:cashier_management/utils/routes.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';

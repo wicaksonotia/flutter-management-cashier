@@ -18,6 +18,7 @@ class MySizes {
   static const double fontSizeMd = 14.0;
   static const double fontSizeLg = 16.0;
   static const double fontSizeXl = 24.0;
+  static const double fontSizeHeader = 18.0;
 
   // Button sizes
   static const double buttonHeight = 18.0;

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart' as Dio;
 import 'package:cashier_management/database/api_request.dart';
-import 'package:cashier_management/utils/routes.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -33,7 +33,7 @@ class LoginController extends GetxController {
       });
       bool result = await RemoteDataSource.login(formData);
       if (result) {
-        Get.offNamed(RouterClass.navigation);
+        Get.offNamed(RouterClass.home);
       } else {
         throw "Kios is not regsitered";
       }
@@ -53,7 +53,7 @@ class LoginController extends GetxController {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     isLogin.value = prefs.getBool('statusLogin') ?? false;
     if (isLogin.value == true) {
-      Get.offAllNamed(RouterClass.navigation);
+      Get.offAllNamed(RouterClass.home);
     } else {
       Get.offAllNamed(RouterClass.login);
     }

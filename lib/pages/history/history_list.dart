@@ -24,15 +24,17 @@ class _HistoryListState extends State<HistoryList> {
   @override
   void initState() {
     super.initState();
-    historyController.getHistoriesByFilter();
-    historyController.getDataListCategoryPemasukan();
-    historyController.getDataListCategoryPengeluaran();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      historyController.getHistoriesByFilter();
+      historyController.getDataListCategoryPemasukan();
+      historyController.getDataListCategoryPengeluaran();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (historyController.isLoading.value) {
+      if (historyController.isLoadingHistory.value) {
         return Shimmer.fromColors(
           baseColor: Colors.grey[300]!,
           highlightColor: Colors.grey[100]!,
@@ -180,7 +182,7 @@ class _HistoryListState extends State<HistoryList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        DateFormat('EEEE').format(
+                        DateFormat('EEEE', 'id_ID').format(
                           DateFormat('dd MMMM yyyy')
                               .parse(resultDataMap.keys.toList()[section]),
                         ),
@@ -190,7 +192,7 @@ class _HistoryListState extends State<HistoryList> {
                         ),
                       ),
                       Text(
-                        DateFormat('MMMM yyyy').format(
+                        DateFormat('MMMM yyyy', 'id_ID').format(
                           DateFormat('dd MMMM yyyy')
                               .parse(resultDataMap.keys.toList()[section]),
                         ),

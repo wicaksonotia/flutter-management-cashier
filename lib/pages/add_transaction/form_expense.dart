@@ -2,7 +2,7 @@ import 'package:currency_text_input_formatter/currency_text_input_formatter.dart
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
 import 'package:cashier_management/utils/colors.dart';
-import 'package:cashier_management/utils/routes.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -30,6 +30,22 @@ class _FormExpenseState extends State<FormExpense> {
       ),
       child: Column(
         children: [
+          Obx(
+            () => Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(15.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(5.0),
+                color: Colors.white,
+              ),
+              child: Text(
+                _transactionController.namaKios.value,
+                style: const TextStyle(fontSize: 16, color: Colors.black54),
+              ),
+            ),
+          ),
+          const Gap(10),
           InkWell(
             onTap: () {
               Get.toNamed(RouterClass.expensefrom);
@@ -46,11 +62,9 @@ class _FormExpenseState extends State<FormExpense> {
                 children: [
                   Obx(
                     () => Text(
-                      _transactionController
-                              .dataCategoryExpenseFromName.value.isNotEmpty
-                          ? _transactionController
-                              .dataCategoryExpenseFromName.value
-                          : 'Expense from',
+                      _transactionController.cabang.value.isNotEmpty
+                          ? _transactionController.cabang.value
+                          : 'Cabang Kios',
                       style:
                           const TextStyle(fontSize: 16, color: Colors.black54),
                     ),
@@ -78,10 +92,9 @@ class _FormExpenseState extends State<FormExpense> {
                 children: [
                   Obx(
                     () => Text(
-                      _transactionController
-                              .dataCategoryExpenseName.value.isNotEmpty
-                          ? _transactionController.dataCategoryExpenseName.value
-                          : 'Category Item',
+                      _transactionController.namaKategori.value.isNotEmpty
+                          ? _transactionController.namaKategori.value
+                          : 'Kategori',
                       style:
                           const TextStyle(fontSize: 16, color: Colors.black54),
                     ),
@@ -104,7 +117,7 @@ class _FormExpenseState extends State<FormExpense> {
             ],
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'Amount',
+              labelText: 'Total Belanja',
               floatingLabelStyle: const TextStyle(
                 color: MyColors.primary,
               ),
@@ -147,7 +160,7 @@ class _FormExpenseState extends State<FormExpense> {
             controller: _transactionController.descriptionController,
             maxLines: 3,
             decoration: InputDecoration(
-              labelText: 'Description',
+              labelText: 'Deskripsi',
               floatingLabelStyle: const TextStyle(
                 color: MyColors.primary,
               ),
@@ -203,7 +216,7 @@ class _FormExpenseState extends State<FormExpense> {
                       _transactionController.showDialogDatePickerExpense();
                     },
                     controller: TextEditingController(
-                      text: DateFormat('dd MMMM yyyy').format(
+                      text: DateFormat('dd MMMM yyyy', 'id_ID').format(
                         _transactionController
                             .selectTransactionExpenseDate.value,
                       ),

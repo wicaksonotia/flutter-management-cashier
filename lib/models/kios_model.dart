@@ -1,40 +1,21 @@
 class KiosModel {
-  int? id;
+  int? idOwner;
+  int? idKios;
   String? kios;
-  String? username;
-  String? password;
-  bool? accountStatus;
-  String? alamat;
-  String? gambar;
 
-  KiosModel(
-      {this.id,
-      this.kios,
-      this.username,
-      this.password,
-      this.accountStatus,
-      this.alamat,
-      this.gambar});
+  KiosModel({this.idOwner, this.idKios, this.kios});
 
   KiosModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    idOwner = json['id_owner'];
+    idKios = json['id_kios'];
     kios = json['kios'];
-    username = json['username'];
-    password = json['password'];
-    accountStatus = json['account_status'];
-    alamat = json['alamat'];
-    gambar = json['gambar'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
+    data['id_owner'] = idOwner;
+    data['id_kios'] = idKios;
     data['kios'] = kios;
-    data['username'] = username;
-    data['password'] = password;
-    data['account_status'] = accountStatus;
-    data['alamat'] = alamat;
-    data['gambar'] = gambar;
     return data;
   }
 }

@@ -29,9 +29,9 @@ class _ChipsCategoryPemasukanState extends State<ChipsCategoryPemasukan> {
       return ChipsChoice.multiple(
         wrapped: true,
         padding: EdgeInsets.zero,
-        value: widget.historyController.tagCategory,
+        value: widget.historyController.tagCabangKios,
         onChanged: (val) => setState(() {
-          widget.historyController.tagCategory.value = val;
+          widget.historyController.tagCabangKios.value = val;
           widget.historyController.getHistoriesByFilter();
         }),
         choiceItems: C2Choice.listFrom<int, Map<String, dynamic>>(

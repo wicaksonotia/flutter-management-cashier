@@ -54,7 +54,7 @@ class _FilterMonthState extends State<FilterMonth> {
                 // debugPrint('Selected date: $selectedDate');
               },
               child: Obx(() => Text(
-                    DateFormat('MMMM yyyy')
+                    DateFormat('MMMM yyyy', 'id_ID')
                         .format(_monitoringOutletController.monthDate.value),
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold),
