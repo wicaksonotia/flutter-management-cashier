@@ -1,30 +1,29 @@
-import 'package:cashier_management/controllers/transaction_controller.dart';
+import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-class ExpenseFromListPage extends StatefulWidget {
-  const ExpenseFromListPage({super.key});
+class ExpenseKios extends StatefulWidget {
+  const ExpenseKios({super.key});
 
   @override
-  State<ExpenseFromListPage> createState() => _ExpenseFromListPageState();
+  State<ExpenseKios> createState() => _ExpenseKiosState();
 }
 
-class _ExpenseFromListPageState extends State<ExpenseFromListPage> {
-  final TransactionController _transactionController =
-      Get.find<TransactionController>();
+class _ExpenseKiosState extends State<ExpenseKios> {
+  final KiosController _kiosController = Get.find<KiosController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cabang Kios'),
+        title: const Text('Kios'),
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey.shade50,
       body: Obx(() {
-        return _transactionController.isLoading.value
+        return _kiosController.isLoading.value
             ? ListView.builder(
                 itemCount: 8,
                 itemBuilder: (context, index) {
@@ -52,23 +51,21 @@ class _ExpenseFromListPageState extends State<ExpenseFromListPage> {
                     color: Colors.grey.shade300,
                   );
                 },
-                itemCount: _transactionController.resultDataExpenseFrom.length,
+                itemCount: _kiosController.listKios.length,
                 itemBuilder: (context, index) {
-                  final category =
-                      _transactionController.resultDataExpenseFrom[index];
+                  final kios = _kiosController.listKios[index];
                   return ListTile(
-                    title: Text(category.cabang!),
+                    title: Text(kios.kios!),
                     onTap: () {
-                      _transactionController.idCabang.value = category.id!;
-                      _transactionController.cabang.value = category.cabang!;
-                      Get.back(result: category);
+                      _kiosController.idKios.value = kios.idKios!;
+                      _kiosController.namaKios.value = kios.kios!;
+                      Get.back(result: kios);
                     },
                     trailing: Icon(
                       Icons.check_circle,
-                      color:
-                          _transactionController.idCabang.value == category.id
-                              ? MyColors.primary
-                              : Colors.grey.shade300,
+                      color: _kiosController.idKios.value == kios.idKios
+                          ? MyColors.primary
+                          : Colors.grey.shade300,
                     ),
                   );
                 },

@@ -1,4 +1,5 @@
 import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/category_model.dart';
 import 'package:cashier_management/models/outlet_branch_model.dart';
@@ -6,10 +7,10 @@ import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionController extends GetxController {
   final HistoryController _historyController = Get.find<HistoryController>();
+  final KiosController _kiosController = Get.find<KiosController>();
   TextEditingController amountController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   var selectTransactionExpenseDate = DateTime.now().obs;
@@ -22,8 +23,6 @@ class TransactionController extends GetxController {
   var resultDataIncome = <CategoryModel>[].obs;
   var resultDataExpense = <CategoryModel>[].obs;
   var resultDataExpenseFrom = <DataListOutletBranch>[].obs;
-  var namaKios = ''.obs;
-  var idKios = 0.obs;
   var idCabang = 0.obs;
   var cabang = ''.obs;
   var idKategoriTransaksi = 0.obs;
@@ -32,12 +31,9 @@ class TransactionController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    idKios.value = prefs.getInt('id_kios')!;
-    namaKios.value = prefs.getString('kios')!;
     getListDataIncome();
     getListDataExpense();
-    getListDataExpenseFrom();
+    // getListDataExpenseFrom();
   }
 
   void getListDataIncome() async {
@@ -59,7 +55,7 @@ class TransactionController extends GetxController {
   void getListDataExpenseFrom() async {
     try {
       isLoading(true);
-      var rawFormat = {'id_kios': idKios.value};
+      var rawFormat = {'id_kios': _kiosController.idKios.value};
       final result = await RemoteDataSource.getListCabangKios(rawFormat);
       if (result != null) {
         resultDataExpenseFrom.assignAll(result);
@@ -184,7 +180,7 @@ class TransactionController extends GetxController {
       isLoading(true);
       try {
         var rawFormat = {
-          'id_kios': idKios.value,
+          'id_kios': _kiosController.idKios.value,
           'id_cabang': idCabang.value,
           'id_kategori_transaksi': idKategoriTransaksi.value,
           'nama_kategori': namaKategori.value,

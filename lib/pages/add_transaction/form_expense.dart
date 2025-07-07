@@ -1,3 +1,4 @@
+import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
@@ -19,6 +20,7 @@ class FormExpense extends StatefulWidget {
 class _FormExpenseState extends State<FormExpense> {
   final TransactionController _transactionController =
       Get.find<TransactionController>();
+  final KiosController _kiosController = Get.find<KiosController>();
 
   @override
   Widget build(BuildContext context) {
@@ -30,24 +32,39 @@ class _FormExpenseState extends State<FormExpense> {
       ),
       child: Column(
         children: [
-          Obx(
-            () => Container(
-              width: double.infinity,
+          InkWell(
+            onTap: () {
+              Get.toNamed(RouterClass.expenseKios);
+            },
+            child: Container(
               padding: const EdgeInsets.all(15.0),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(5.0),
                 color: Colors.white,
               ),
-              child: Text(
-                _transactionController.namaKios.value,
-                style: const TextStyle(fontSize: 16, color: Colors.black54),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Obx(
+                    () => Text(
+                      _kiosController.namaKios.value.isNotEmpty
+                          ? _kiosController.namaKios.value
+                          : 'Kios',
+                      style:
+                          const TextStyle(fontSize: 16, color: Colors.black54),
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_ios,
+                      size: 16, color: MyColors.primary),
+                ],
               ),
             ),
           ),
           const Gap(10),
           InkWell(
             onTap: () {
+              _transactionController.getListDataExpenseFrom();
               Get.toNamed(RouterClass.expensefrom);
             },
             child: Container(

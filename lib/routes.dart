@@ -5,6 +5,7 @@ import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
 import 'package:cashier_management/pages/add_transaction/category/expense_from_list.dart';
+import 'package:cashier_management/pages/add_transaction/category/expense_kios.dart';
 import 'package:cashier_management/pages/add_transaction/form_transaction.dart';
 import 'package:cashier_management/pages/add_transaction/category/expense_list.dart';
 import 'package:cashier_management/pages/add_transaction/category/income_list.dart';
@@ -25,6 +26,7 @@ class RouterClass {
   static String monitoringoutlet = '/monitoringoutlet';
   static String expense = '/expense';
   static String expensefrom = '/expensefrom';
+  static String expenseKios = '/expensekios';
   static String income = '/income';
   static String calculator = '/calculator';
 
@@ -73,6 +75,11 @@ class RouterClass {
     GetPage(
         page: () => const ExpenseFromListPage(),
         name: expensefrom,
+        transition: Transition.rightToLeft,
+        transitionDuration: const Duration(milliseconds: 500)),
+    GetPage(
+        page: () => const ExpenseKios(),
+        name: expenseKios,
         transition: Transition.rightToLeft,
         transitionDuration: const Duration(milliseconds: 500)),
     GetPage(
