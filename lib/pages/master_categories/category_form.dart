@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 // import 'package:cashier_management/utils/lists.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:toggle_switch/toggle_switch.dart';
+// import 'package:toggle_switch/toggle_switch.dart';
 
 class CategoryForm extends StatefulWidget {
   const CategoryForm({super.key});
@@ -33,7 +33,7 @@ class _CategoryFormState extends State<CategoryForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Add Category',
+              'Tambah Kategori',
               style: TextStyle(
                 fontSize: MySizes.fontSizeLg,
                 fontWeight: FontWeight.bold,
@@ -46,34 +46,34 @@ class _CategoryFormState extends State<CategoryForm> {
               height: 1,
             ),
             const Gap(15),
-            Obx(
-              () => ToggleSwitch(
-                minWidth: 90.0,
-                initialLabelIndex:
-                    categoryController.tipeContoller.value == "PEMASUKAN"
-                        ? 0
-                        : 1,
-                cornerRadius: 5.0,
-                activeFgColor: Colors.white,
-                inactiveBgColor: Colors.grey,
-                inactiveFgColor: Colors.white,
-                totalSwitches: 2,
-                labels: const ['Income', 'Expense'],
-                icons: const [Icons.download, Icons.upload],
-                activeBgColors: const [
-                  [MyColors.primary],
-                  [MyColors.red]
-                ],
-                onToggle: (index) {
-                  if (index == 0) {
-                    categoryController.tipeContoller.value = "PEMASUKAN";
-                  } else {
-                    categoryController.tipeContoller.value = "PENGELUARAN";
-                  }
-                },
-              ),
-            ),
-            const Gap(15),
+            // Obx(
+            //   () => ToggleSwitch(
+            //     minWidth: 90.0,
+            //     initialLabelIndex:
+            //         categoryController.tipeContoller.value == "PEMASUKAN"
+            //             ? 0
+            //             : 1,
+            //     cornerRadius: 5.0,
+            //     activeFgColor: Colors.white,
+            //     inactiveBgColor: Colors.grey,
+            //     inactiveFgColor: Colors.white,
+            //     totalSwitches: 2,
+            //     labels: const ['Pengeluaran', 'Pemasukan'],
+            //     icons: const [Icons.download, Icons.upload],
+            //     activeBgColors: const [
+            //       [MyColors.red],
+            //       [MyColors.primary],
+            //     ],
+            //     onToggle: (index) {
+            //       if (index == 0) {
+            //         categoryController.tipeContoller.value = "PENGELUARAN";
+            //       } else {
+            //         categoryController.tipeContoller.value = "PEMASUKAN";
+            //       }
+            //     },
+            //   ),
+            // ),
+            // const Gap(15),
             TextFormField(
               controller: categoryController.nameController,
               decoration: InputDecoration(
@@ -92,14 +92,14 @@ class _CategoryFormState extends State<CategoryForm> {
                     color: Colors.grey.shade300,
                   ),
                 ),
-                hintText: "Category Name",
+                hintText: "Nama Kategori",
                 hintStyle: TextStyle(
                   color: Colors.grey.shade300,
                 ),
                 border: const OutlineInputBorder(
                   borderSide: BorderSide(color: MyColors.primary),
                 ),
-                labelText: "Category Name",
+                labelText: "Nama Kategori",
                 floatingLabelStyle: const TextStyle(
                   color: MyColors.primary,
                 ),

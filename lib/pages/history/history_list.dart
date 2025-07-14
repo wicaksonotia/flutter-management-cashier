@@ -116,10 +116,10 @@ class _HistoryListState extends State<HistoryList> {
                   : Slidable(
                       endActionPane: ActionPane(
                         motion: const ScrollMotion(),
+                        extentRatio: 0.25,
                         children: [
                           SlidableAction(
                             onPressed: (context) {
-                              Get.back();
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) =>
@@ -137,13 +137,13 @@ class _HistoryListState extends State<HistoryList> {
                             icon: Icons.delete,
                             label: 'Delete',
                           ),
-                          SlidableAction(
-                            onPressed: (context) {},
-                            backgroundColor: const Color(0xFF21B7CA),
-                            foregroundColor: Colors.white,
-                            icon: Icons.edit,
-                            label: 'Edit',
-                          ),
+                          // SlidableAction(
+                          //   onPressed: (context) {},
+                          //   backgroundColor: const Color(0xFF21B7CA),
+                          //   foregroundColor: Colors.white,
+                          //   icon: Icons.edit,
+                          //   label: 'Edit',
+                          // ),
                         ],
                       ),
                       child: ListTileHistories(

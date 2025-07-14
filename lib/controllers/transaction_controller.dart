@@ -210,7 +210,6 @@ class TransactionController extends GetxController {
       } finally {
         isLoading(false);
       }
-      idCabang.value = 0;
       idKategoriTransaksi.value = 0;
       namaKategori.value = '';
       amountController.clear();

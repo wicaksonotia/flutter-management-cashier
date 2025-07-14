@@ -185,12 +185,13 @@ class RemoteDataSource {
 
   // ===================== CATEGORY =====================
   // SAVE CATEGORY
-  static Future<bool> saveCategory(dynamic data) async {
+  static Future<bool> saveCategory(Map<String, dynamic> rawFormat) async {
     try {
+      // print(jsonEncode(rawFormat));
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.savecategories;
       Response response = await Dio().post(url,
-          data: jsonEncode(data),
+          data: rawFormat,
           options: Options(
             contentType: Headers.jsonContentType,
           ));

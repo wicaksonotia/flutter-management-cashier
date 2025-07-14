@@ -11,7 +11,7 @@ class CategoryController extends GetxController {
   final TransactionController _transactionController =
       Get.put(TransactionController());
   TextEditingController nameController = TextEditingController();
-  var tipeContoller = 'PEMASUKAN'.obs;
+  var tipeContoller = 'PENGELUARAN'.obs;
   var resultData = <CategoryModel>[].obs;
   RxList<dynamic> tags = [].obs;
   RxBool isLoading = false.obs;
@@ -32,10 +32,11 @@ class CategoryController extends GetxController {
   void insertCategory() async {
     try {
       isLoading(true);
-      final model = CategoryModel(
-          categoryName: nameController.text,
-          transactionType: tipeContoller.value);
-      var resultSave = await RemoteDataSource.saveCategory(model.toJson());
+      final model = {
+        'categoryName': nameController.text,
+        'transactionType': tipeContoller.value
+      };
+      var resultSave = await RemoteDataSource.saveCategory(model);
       if (resultSave) {
         // NOTIF SAVE SUCCESS
         Get.back();
@@ -43,9 +44,9 @@ class CategoryController extends GetxController {
             icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
         nameController.clear();
         getData(tags, '');
-        _transactionController.getListDataIncome();
+        // _transactionController.getListDataIncome();
         _transactionController.getListDataExpense();
-        _transactionController.getListDataExpenseFrom();
+        // _transactionController.getListDataExpenseFrom();
       } else {
         // NOTIF SAVE FAILED
         Get.snackbar('Notification', 'Failed to save data',

@@ -20,7 +20,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Expense Category'),
+        title: const Text('Kategori Pengeluaran'),
         backgroundColor: Colors.white,
         actions: [
           IconButton(
