@@ -2,7 +2,8 @@ import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/pages/change_outlet_page.dart';
-import 'package:cashier_management/pages/home/bar_chart.dart';
+// import 'package:cashier_management/pages/home/bar_chart.dart';
+import 'package:cashier_management/pages/home/line_chart.dart';
 import 'package:cashier_management/pages/home/calendar_weekly_view.dart';
 // import 'package:cashier_management/pages/home/header.dart';
 import 'package:cashier_management/pages/home/branch_saldo.dart';
@@ -113,7 +114,8 @@ class _HomePageState extends State<HomePage> {
                 Gap(15),
                 BranchSaldo(),
                 Gap(20),
-                BarChartSample3(),
+                // BarChartSample3(),
+                LineChartSample1(),
                 CalendarWeeklyView(),
                 SizedBox(
                   height: 260,

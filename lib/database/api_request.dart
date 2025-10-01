@@ -142,6 +142,27 @@ class RemoteDataSource {
   }
 
 // ===================== KIOS =====================
+  static Future<List<KiosModel>?> getListKiosAndDetail(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listkiosanddetail;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => KiosModel.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   static Future<List<KiosModel>?> getListKios(
     Map<String, dynamic> rawFormat,
   ) async {

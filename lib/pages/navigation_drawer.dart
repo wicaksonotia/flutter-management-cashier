@@ -44,7 +44,7 @@ class NavigationDrawer extends StatelessWidget {
             Divider(color: Colors.grey.shade300),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Text("Transaksi",
+              child: Text("Transaksi Belanja",
                   style: TextStyle(
                       fontSize: MySizes.fontSizeLg, letterSpacing: 1)),
             ),
@@ -67,11 +67,31 @@ class NavigationDrawer extends StatelessWidget {
               selected: Get.currentRoute == RouterClass.transactionhistory,
             ),
             Divider(color: Colors.grey.shade300),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Text("Setting",
+                  style: TextStyle(
+                      fontSize: MySizes.fontSizeLg, letterSpacing: 1)),
+            ),
             buildDrawerItem(
-              icon: Icons.bluetooth,
-              text: "Account Setting",
+              icon: Icons.manage_accounts,
+              text: "Outlet",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.outlet);
+              },
+            ),
+            buildDrawerItem(
+              icon: Icons.manage_accounts,
+              text: "User Outlet",
               onTap: () => '',
             ),
+            buildDrawerItem(
+              icon: Icons.production_quantity_limits,
+              text: "Product",
+              onTap: () => '',
+            ),
+            Divider(color: Colors.grey.shade300),
             buildDrawerItem(
               icon: Icons.logout,
               text: "Log Out",

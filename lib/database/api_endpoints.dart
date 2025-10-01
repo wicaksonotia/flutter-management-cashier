@@ -16,6 +16,7 @@ class _AuthEndPoints {
   final String deletehistory = 'financialdeletehistory';
 
   // KIOS
+  final String listkiosanddetail = 'FinancialListKiosAndDetail';
   final String listkios = 'FinancialListKios';
   final String listcabangkios = 'FinancialListCabangKios';
 

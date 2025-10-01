@@ -53,7 +53,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Riwayat Transaksi',
+              'Riwayat Belanja',
               style: TextStyle(
                   fontSize: MySizes.fontSizeHeader,
                   fontWeight: FontWeight.bold),

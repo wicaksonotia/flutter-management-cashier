@@ -5,7 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class KiosController extends GetxController {
   var listKios = <KiosModel>[].obs;
+  var listKiosFinancial = <KiosModel>[].obs;
   var isLoading = true.obs;
+  var isLoadingFinancialKios = true.obs;
   var idOwner = 0.obs;
   var idKios = 0.obs;
   var namaKios = ''.obs;
@@ -18,7 +20,7 @@ class KiosController extends GetxController {
 
   void fetchDataListKios() async {
     try {
-      isLoading(true);
+      isLoading(false);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       idOwner.value = prefs.getInt('id_owner')!;
       idKios.value = prefs.getInt('id_kios')!;
@@ -27,9 +29,26 @@ class KiosController extends GetxController {
       var result = await RemoteDataSource.getListKios(rawFormat);
       if (result != null) {
         listKios.assignAll(result);
+        // final activeKios =
+        //     result.where((kios) => kios.isActive == true).toList();
+        // listKios.assignAll(activeKios);
       }
     } finally {
       isLoading(false);
+    }
+  }
+
+  void fetchDataListKiosFinancial() async {
+    try {
+      isLoadingFinancialKios(false);
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var rawFormat = {'id_owner': prefs.getInt('id_owner')!};
+      var result = await RemoteDataSource.getListKiosAndDetail(rawFormat);
+      if (result != null) {
+        listKiosFinancial.assignAll(result);
+      }
+    } finally {
+      isLoadingFinancialKios(false);
     }
   }
 
