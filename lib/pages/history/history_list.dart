@@ -1,5 +1,7 @@
 import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
 import 'package:cashier_management/pages/history/confirm_delete.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/currency.dart';
 import 'package:cashier_management/utils/sizes.dart';
@@ -281,14 +283,24 @@ class ListTileHistories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MonitoringOutletController monitoringOutletController =
+        Get.put(MonitoringOutletController());
+
     return ListTile(
+      onTap: items.transactionType != "PENGELUARAN"
+          ? () {
+              monitoringOutletController.setKiosForDetailTransaksi(
+                  items.idKios!, items.idCabang!, items.transactionDate!);
+              Get.toNamed(RouterClass.monitoringoutlet);
+            }
+          : null,
       leading: Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: warna,
         ),
         padding: const EdgeInsets.all(3),
-        child: Icon(
+        child: const Icon(
           Icons.arrow_downward,
           color: Colors.white,
         ),

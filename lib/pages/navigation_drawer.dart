@@ -1,4 +1,5 @@
 import 'package:cashier_management/controllers/login_controller.dart';
+import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
 import 'package:cashier_management/pages/change_outlet_page.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/routes.dart';
@@ -37,6 +38,9 @@ class NavigationDrawer extends StatelessWidget {
               text: "Transaksi Per Outlet",
               onTap: () {
                 Navigator.of(context).pop();
+                final MonitoringOutletController monitoringOutletController =
+                    Get.put(MonitoringOutletController());
+                monitoringOutletController.setKiosForTransaksiPerOutlet();
                 Get.toNamed(RouterClass.monitoringoutlet);
               },
               selected: Get.currentRoute == RouterClass.monitoringoutlet,

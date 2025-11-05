@@ -135,43 +135,50 @@ class _MonitoringPageState extends State<MonitoringPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: context.width * .5,
-                    height: context.height * .05,
-                    child: Row(
-                      children: List.generate(
-                        filterKategori.length,
-                        (index) => Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                groupValue = index;
-                              });
-                              _monitoringOutletController.filterBy.value =
-                                  filterKategori[index]['value']!;
-                              _monitoringOutletController.getDataByFilter();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  right: BorderSide(
-                                    width: 0.5,
-                                    color: Colors.grey[300]!,
+                  Obx(() {
+                    final selectedIndex = filterKategori.indexWhere((e) =>
+                        e['value'] ==
+                        _monitoringOutletController.filterBy.value);
+                    final currentIndex =
+                        selectedIndex == -1 ? 0 : selectedIndex;
+                    return SizedBox(
+                      width: context.width * .5,
+                      height: context.height * .05,
+                      child: Row(
+                        children: List.generate(
+                          filterKategori.length,
+                          (index) => Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  groupValue = index;
+                                });
+                                _monitoringOutletController.filterBy.value =
+                                    filterKategori[index]['value']!;
+                                _monitoringOutletController.getDataByFilter();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    right: BorderSide(
+                                      width: 0.5,
+                                      color: Colors.grey[300]!,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              child: Center(
-                                child: Text(
-                                  filterKategori[index]['nama']!,
-                                  style: TextStyle(
-                                    color: groupValue == index
-                                        ? MyColors.primary
-                                        : Colors.black,
-                                    fontWeight: groupValue == index
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                child: Center(
+                                  child: Text(
+                                    filterKategori[index]['nama']!,
+                                    style: TextStyle(
+                                      color: currentIndex == index
+                                          ? MyColors.primary
+                                          : Colors.black,
+                                      fontWeight: currentIndex == index
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -179,8 +186,8 @@ class _MonitoringPageState extends State<MonitoringPage> {
                           ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                   // NEXT AND PREVIOUS MONTH YEAR
                   SizedBox(
                     width: MediaQuery.of(context).size.width,

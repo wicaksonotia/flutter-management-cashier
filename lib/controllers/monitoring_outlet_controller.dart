@@ -14,7 +14,7 @@ class MonitoringOutletController extends GetxController {
   RxInt totalBalance = 0.obs;
   RxList<Map<String, dynamic>> listOutlet = <Map<String, dynamic>>[].obs;
   var monthDate = DateTime.now().obs;
-  late RxString monthYear;
+  var monthYear = '${DateTime.now().month}-${DateTime.now().year}'.obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
   var filterBy = 'bulan'.obs;
@@ -22,24 +22,37 @@ class MonitoringOutletController extends GetxController {
   var idKios = 0.obs;
   var idCabangKios = 0.obs;
 
-  @override
-  void onInit() async {
-    super.onInit();
+  void setKiosForTransaksiPerOutlet() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     idKios.value = prefs.getInt('id_kios')!;
-    monthYear = "${monthDate.value.month}-${monthDate.value.year}".obs;
-    getDataListOutlet();
+    filterBy.value = 'bulan';
+    monthYear.value = '${DateTime.now().month}-${DateTime.now().year}';
+    await getDataListOutlet();
+    idCabangKios.value =
+        listOutlet.isNotEmpty ? listOutlet.first['value'] as int : 0;
+    getDataByFilter();
+  }
+
+  void setKiosForDetailTransaksi(
+      int kiosId, int cabangKiosId, String transactionDate) async {
+    filterBy.value = 'tanggal';
+    idKios.value = kiosId;
+    idCabangKios.value = cabangKiosId;
+    startDate.value = DateTime.parse(transactionDate);
+    endDate.value = DateTime.parse(transactionDate);
+    await getDataListOutlet();
+    getDataByFilter();
   }
 
   void changeBranchOutlet() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     idKios.value = prefs.getInt('id_kios')!;
     namaKios.value = prefs.getString('kios')!;
-    getDataListOutlet();
+    await getDataListOutlet();
     getDataByFilter();
   }
 
-  void getDataListOutlet() async {
+  Future<void> getDataListOutlet() async {
     try {
       isLoadingOutlet(true);
       var rawFormat = {'id_kios': idKios.value};
@@ -49,9 +62,6 @@ class MonitoringOutletController extends GetxController {
               'value': category.id,
               'nama': category.cabang!,
             }));
-        idCabangKios.value =
-            listOutlet.isNotEmpty ? listOutlet.first['value'] as int : 0;
-        getDataByFilter();
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),
@@ -82,7 +92,6 @@ class MonitoringOutletController extends GetxController {
         };
         result = await RemoteDataSource.monitoringByDateRange(rawFormat);
       }
-
       if (result != null && result.data != null) {
         totalIncome.value = result.income ?? 0;
         totalExpense.value = result.expense ?? 0;

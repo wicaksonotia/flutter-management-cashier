@@ -1,6 +1,5 @@
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
-import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
@@ -66,9 +65,6 @@ class RouterClass {
     GetPage(
       page: () => const MonitoringPage(),
       name: monitoringoutlet,
-      binding: BindingsBuilder(() {
-        Get.put<MonitoringOutletController>(MonitoringOutletController());
-      }),
     ),
     GetPage(
         page: () => const ExpenseListPage(),

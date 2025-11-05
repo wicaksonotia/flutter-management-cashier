@@ -1,5 +1,6 @@
 class ApiEndPoints {
-  static const String baseUrl = 'http://103.184.181.9/apiGlobal/';
+  // static const String baseUrl = 'http://103.184.181.9/apiGlobal/';
+  static const String baseUrl = 'http://36.93.148.82/pkbsurabaya/apiGlobal/';
   static _AuthEndPoints authEndpoints = _AuthEndPoints();
 }
 

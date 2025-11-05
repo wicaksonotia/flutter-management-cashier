@@ -1,4 +1,6 @@
 import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/currency.dart';
 import 'package:cashier_management/utils/sizes.dart';
@@ -15,6 +17,8 @@ class TransactionList extends StatefulWidget {
 
 class _TransactionListState extends State<TransactionList> {
   final HistoryController historyController = Get.find<HistoryController>();
+  final MonitoringOutletController monitoringOutletController =
+      Get.put(MonitoringOutletController());
 
   @override
   Widget build(BuildContext context) {
@@ -94,11 +98,20 @@ class _TransactionListState extends State<TransactionList> {
                 historyController.resultDataSingleDate[index].transactionName!;
             String cabang =
                 historyController.resultDataSingleDate[index].cabang!;
-            String note = historyController.resultDataSingleDate[index].note ==
-                    '-'
-                ? cabang
-                : '$transactionName : ${historyController.resultDataSingleDate[index].note!}';
+            String note =
+                historyController.resultDataSingleDate[index].note ?? '';
+            String plusminus = kategori == "PENGELUARAN" ? "-" : "";
             return ListTile(
+              onTap: kategori != "PENGELUARAN"
+                  ? () {
+                      monitoringOutletController.setKiosForDetailTransaksi(
+                          historyController.resultDataSingleDate[index].idKios!,
+                          historyController
+                              .resultDataSingleDate[index].idCabang!,
+                          transactionDate);
+                      Get.toNamed(RouterClass.monitoringoutlet);
+                    }
+                  : null,
               leading: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -112,22 +125,10 @@ class _TransactionListState extends State<TransactionList> {
                   color: Colors.white,
                 ),
               ),
-              title: RichText(
-                text: TextSpan(
-                  text: kategori,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: MySizes.fontSizeMd,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: kategori == "PENGELUARAN" ? ' $cabang' : '',
-                      style: const TextStyle(
-                        color: MyColors.grey,
-                        fontSize: MySizes.fontSizeSm,
-                      ),
-                    ),
-                  ],
+              title: Text(
+                '$cabang - $transactionName',
+                style: const TextStyle(
+                  fontSize: MySizes.fontSizeMd,
                 ),
               ),
               subtitle: Text(
@@ -141,33 +142,22 @@ class _TransactionListState extends State<TransactionList> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text.rich(
-                      TextSpan(
-                        text: kategori == "PENGELUARAN" ? '- ' : '',
-                        style: TextStyle(
-                          color: warna,
-                          fontSize: MySizes.fontSizeLg,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: CurrencyFormat.convertToIdr(dataPrice, 0),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: MySizes.fontSizeLg,
-                              color: warna,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      plusminus + CurrencyFormat.convertToIdr(dataPrice, 0),
+                      style: TextStyle(
+                        color: warna,
+                        fontSize: MySizes.fontSizeMd,
                       ),
                     ),
                     Text(
-                      DateFormat('dd MMMM yyyy')
-                          .format(DateTime.parse(transactionDate)),
+                      DateFormat('HH:mm').format(
+                        DateTime.parse(transactionDate),
+                      ),
                       style: const TextStyle(
                         color: MyColors.grey,
                         fontSize: MySizes.fontSizeSm,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
