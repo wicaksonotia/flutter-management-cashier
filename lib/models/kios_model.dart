@@ -1,6 +1,7 @@
 class KiosModel {
   int? idKios;
   String? kios;
+  String? phone;
   String? keterangan;
   bool? isActive;
   String? logo;
@@ -11,6 +12,7 @@ class KiosModel {
   KiosModel(
       {this.idKios,
       this.kios,
+      this.phone,
       this.keterangan,
       this.isActive,
       this.logo,
@@ -21,6 +23,7 @@ class KiosModel {
   KiosModel.fromJson(Map<String, dynamic> json) {
     idKios = json['id_kios'];
     kios = json['kios'];
+    phone = json['phone'];
     keterangan = json['keterangan'];
     isActive = json['is_active'];
     logo = json['logo'];
@@ -33,6 +36,7 @@ class KiosModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id_kios'] = idKios;
     data['kios'] = kios;
+    data['phone'] = phone;
     data['keterangan'] = keterangan;
     data['is_active'] = isActive;
     data['logo'] = logo;

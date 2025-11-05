@@ -20,6 +20,9 @@ class KiosController extends GetxController {
   TextEditingController kios = TextEditingController();
   TextEditingController phone = TextEditingController();
   TextEditingController description = TextEditingController();
+  var logo = ''.obs;
+  var oldLogo = ''.obs;
+  var kiosId = 0.obs;
   Rx<XFile> pickedFile1 = XFile('').obs;
 
   @override
@@ -32,7 +35,20 @@ class KiosController extends GetxController {
     kios.clear();
     phone.clear();
     description.clear();
+    logo.value = '';
+    oldLogo.value = '';
+    kiosId.value = 0;
     pickedFile1.value = XFile('');
+    update();
+  }
+
+  void editKios(KiosModel kiosModel) {
+    kios.text = kiosModel.kios!;
+    phone.text = kiosModel.phone!;
+    description.text = kiosModel.keterangan!;
+    logo.value = kiosModel.logo!;
+    oldLogo.value = kiosModel.logo!;
+    kiosId.value = kiosModel.idKios!;
     update();
   }
 
@@ -84,27 +100,60 @@ class KiosController extends GetxController {
 
   void saveKios() async {
     try {
-      if (pickedFile1.value.path.isEmpty) {
-        throw 'Please select an image';
-      }
-      final file = File(pickedFile1.value.path);
-      final fileSizeInBytes = await file.length();
-      final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
-      if (fileSizeInMB > 2) {
-        throw 'File size must be less than 2 MB';
-      }
+      // === CEK VALIDASI DASAR ===
       if (kios.text.isEmpty || phone.text.isEmpty || description.text.isEmpty) {
         throw 'Please fill all fields';
       }
-      dio.FormData formData = dio.FormData.fromMap({
-        "id_owner": idOwner.value,
-        "kios": kios.text,
-        "phone": phone.text,
-        "description": description.text,
-        "logo": await dio.MultipartFile.fromFile(pickedFile1.value.path,
-            filename: pickedFile1.value.path.split('/').last),
-      });
+
+      final filePath = pickedFile1.value.path;
+      final logoFromApi = logo.value; // logo lama dari API
+      final oldLogoFromApi = oldLogo.value; // logo lama dari API
+
+      dio.FormData formData;
+
+      // === JIKA ADA FILE BARU DIPILIH ===
+      if (filePath.isNotEmpty) {
+        final file = File(filePath);
+        final fileSizeInBytes = await file.length();
+        final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+
+        if (fileSizeInMB > 2) {
+          throw 'File size must be less than 2 MB';
+        }
+
+        formData = dio.FormData.fromMap({
+          "id_owner": idOwner.value,
+          "kios_id": kiosId.value,
+          "kios": kios.text,
+          "phone": phone.text,
+          "description": description.text,
+          "old_logo": oldLogoFromApi,
+          // kirim file baru
+          "logo": await dio.MultipartFile.fromFile(
+            filePath,
+            filename: filePath.split('/').last,
+          ),
+        });
+      } else {
+        // === JIKA TIDAK ADA FILE BARU, GUNAKAN LOGO LAMA ===
+        if (logoFromApi.isEmpty) {
+          throw 'Please select an image';
+        }
+
+        formData = dio.FormData.fromMap({
+          "id_owner": idOwner.value,
+          "kios_id": kiosId.value,
+          "kios": kios.text,
+          "phone": phone.text,
+          "description": description.text,
+          "old_logo": oldLogoFromApi,
+          "logo": logoFromApi, // kirim nama file lama saja
+        });
+      }
+
+      // === SIMPAN KE SERVER ===
       final result = await RemoteDataSource.saveKios(formData);
+
       if (result) {
         clearController();
         Get.snackbar(
@@ -114,13 +163,19 @@ class KiosController extends GetxController {
           snackPosition: SnackPosition.TOP,
         );
 
-        // Delay sedikit agar snackbar sempat muncul sebelum kembali
-        await Future.delayed(const Duration(seconds: 5));
-        Get.back();
+        // Delay sedikit agar snackbar tampil
+        // await Future.delayed(const Duration(seconds: 2));
+        // Get.back();
+      } else {
+        throw 'Failed to save Kios';
       }
     } catch (error) {
-      Get.snackbar('Notification', error.toString(),
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notification',
+        error.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     } finally {
       isLoadingSaveKios(false);
       fetchDataListKiosFinancial();

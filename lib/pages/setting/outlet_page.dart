@@ -65,6 +65,7 @@ class _OutletPageState extends State<OutletPage> {
           IconButton(
             icon: const Icon(Icons.add_box_outlined),
             onPressed: () {
+              _kiosController.clearController();
               Get.toNamed(RouterClass.addoutlet);
             },
           ),
@@ -187,9 +188,10 @@ class QuotationCard extends StatelessWidget {
                   child: PopupMenuButton<String>(
                     onSelected: (value) {
                       if (value == "edit") {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Edit clicked")),
-                        );
+                        final KiosController kiosController =
+                            Get.find<KiosController>();
+                        kiosController.editKios(quotation);
+                        Get.toNamed(RouterClass.addoutlet);
                       } else if (value == "delete") {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("Delete clicked")),
@@ -199,15 +201,23 @@ class QuotationCard extends StatelessWidget {
                     itemBuilder: (context) => [
                       const PopupMenuItem(
                         value: "edit",
-                        child: Text("Edit"),
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_outlined),
+                            SizedBox(width: 8),
+                            Text("Edit"),
+                          ],
+                        ),
                       ),
                       const PopupMenuItem(
                         value: "delete",
-                        child: Text("Delete"),
-                      ),
-                      const PopupMenuItem(
-                        value: "share",
-                        child: Text("Share"),
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline),
+                            SizedBox(width: 8),
+                            Text("Delete"),
+                          ],
+                        ),
                       ),
                     ],
                     icon: const Icon(Icons.more_vert),
