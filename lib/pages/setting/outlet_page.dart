@@ -1,5 +1,7 @@
 import 'package:cashier_management/controllers/kios_controller.dart';
+import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:cashier_management/models/kios_model.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/currency.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +24,9 @@ class _OutletPageState extends State<OutletPage> {
   @override
   void initState() {
     super.initState();
-    _kiosController.fetchDataListKiosFinancial();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _kiosController.fetchDataListKiosFinancial();
+    });
   }
 
   Future<void> _refresh() async {
@@ -57,6 +61,14 @@ class _OutletPageState extends State<OutletPage> {
           ],
         ),
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_box_outlined),
+            onPressed: () {
+              Get.toNamed(RouterClass.addoutlet);
+            },
+          ),
+        ],
       ),
       body: Obx(() {
         if (_kiosController.isLoadingFinancialKios.value) {
@@ -120,12 +132,15 @@ class QuotationCard extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png',
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                      ),
+                      child: quotation.logo != null
+                          ? Image.network(
+                              '${ApiEndPoints.ipPublic}images/logo/${quotation.logo}',
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.contain,
+                            )
+                          : Image.asset('assets/stmj.png',
+                              width: 80, height: 80, fit: BoxFit.contain),
                     ),
                     const SizedBox(width: 12),
                     Expanded(

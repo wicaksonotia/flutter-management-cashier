@@ -200,15 +200,14 @@ class TransactionController extends GetxController {
         };
         final result = await RemoteDataSource.saveTransactionExpense(rawFormat);
         if (result) {
-          Get.snackbar('Success', 'Transaction added successfully',
-              icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-          _historyController.getHistoriesByFilter();
+          throw 'Transaction saved successfully';
         }
       } catch (error) {
-        Get.snackbar('Error', error.toString(),
+        Get.snackbar('Notification', error.toString(),
             icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
       } finally {
         isLoading(false);
+        _historyController.getHistoriesByFilter();
       }
       idKategoriTransaksi.value = 0;
       namaKategori.value = '';

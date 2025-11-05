@@ -124,8 +124,7 @@ class DatabaseHelper {
     final localData = await dbClient.query(tableCategories);
     try {
       Dio dio = Dio();
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.savecategories;
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveCategory;
       Response response = await dio.post(url,
           data: jsonEncode(localData),
           options: Options(
@@ -145,7 +144,7 @@ class DatabaseHelper {
     try {
       Dio dio = Dio();
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcategories;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listCategories;
       Response response = await dio.get(url);
       if (response.statusCode == 200) {
         await dbClient.delete(tableCategories);

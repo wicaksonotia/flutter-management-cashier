@@ -12,6 +12,7 @@ import 'package:cashier_management/pages/login_page.dart';
 import 'package:cashier_management/pages/monitoring_outlet/monitoring_page.dart';
 // import 'package:cashier_management/pages/navigation_bottom_page.dart';
 import 'package:cashier_management/pages/history/history_page.dart';
+import 'package:cashier_management/pages/setting/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet_page.dart';
 import 'package:get/get.dart';
 
@@ -31,6 +32,7 @@ class RouterClass {
   static String calculator = '/calculator';
   // SETTING
   static String outlet = '/outlet';
+  static String addoutlet = '/addoutlet';
 
   static List<GetPage> routes = [
     GetPage(page: () => const LoginPage(), name: login),
@@ -96,6 +98,10 @@ class RouterClass {
       binding: BindingsBuilder(() {
         Get.put<KiosController>(KiosController());
       }),
+    ),
+    GetPage(
+      page: () => const AddOutletPage(),
+      name: addoutlet,
     ),
   ];
 }

@@ -1,6 +1,7 @@
 class ApiEndPoints {
   // static const String baseUrl = 'http://103.184.181.9/apiGlobal/';
-  static const String baseUrl = 'http://36.93.148.82/pkbsurabaya/apiGlobal/';
+  static const String ipPublic = 'http://36.93.148.82/pkbsurabaya/';
+  static const String baseUrl = '${ipPublic}apiGlobal/';
   static _AuthEndPoints authEndpoints = _AuthEndPoints();
 }
 
@@ -12,24 +13,25 @@ class _AuthEndPoints {
 
   //HISTORY
   final String histories = 'FinancialHistories';
-  final String saveTransactionExpense = 'financialsavetransactionexpense';
-  final String saveTransactionIncome = 'financialsavetransactionincome';
-  final String deletehistory = 'financialdeletehistory';
+  final String saveTransactionExpense = 'FinancialSaveTransactionExpense';
+  final String saveTransactionIncome = 'FinancialSaveTransactionIncome';
+  final String deletehistory = 'FinancialDeleteHistory';
 
   // KIOS
-  final String listkiosanddetail = 'FinancialListKiosAndDetail';
-  final String listkios = 'FinancialListKios';
-  final String listcabangkios = 'FinancialListCabangKios';
+  final String saveKios = 'FinancialSaveKios';
+  final String listKiosAndDetail = 'FinancialListKiosAndDetail';
+  final String listKios = 'FinancialListKios';
+  final String listCabangKios = 'FinancialListCabangKios';
 
   // CATEGORY
-  final String listcategories = 'FinancialListCategories';
-  final String savecategories = 'financialsavecategory';
-  final String detailcategory = 'financialdetailcategory';
-  final String updateCategory = 'financialupdatecategory';
-  final String updatecategorystatus = 'financialupdatecategorystatus';
-  final String deletecategory = 'financialdeletecategory';
+  final String listCategories = 'FinancialListCategories';
+  final String saveCategory = 'FinancialSaveCategory';
+  final String detailCategory = 'FinancialDetailCategory';
+  final String updateCategory = 'FinancialUpdateCategory';
+  final String updateCategoryStatus = 'FinancialUpdateCategoryStatus';
+  final String deleteCategory = 'FinancialDeleteCategory';
 
   //MONITORING
-  final String monitoringbydaterange = 'financialmonitoringoutletbydaterange';
-  final String monitoringbymonth = 'financialmonitoringoutletbymonth';
+  final String monitoringByDateRange = 'FinancialMonitoringOutletByDateRange';
+  final String monitoringByMonth = 'FinancialMonitoringOutletByMonth';
 }

@@ -142,12 +142,30 @@ class RemoteDataSource {
   }
 
 // ===================== KIOS =====================
+
+  static Future<bool> saveKios(FormData data) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveKios;
+      Response response = await Dio().post(url,
+          data: data,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   static Future<List<KiosModel>?> getListKiosAndDetail(
     Map<String, dynamic> rawFormat,
   ) async {
     try {
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listkiosanddetail;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listKiosAndDetail;
       Response response = await Dio().post(
         url,
         data: rawFormat,
@@ -167,7 +185,7 @@ class RemoteDataSource {
     Map<String, dynamic> rawFormat,
   ) async {
     try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listkios;
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listKios;
       Response response = await Dio().post(
         url,
         data: rawFormat,
@@ -188,7 +206,7 @@ class RemoteDataSource {
   ) async {
     try {
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcabangkios;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listCabangKios;
       Response response = await Dio().post(
         url,
         data: rawFormat,
@@ -209,8 +227,7 @@ class RemoteDataSource {
   static Future<bool> saveCategory(Map<String, dynamic> rawFormat) async {
     try {
       // print(jsonEncode(rawFormat));
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.savecategories;
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveCategory;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
@@ -249,7 +266,7 @@ class RemoteDataSource {
     try {
       var rawFormat = jsonEncode({'id': id, 'status': !status});
       var url = ApiEndPoints.baseUrl +
-          ApiEndPoints.authEndpoints.updatecategorystatus;
+          ApiEndPoints.authEndpoints.updateCategoryStatus;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
@@ -269,7 +286,7 @@ class RemoteDataSource {
     try {
       var rawFormat = jsonEncode({'id': id});
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deletecategory;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteCategory;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
@@ -293,7 +310,7 @@ class RemoteDataSource {
         'textSearch': textSearch,
       });
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listcategories;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listCategories;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
@@ -313,7 +330,7 @@ class RemoteDataSource {
   static Future<CategoryModel?> detailCategory(int id) async {
     try {
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.detailcategory;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.detailCategory;
       final response = await Dio().get('$url?id=$id');
       if (response.statusCode == 200) {
         dynamic jsonData = response.data;
@@ -368,7 +385,7 @@ class RemoteDataSource {
       Map<String, dynamic> rawFormat) async {
     try {
       var url = ApiEndPoints.baseUrl +
-          ApiEndPoints.authEndpoints.monitoringbydaterange;
+          ApiEndPoints.authEndpoints.monitoringByDateRange;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
@@ -389,7 +406,7 @@ class RemoteDataSource {
       Map<String, dynamic> rawFormat) async {
     try {
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.monitoringbymonth;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.monitoringByMonth;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(

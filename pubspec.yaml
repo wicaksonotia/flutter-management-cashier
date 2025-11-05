@@ -34,6 +34,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   currency_text_input_formatter: ^2.3.0
   dio: ^5.8.0+1
+  dotted_border: ^3.1.0
   easy_date_timeline: ^2.0.9
   fl_chart: ^1.0.0
   flutter:
@@ -45,6 +46,7 @@ dependencies:
   get: ^4.7.2
   google_nav_bar: ^5.0.7
   group_list_view: ^1.1.1
+  image_picker: ^1.2.0
   intl: ^0.19.0
   path: ^1.9.1
   shared_preferences: ^2.5.3
