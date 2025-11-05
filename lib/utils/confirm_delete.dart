@@ -1,19 +1,24 @@
-import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class ConfirmDelete extends StatefulWidget {
-  final int id;
-  const ConfirmDelete({super.key, required this.id});
+class ConfirmDelete extends StatelessWidget {
+  final String title;
+  final String message;
+  final Future<void> Function() onConfirm; // callback dinamis
+  final String confirmText;
+  final String cancelText;
 
-  @override
-  State<ConfirmDelete> createState() => _ConfirmDeleteState();
-}
+  const ConfirmDelete({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.onConfirm,
+    this.confirmText = 'Yes',
+    this.cancelText = 'No',
+  });
 
-class _ConfirmDeleteState extends State<ConfirmDelete> {
-  final HistoryController _historyController = Get.find<HistoryController>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,20 +30,22 @@ class _ConfirmDeleteState extends State<ConfirmDelete> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            "Confirmation",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const Gap(10),
-          const Text("Are you sure you want to delete this history?"),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+          ),
           const Gap(20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Tombol Cancel
               ElevatedButton(
-                onPressed: () {
-                  Get.back();
-                },
+                onPressed: () => Get.back(),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -47,21 +54,23 @@ class _ConfirmDeleteState extends State<ConfirmDelete> {
                   backgroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  minimumSize: const Size(100, 40), // Set width and height
+                  minimumSize: const Size(100, 40),
                   textStyle: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: const Text(
-                  'No',
-                  style: TextStyle(color: MyColors.primary),
+                child: Text(
+                  cancelText,
+                  style: const TextStyle(color: MyColors.primary),
                 ),
               ),
               const Gap(10),
+              // Tombol Yes / Confirm
               ElevatedButton(
                 onPressed: () async {
-                  _historyController.delete(widget.id);
+                  await onConfirm(); // jalankan callback dinamis
+                  Get.back(); // tutup modal setelah selesai
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -70,15 +79,15 @@ class _ConfirmDeleteState extends State<ConfirmDelete> {
                   backgroundColor: MyColors.primary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  minimumSize: const Size(100, 40), // Set width and height
+                  minimumSize: const Size(100, 40),
                   textStyle: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: const Text(
-                  'Yes',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  confirmText,
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ],

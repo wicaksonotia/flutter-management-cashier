@@ -1,6 +1,6 @@
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
-import 'package:cashier_management/pages/history/confirm_delete.dart';
+import 'package:cashier_management/utils/confirm_delete.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/currency.dart';
@@ -122,10 +122,32 @@ class _HistoryListState extends State<HistoryList> {
                         children: [
                           SlidableAction(
                             onPressed: (context) {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (context) =>
-                                    ConfirmDelete(id: items.id!),
+                              // showModalBottomSheet(
+                              //   context: context,
+                              //   builder: (context) => ConfirmDelete(
+                              //     title: 'Delete History',
+                              //     message:
+                              //         'Are you sure you want to delete this history?',
+                              //     onConfirm: () async {
+                              //       historyController.delete(items.id!);
+                              //     },
+                              //   ),
+                              //   isScrollControlled: true,
+                              //   backgroundColor: Colors.white,
+                              //   shape: const RoundedRectangleBorder(
+                              //     borderRadius: BorderRadius.vertical(
+                              //         top: Radius.circular(20)),
+                              //   ),
+                              // );
+                              Get.bottomSheet(
+                                ConfirmDelete(
+                                  title: 'Delete History',
+                                  message:
+                                      'Are you sure, you want to delete this history?',
+                                  onConfirm: () async {
+                                    historyController.delete(items.id!);
+                                  },
+                                ),
                                 isScrollControlled: true,
                                 backgroundColor: Colors.white,
                                 shape: const RoundedRectangleBorder(

@@ -126,7 +126,7 @@ class RemoteDataSource {
   static Future<bool> deleteHistory(int id) async {
     try {
       var rawFormat = jsonEncode({'id': id});
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deletehistory;
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteHistory;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
@@ -148,6 +148,24 @@ class RemoteDataSource {
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveKios;
       Response response = await Dio().post(url,
           data: data,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> deleteKios(int id) async {
+    try {
+      var rawFormat = jsonEncode({'id': id});
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteKios;
+      Response response = await Dio().post(url,
+          data: rawFormat,
           options: Options(
             contentType: Headers.jsonContentType,
           ));

@@ -106,8 +106,8 @@ class KiosController extends GetxController {
       }
 
       final filePath = pickedFile1.value.path;
-      final logoFromApi = logo.value; // logo lama dari API
-      final oldLogoFromApi = oldLogo.value; // logo lama dari API
+      final logoFromApi = logo.value;
+      final oldLogoFromApi = oldLogo.value;
 
       dio.FormData formData;
 
@@ -179,6 +179,18 @@ class KiosController extends GetxController {
     } finally {
       isLoadingSaveKios(false);
       fetchDataListKiosFinancial();
+    }
+  }
+
+  void deleteKios(int id) async {
+    var resultUpdate = await RemoteDataSource.deleteKios(id);
+    if (resultUpdate) {
+      Get.snackbar('Notification', 'Data deleted successfully',
+          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      fetchDataListKiosFinancial();
+    } else {
+      Get.snackbar('Notification', 'Failed to delete data',
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     }
   }
 }

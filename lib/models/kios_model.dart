@@ -5,6 +5,7 @@ class KiosModel {
   String? keterangan;
   bool? isActive;
   String? logo;
+  int? totalCabang;
   int? totalIncome;
   int? totalExpense;
   int? totalBalance;
@@ -16,6 +17,7 @@ class KiosModel {
       this.keterangan,
       this.isActive,
       this.logo,
+      this.totalCabang,
       this.totalIncome,
       this.totalExpense,
       this.totalBalance});
@@ -27,9 +29,10 @@ class KiosModel {
     keterangan = json['keterangan'];
     isActive = json['is_active'];
     logo = json['logo'];
-    totalIncome = json['total_income'];
-    totalExpense = json['total_expense'];
-    totalBalance = json['total_balance'];
+    totalCabang = json['total_cabang'] ?? 0;
+    totalIncome = json['total_income'] ?? 0;
+    totalExpense = json['total_expense'] ?? 0;
+    totalBalance = json['total_balance'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -40,6 +43,7 @@ class KiosModel {
     data['keterangan'] = keterangan;
     data['is_active'] = isActive;
     data['logo'] = logo;
+    data['total_cabang'] = totalCabang;
     data['total_income'] = totalIncome;
     data['total_expense'] = totalExpense;
     data['total_balance'] = totalBalance;

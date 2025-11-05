@@ -15,10 +15,11 @@ class _AuthEndPoints {
   final String histories = 'FinancialHistories';
   final String saveTransactionExpense = 'FinancialSaveTransactionExpense';
   final String saveTransactionIncome = 'FinancialSaveTransactionIncome';
-  final String deletehistory = 'FinancialDeleteHistory';
+  final String deleteHistory = 'FinancialDeleteHistory';
 
   // KIOS
   final String saveKios = 'FinancialSaveKios';
+  final String deleteKios = 'FinancialDeleteKios';
   final String listKiosAndDetail = 'FinancialListKiosAndDetail';
   final String listKios = 'FinancialListKios';
   final String listCabangKios = 'FinancialListCabangKios';

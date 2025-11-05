@@ -2,6 +2,7 @@ import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:cashier_management/models/kios_model.dart';
 import 'package:cashier_management/routes.dart';
+import 'package:cashier_management/utils/confirm_delete.dart';
 import 'package:cashier_management/utils/currency.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
@@ -101,6 +102,7 @@ class _OutletPageState extends State<OutletPage> {
             itemCount: _kiosController.listKiosFinancial.length,
             itemBuilder: (context, index) {
               return QuotationCard(
+                  controller: _kiosController,
                   quotation: _kiosController.listKiosFinancial[index]);
             },
           ),
@@ -110,11 +112,12 @@ class _OutletPageState extends State<OutletPage> {
   }
 }
 
-// ...existing code...
 class QuotationCard extends StatelessWidget {
-  const QuotationCard({super.key, required this.quotation});
+  const QuotationCard(
+      {super.key, required this.quotation, required this.controller});
 
   final KiosModel quotation;
+  final KiosController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -161,21 +164,38 @@ class QuotationCard extends StatelessWidget {
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                           const Gap(8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: quotation.isActive == true
-                                  ? Colors.green[200]
-                                  : Colors.red[200],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              quotation.isActive == true
-                                  ? 'Active'
-                                  : 'Inactive',
-                              style: const TextStyle(fontSize: 12),
-                            ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: quotation.isActive == true
+                                      ? Colors.green[200]
+                                      : Colors.red[200],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  quotation.isActive == true
+                                      ? 'Active'
+                                      : 'Inactive',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ),
+                              const Gap(8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue[200],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'Cabang: ${quotation.totalCabang ?? 0}',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -193,8 +213,46 @@ class QuotationCard extends StatelessWidget {
                         kiosController.editKios(quotation);
                         Get.toNamed(RouterClass.addoutlet);
                       } else if (value == "delete") {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Delete clicked")),
+                        if (quotation.totalCabang != 0) {
+                          Get.snackbar(
+                            'Error',
+                            'Cannot delete this outlet, it has branches.',
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: Colors.red[100],
+                            colorText: Colors.red[800],
+                          );
+                          return;
+                        }
+                        // Check if the quotation has any financial records
+                        if (quotation.totalIncome != 0 ||
+                            quotation.totalExpense != 0 ||
+                            quotation.totalBalance != 0) {
+                          Get.snackbar(
+                            'Error',
+                            'Cannot delete this outlet, it has financial records.',
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: Colors.red[100],
+                            colorText: Colors.red[800],
+                          );
+                          return;
+                        }
+
+                        // Show confirmation dialog
+                        Get.bottomSheet(
+                          ConfirmDelete(
+                            title: 'Delete History',
+                            message:
+                                'Are you sure, you want to delete this history?',
+                            onConfirm: () async {
+                              controller.deleteKios(quotation.idKios!);
+                            },
+                          ),
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
                         );
                       }
                     },
