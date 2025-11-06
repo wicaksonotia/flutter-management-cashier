@@ -41,8 +41,9 @@ class _HistoryListState extends State<HistoryList> {
       } else {
         Map<String, List<dynamic>> resultDataMap = {};
         for (var item in _monitoringOutletController.resultData) {
-          String formattedDate = DateFormat('dd MMMM yyyy')
-              .format(DateTime.parse(item.transactionDate!));
+          String formattedDate = DateFormat(
+            'dd MMMM yyyy',
+          ).format(DateTime.parse(item.transactionDate!));
           if (!resultDataMap.containsKey(formattedDate)) {
             resultDataMap[formattedDate] = [];
           }
@@ -59,87 +60,184 @@ class _HistoryListState extends State<HistoryList> {
             return Container(
               color: Colors.white,
               child: ExpansionTile(
-                leading: const Icon(Icons.receipt),
                 title: Text(
-                  items.numerator.toString().padLeft(
-                        4,
-                        '0',
-                      ),
-                  style: const TextStyle(fontSize: MySizes.fontSizeMd),
+                  "HIMALAYA/${items.branchCode}/${items.numerator.toString().padLeft(4, '0')}",
+                  style: const TextStyle(
+                    fontSize: MySizes.fontSizeMd,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                subtitle: Text(
-                    DateFormat('dd MMM yyyy HH:mm')
-                        .format(DateTime.parse(items.transactionDate)),
-                    style: const TextStyle(
-                      color: MyColors.grey,
-                      fontSize: MySizes.fontSizeSm,
-                    )),
+                subtitle: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.shopping_cart,
+                          size: 16,
+                          color: MyColors.grey,
+                        ),
+                        const Gap(5),
+                        Text(
+                          'Total Item: ${items.totalItem}',
+                          style: const TextStyle(
+                            color: MyColors.grey,
+                            fontSize: MySizes.fontSizeSm,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_month,
+                          size: 16,
+                          color: MyColors.grey,
+                        ),
+                        const Gap(5),
+                        Text(
+                          DateFormat(
+                            'dd MMM yyyy HH:mm',
+                            'id_ID',
+                          ).format(
+                            DateTime.parse(items.transactionDate),
+                          ),
+                          style: const TextStyle(
+                            color: MyColors.grey,
+                            fontSize: MySizes.fontSizeSm,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.person,
+                          size: 16,
+                          color: MyColors.grey,
+                        ),
+                        const Gap(5),
+                        Text(
+                          items.cashierName ?? 'Unknown Cashier',
+                          style: const TextStyle(
+                            color: MyColors.grey,
+                            fontSize: MySizes.fontSizeSm,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
                 trailing: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      CurrencyFormat.convertToIdr(items.grandTotal, 0),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: MySizes.fontSizeMd,
-                          color: MyColors.primary),
-                    ),
-                    Text(
-                      items.deleteStatus! ? 'Deleted' : '',
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: MySizes.fontSizeSm,
+                      CurrencyFormat.convertToIdr(
+                        items.grandTotal,
+                        0,
                       ),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: MySizes.fontSizeMd,
+                        color: items.deleteStatus!
+                            ? MyColors.red
+                            : MyColors.primary,
+                      ),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          items.paymentMethod ?? 'Cash',
+                          style: const TextStyle(
+                            color: MyColors.grey,
+                            fontSize: MySizes.fontSizeSm,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 iconColor: MyColors.primary,
                 children: [
-                  ListTile(
-                    title: const Text(
-                      'Transaction Details',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: const Text(
+                          'Transaction Details',
+                          style: TextStyle(
+                            fontSize: MySizes.fontSizeMd,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: items.details!.length,
+                              itemBuilder: (context, detailIndex) {
+                                return Row(
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.centerLeft,
+                                      width: MediaQuery.of(
+                                            context,
+                                          ).size.width *
+                                          0.5,
+                                      child: Text(
+                                        items.details[detailIndex]
+                                                .productName ??
+                                            'Unknown Product',
+                                      ),
+                                    ),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width: MediaQuery.of(
+                                            context,
+                                          ).size.width *
+                                          0.1,
+                                      child: Text(
+                                        '${items.details[detailIndex].quantity}',
+                                      ),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(
+                                            context,
+                                          ).size.width *
+                                          0.25,
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        CurrencyFormat.convertToIdr(
+                                          items.details[detailIndex].totalPrice,
+                                          0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                            Text(
+                              items.deleteStatus!
+                                  ? 'Transaksi ini telah dibatalkan\nAlasan: ${items.deleteReason}'
+                                  : '',
+                              style: TextStyle(
+                                fontSize: MySizes.fontSizeSm,
+                                color: items.deleteStatus!
+                                    ? MyColors.red
+                                    : MyColors.grey,
+                                fontWeight: items.deleteStatus!
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: items.details!.length,
-                          itemBuilder: (context, detailIndex) {
-                            return Row(
-                              children: [
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: Text(
-                                      items.details[detailIndex].productName ??
-                                          'Unknown Product'),
-                                ),
-                                Container(
-                                  alignment: Alignment.center,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  child: Text(
-                                      '${items.details[detailIndex].quantity}'),
-                                ),
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.25,
-                                  alignment: Alignment.centerRight,
-                                  child: Text(CurrencyFormat.convertToIdr(
-                                      items.details[detailIndex].totalPrice,
-                                      0)),
-                                ),
-                              ],
-                            );
-                          },
-                        )
-                      ],
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -154,7 +252,10 @@ class _HistoryListState extends State<HistoryList> {
                 color: Colors.white,
                 border: Border(
                   top: BorderSide(color: Colors.grey[100]!, width: 1),
-                  bottom: BorderSide(color: Colors.grey[100]!, width: 1),
+                  bottom: BorderSide(
+                    color: Colors.grey[100]!,
+                    width: 1,
+                  ),
                 ),
               ),
               child: Row(
@@ -162,11 +263,14 @@ class _HistoryListState extends State<HistoryList> {
                 children: [
                   Text(
                     DateFormat('dd').format(
-                      DateFormat('dd MMMM yyyy')
-                          .parse(resultDataMap.keys.toList()[section]),
+                      DateFormat(
+                        'dd MMMM yyyy',
+                      ).parse(resultDataMap.keys.toList()[section]),
                     ),
                     style: const TextStyle(
-                        fontSize: 33, fontWeight: FontWeight.bold),
+                      fontSize: 33,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const Gap(10),
                   Column(
@@ -198,8 +302,9 @@ class _HistoryListState extends State<HistoryList> {
                       ),
                       Text(
                         DateFormat('MMMM yyyy', 'id_ID').format(
-                          DateFormat('dd MMMM yyyy')
-                              .parse(resultDataMap.keys.toList()[section]),
+                          DateFormat('dd MMMM yyyy').parse(
+                            resultDataMap.keys.toList()[section],
+                          ),
                         ),
                         style: const TextStyle(
                           fontSize: MySizes.fontSizeSm,
@@ -210,8 +315,10 @@ class _HistoryListState extends State<HistoryList> {
                   ),
                   const Spacer(),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: MyColors.primary,
                       borderRadius: BorderRadius.circular(8),
@@ -219,12 +326,16 @@ class _HistoryListState extends State<HistoryList> {
                     child: Text(
                       CurrencyFormat.convertToIdr(
                         _monitoringOutletController.resultData
-                            .where((element) =>
-                                DateFormat('dd MMMM yyyy').format(
+                            .where(
+                              (element) =>
+                                  DateFormat('dd MMMM yyyy').format(
                                         DateTime.parse(
-                                            element.transactionDate!)) ==
-                                    resultDataMap.keys.toList()[section] &&
-                                !element.deleteStatus!)
+                                          element.transactionDate!,
+                                        ),
+                                      ) ==
+                                      resultDataMap.keys.toList()[section] &&
+                                  !element.deleteStatus!,
+                            )
                             .fold<int>(
                               0,
                               (sum, element) => sum + element.grandTotal!,
@@ -242,8 +353,9 @@ class _HistoryListState extends State<HistoryList> {
               ),
             );
           },
-          separatorBuilder: (context, index) => SizedBox(height: 2),
-          sectionSeparatorBuilder: (context, section) => SizedBox(height: 20),
+          separatorBuilder: (context, index) => const SizedBox(height: 2),
+          sectionSeparatorBuilder: (context, section) =>
+              const SizedBox(height: 20),
         );
       }
     });

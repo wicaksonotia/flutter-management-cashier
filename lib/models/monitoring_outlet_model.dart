@@ -38,25 +38,42 @@ class DataTransaction {
   int? id;
   int? numerator;
   String? transactionDate;
+  int? idKios;
   String? kios;
+  int? idKasir;
+  int? subTotal;
+  int? discount;
   int? grandTotal;
   bool? deleteStatus;
-  int? discount;
-  int? total;
+  String? deleteReason;
+  int? idCabang;
+  String? paymentMethod;
+  int? totalItem;
+  String? cashierName;
+  String? branchCode;
   String? orderType;
   List<DataTransactionDetails>? details;
 
-  DataTransaction(
-      {this.id,
-      this.numerator,
-      this.transactionDate,
-      this.kios,
-      this.grandTotal,
-      this.deleteStatus,
-      this.discount,
-      this.total,
-      this.details,
-      this.orderType});
+  DataTransaction({
+    this.id,
+    this.numerator,
+    this.transactionDate,
+    this.kios,
+    this.grandTotal,
+    this.deleteStatus,
+    this.discount,
+    this.orderType,
+    this.details,
+    this.idKios,
+    this.idKasir,
+    this.subTotal,
+    this.idCabang,
+    this.paymentMethod,
+    this.totalItem,
+    this.cashierName,
+    this.branchCode,
+    this.deleteReason,
+  });
 
   DataTransaction.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -66,8 +83,16 @@ class DataTransaction {
     grandTotal = json['grand_total'];
     deleteStatus = json['delete_status'];
     discount = json['discount'];
-    total = json['total'];
     orderType = json['order_type'];
+    idKios = json['id_kios'];
+    idKasir = json['id_kasir'];
+    subTotal = json['sub_total'];
+    idCabang = json['id_cabang'];
+    paymentMethod = json['payment_method'];
+    totalItem = json['total_item'];
+    cashierName = json['nama_kasir'];
+    branchCode = json['kode_cabang'];
+    deleteReason = json['delete_reason'];
     if (json['details'] != null) {
       details = <DataTransactionDetails>[];
       json['details'].forEach((v) {
@@ -85,8 +110,16 @@ class DataTransaction {
     data['grand_total'] = grandTotal;
     data['delete_status'] = deleteStatus;
     data['discount'] = discount;
-    data['total'] = total;
     data['order_type'] = orderType;
+    data['id_kios'] = idKios;
+    data['id_kasir'] = idKasir;
+    data['sub_total'] = subTotal;
+    data['id_cabang'] = idCabang;
+    data['payment_method'] = paymentMethod;
+    data['total_item'] = totalItem;
+    data['nama_kasir'] = cashierName;
+    data['kode_cabang'] = branchCode;
+    data['delete_reason'] = deleteReason;
     if (details != null) {
       data['details'] = details!.map((v) => v.toJson()).toList();
     }
