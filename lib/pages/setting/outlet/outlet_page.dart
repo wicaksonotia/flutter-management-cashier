@@ -151,7 +151,7 @@ class QuotationCard extends StatelessWidget {
                               height: 80,
                               fit: BoxFit.contain,
                             )
-                          : Image.asset('assets/stmj.png',
+                          : Image.asset('assets/no_image.jpg',
                               width: 80, height: 80, fit: BoxFit.contain),
                     ),
                     const Gap(12),

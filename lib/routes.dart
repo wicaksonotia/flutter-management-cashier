@@ -16,6 +16,9 @@ import 'package:cashier_management/pages/setting/branch/add_branch_page.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
+import 'package:cashier_management/pages/setting/user/change_password_page.dart';
+import 'package:cashier_management/pages/setting/user/profile_page.dart';
+import 'package:cashier_management/pages/setting/user/user_setting.dart';
 import 'package:get/get.dart';
 
 import 'pages/home/home_page.dart';
@@ -37,6 +40,9 @@ class RouterClass {
   static String addoutlet = '/addoutlet';
   static String branch = '/branch';
   static String addbranch = '/addbranch';
+  static String userSetting = '/userSetting';
+  static String changePassword = "/change_password";
+  static String profile = "/profile";
 
   static List<GetPage> routes = [
     GetPage(page: () => const LoginPage(), name: login),
@@ -96,6 +102,7 @@ class RouterClass {
     // =============================================================
     // SETTING
     // =============================================================
+    // OUTLET
     GetPage(
       page: () => const OutletPage(),
       name: outlet,
@@ -107,7 +114,7 @@ class RouterClass {
       page: () => const AddOutletPage(),
       name: addoutlet,
     ),
-
+    // BRANCH
     GetPage(
       page: () => const BranchPage(),
       name: branch,
@@ -116,5 +123,9 @@ class RouterClass {
       page: () => const AddBranchPage(),
       name: addbranch,
     ),
+    // PROFILE
+    GetPage(page: () => const UserSetting(), name: userSetting),
+    GetPage(page: () => const ChangePassword(), name: changePassword),
+    GetPage(page: () => const ProfilePage(), name: profile),
   ];
 }

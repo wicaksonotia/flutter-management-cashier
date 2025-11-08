@@ -4,6 +4,7 @@ class MyColors {
   MyColors._();
   // static const Color primary = Color(0xFF96af64);
   static const Color primary = Color(0xFF7F00FF);
+  static const Color secondary = Color.fromARGB(255, 189, 128, 249);
   // static const Color primary = Color(0xFFBF00FF);
   static const Color red = Color(0xFFFC2847);
   static const Color green = Color(0xFF11967b);

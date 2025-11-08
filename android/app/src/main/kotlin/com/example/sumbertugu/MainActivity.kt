@@ -1,4 +1,4 @@
-package com.cashier
+package com.cashier_management
 
 import io.flutter.embedding.android.FlutterActivity
 

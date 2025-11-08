@@ -28,6 +28,10 @@ class _AuthEndPoints {
   final String listKios = 'FinancialListKios';
   final String listCabangKios = 'FinancialListCabangKios';
 
+  //PROFILE
+  final String updateProfile = 'FinancialUpdateProfile';
+  final String changePassword = 'FinancialChangePassword';
+
   // CATEGORY
   final String listCategories = 'FinancialListCategories';
   final String saveCategory = 'FinancialSaveCategory';

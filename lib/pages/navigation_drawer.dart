@@ -98,6 +98,14 @@ class NavigationDrawer extends StatelessWidget {
             ),
             Divider(color: Colors.grey.shade300),
             buildDrawerItem(
+              icon: Icons.manage_accounts,
+              text: "Account",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.userSetting);
+              },
+            ),
+            buildDrawerItem(
               icon: Icons.logout,
               text: "Log Out",
               onTap: () {

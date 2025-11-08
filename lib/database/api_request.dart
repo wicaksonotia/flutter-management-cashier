@@ -24,7 +24,12 @@ class RemoteDataSource {
         if (response.data['status'] == 'ok') {
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setBool('statusLogin', true);
+          await prefs.setString('username', response.data['username']);
+          await prefs.setString('password', response.data['password']);
           await prefs.setInt('id_owner', response.data['id_owner']);
+          await prefs.setString('nama_owner', response.data['nama_owner']);
+          await prefs.setString('phone_owner', response.data['phone_owner']);
+          await prefs.setString('alamat_owner', response.data['alamat_owner']);
           await prefs.setInt('id_kios', response.data['id_kios']);
           await prefs.setString('kios', response.data['kios']);
           await prefs.setString('phone', response.data['phone'] ?? '');
@@ -141,7 +146,6 @@ class RemoteDataSource {
   }
 
 // ===================== KIOS =====================
-
   static Future<bool> saveOutlet(FormData data) async {
     try {
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveKios;
@@ -196,6 +200,48 @@ class RemoteDataSource {
     }
   }
 
+  static Future<List<KiosModel>?> getListKiosAndDetail(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listKiosAndDetail;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => KiosModel.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<List<KiosModel>?> getListKios(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listKios;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => KiosModel.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+// ===================== CABANG =====================
   static Future<bool> saveBranch(
     Map<String, dynamic> rawFormat,
   ) async {
@@ -252,47 +298,6 @@ class RemoteDataSource {
     }
   }
 
-  static Future<List<KiosModel>?> getListKiosAndDetail(
-    Map<String, dynamic> rawFormat,
-  ) async {
-    try {
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listKiosAndDetail;
-      Response response = await Dio().post(
-        url,
-        data: rawFormat,
-        options: Options(contentType: Headers.jsonContentType),
-      );
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = response.data;
-        return jsonData.map((e) => KiosModel.fromJson(e)).toList();
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  static Future<List<KiosModel>?> getListKios(
-    Map<String, dynamic> rawFormat,
-  ) async {
-    try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listKios;
-      Response response = await Dio().post(
-        url,
-        data: rawFormat,
-        options: Options(contentType: Headers.jsonContentType),
-      );
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = response.data;
-        return jsonData.map((e) => KiosModel.fromJson(e)).toList();
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
   static Future<List<DataListOutletBranch>?> getListCabangKios(
     Map<String, dynamic> rawFormat,
   ) async {
@@ -314,7 +319,49 @@ class RemoteDataSource {
     }
   }
 
-  // ===================== CATEGORY =====================
+// ===================== PROFILE =====================
+  static Future<bool> updateProfile(Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateProfile;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> changePasswordProcess(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.changePassword;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+// ===================== CATEGORY =====================
   // SAVE CATEGORY
   static Future<bool> saveCategory(Map<String, dynamic> rawFormat) async {
     try {
