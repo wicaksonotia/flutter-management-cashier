@@ -143,7 +143,7 @@ class RemoteDataSource {
 
 // ===================== KIOS =====================
 
-  static Future<bool> saveKios(FormData data) async {
+  static Future<bool> saveOutlet(FormData data) async {
     try {
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveKios;
       Response response = await Dio().post(url,
@@ -160,10 +160,29 @@ class RemoteDataSource {
     }
   }
 
-  static Future<bool> deleteKios(int id) async {
+  static Future<bool> deleteOutlet(int id) async {
     try {
       var rawFormat = jsonEncode({'id': id});
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteKios;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> saveBranch(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveCabang;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(

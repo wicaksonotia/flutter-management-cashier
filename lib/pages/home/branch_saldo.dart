@@ -157,7 +157,7 @@ class BranchSaldo extends StatelessWidget {
       int index, TotalPerTypeController totalPerTypeController) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: index.isOdd

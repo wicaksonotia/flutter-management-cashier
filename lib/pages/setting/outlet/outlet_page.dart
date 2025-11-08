@@ -66,7 +66,7 @@ class _OutletPageState extends State<OutletPage> {
           IconButton(
             icon: const Icon(Icons.add_box_outlined),
             onPressed: () {
-              _kiosController.clearController();
+              _kiosController.clearOutletController();
               Get.toNamed(RouterClass.addoutlet);
             },
           ),
@@ -121,6 +121,7 @@ class QuotationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final KiosController kiosController = Get.find<KiosController>();
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -208,11 +209,11 @@ class QuotationCard extends StatelessWidget {
                   child: PopupMenuButton<String>(
                     onSelected: (value) {
                       if (value == "edit") {
-                        final KiosController kiosController =
-                            Get.find<KiosController>();
                         kiosController.editKios(quotation);
                         Get.toNamed(RouterClass.addoutlet);
-                      } else if (value == "delete") {
+                        return;
+                      }
+                      if (value == "delete") {
                         if (quotation.totalCabang != 0) {
                           Get.snackbar(
                             'Error',
@@ -244,7 +245,7 @@ class QuotationCard extends StatelessWidget {
                             message:
                                 'Are you sure, you want to delete this history?',
                             onConfirm: () async {
-                              controller.deleteKios(quotation.idKios!);
+                              controller.deleteOutlet(quotation.idKios!);
                             },
                           ),
                           isScrollControlled: true,
@@ -254,6 +255,14 @@ class QuotationCard extends StatelessWidget {
                                 BorderRadius.vertical(top: Radius.circular(20)),
                           ),
                         );
+                        return;
+                      }
+
+                      if (value == "branch") {
+                        kiosController.kiosId(quotation.idKios!);
+                        kiosController.headerNamaKios(quotation.kios!);
+                        Get.toNamed(RouterClass.addbranch);
+                        return;
                       }
                     },
                     itemBuilder: (context) => [
@@ -274,6 +283,16 @@ class QuotationCard extends StatelessWidget {
                             Icon(Icons.delete_outline),
                             SizedBox(width: 8),
                             Text("Delete"),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: "branch",
+                        child: Row(
+                          children: [
+                            Icon(Icons.home_outlined),
+                            SizedBox(width: 8),
+                            Text("Add Branch"),
                           ],
                         ),
                       ),

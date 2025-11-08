@@ -109,7 +109,7 @@ class _AddOutletPageState extends State<AddOutletPage> {
               controller: _kiosController.description,
               maxLines: 3,
               decoration: InputDecoration(
-                labelText: 'Deskripsi',
+                labelText: 'Description',
                 floatingLabelStyle: const TextStyle(
                   color: MyColors.primary,
                 ),
@@ -262,10 +262,10 @@ class _AddOutletPageState extends State<AddOutletPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  _kiosController.saveKios();
+                  _kiosController.saveOutlet();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MyColors.red, // Button color
+                  backgroundColor: MyColors.primary, // Button color
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),

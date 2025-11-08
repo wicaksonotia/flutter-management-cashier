@@ -14,6 +14,7 @@ class KiosController extends GetxController {
   var isLoading = true.obs;
   var isLoadingFinancialKios = true.obs;
   var isLoadingSaveKios = true.obs;
+  var isLoadingSaveCabang = true.obs;
   var idOwner = 0.obs;
   var idKios = 0.obs;
   var namaKios = ''.obs;
@@ -23,7 +24,11 @@ class KiosController extends GetxController {
   var logo = ''.obs;
   var oldLogo = ''.obs;
   var kiosId = 0.obs;
+  var headerNamaKios = ''.obs;
   Rx<XFile> pickedFile1 = XFile('').obs;
+  TextEditingController kodeCabang = TextEditingController();
+  TextEditingController namaCabang = TextEditingController();
+  TextEditingController alamatCabang = TextEditingController();
 
   @override
   void onInit() {
@@ -31,7 +36,7 @@ class KiosController extends GetxController {
     fetchDataListKios();
   }
 
-  void clearController() {
+  void clearOutletController() {
     kios.clear();
     phone.clear();
     description.clear();
@@ -39,6 +44,13 @@ class KiosController extends GetxController {
     oldLogo.value = '';
     kiosId.value = 0;
     pickedFile1.value = XFile('');
+    update();
+  }
+
+  void clearBranchController() {
+    kodeCabang.clear();
+    namaCabang.clear();
+    alamatCabang.clear();
     update();
   }
 
@@ -98,7 +110,8 @@ class KiosController extends GetxController {
     }
   }
 
-  void saveKios() async {
+  // === SIMPAN KIOS ===
+  void saveOutlet() async {
     try {
       // === CEK VALIDASI DASAR ===
       if (kios.text.isEmpty || phone.text.isEmpty || description.text.isEmpty) {
@@ -151,11 +164,9 @@ class KiosController extends GetxController {
         });
       }
 
-      // === SIMPAN KE SERVER ===
-      final result = await RemoteDataSource.saveKios(formData);
-
+      final result = await RemoteDataSource.saveOutlet(formData);
       if (result) {
-        clearController();
+        clearOutletController();
         Get.snackbar(
           'Success',
           'Kios saved successfully',
@@ -182,8 +193,8 @@ class KiosController extends GetxController {
     }
   }
 
-  void deleteKios(int id) async {
-    var resultUpdate = await RemoteDataSource.deleteKios(id);
+  void deleteOutlet(int id) async {
+    var resultUpdate = await RemoteDataSource.deleteOutlet(id);
     if (resultUpdate) {
       Get.snackbar('Notification', 'Data deleted successfully',
           icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
@@ -191,6 +202,47 @@ class KiosController extends GetxController {
     } else {
       Get.snackbar('Notification', 'Failed to delete data',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+    }
+  }
+
+  // === SIMPAN CABANG ===
+  void saveBranch() async {
+    try {
+      // === CEK VALIDASI DASAR ===
+      if (kodeCabang.text.isEmpty ||
+          namaCabang.text.isEmpty ||
+          alamatCabang.text.isEmpty) {
+        throw 'Please fill all fields';
+      }
+
+      var rawFormat = {
+        'kios_id': kiosId.value,
+        'kode_cabang': kodeCabang.text,
+        'nama_cabang': namaCabang.text,
+        'alamat_cabang': alamatCabang.text,
+      };
+      final result = await RemoteDataSource.saveBranch(rawFormat);
+      if (result) {
+        clearBranchController();
+        Get.snackbar(
+          'Success',
+          'Cabang saved successfully',
+          icon: const Icon(Icons.check_circle, color: Colors.green),
+          snackPosition: SnackPosition.TOP,
+        );
+      } else {
+        throw 'Failed to save branch outlet';
+      }
+    } catch (error) {
+      Get.snackbar(
+        'Notification',
+        error.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
+    } finally {
+      isLoadingSaveCabang(false);
+      fetchDataListKiosFinancial();
     }
   }
 }
