@@ -121,15 +121,15 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                                 kiosController.idKios.value = outlet.idKios!;
                                 kiosController.namaKios.value =
                                     outlet.kios ?? '';
-                                kiosController.changeBranchOutlet();
+                                kiosController.changeOutlet();
                                 totalPerTypeController.getTotalBranchSaldo();
                                 totalPerTypeController.getTotalPerMonth();
 
                                 // RIWAYAT TRANSAKSI
-                                historyController.changeBranchOutlet();
+                                historyController.changeOutlet();
 
                                 // MONITORING OUTLET
-                                monitoringOutletController.changeBranchOutlet();
+                                monitoringOutletController.changeOutlet();
                               },
                             ),
                           ),

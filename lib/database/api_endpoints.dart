@@ -22,6 +22,8 @@ class _AuthEndPoints {
   final String deleteKios = 'FinancialDeleteKios';
   final String updateStatusOutlet = 'FinancialUpdateStatusOutlet';
   final String saveCabang = 'FinancialSaveCabang';
+  final String deleteBranch = 'FinancialDeleteBranch';
+  final String updateStatusBranch = 'FinancialUpdateStatusBranch';
   final String listKiosAndDetail = 'FinancialListKiosAndDetail';
   final String listKios = 'FinancialListKios';
   final String listCabangKios = 'FinancialListCabangKios';

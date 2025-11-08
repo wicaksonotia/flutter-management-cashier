@@ -1,4 +1,6 @@
+import 'package:cashier_management/controllers/cabang_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ class AddBranchPage extends StatefulWidget {
 }
 
 class _AddBranchPageState extends State<AddBranchPage> {
+  final CabangController _cabangController = Get.put(CabangController());
   final KiosController _kiosController = Get.put(KiosController());
 
   @override
@@ -23,7 +26,7 @@ class _AddBranchPageState extends State<AddBranchPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Get.back();
+            Get.toNamed(RouterClass.branch);
           },
         ),
         title: RichText(
@@ -36,7 +39,7 @@ class _AddBranchPageState extends State<AddBranchPage> {
             ),
             children: <TextSpan>[
               TextSpan(
-                text: '${_kiosController.headerNamaKios}',
+                text: '${_cabangController.headerNamaKios}',
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeHeader,
                   fontWeight: FontWeight.bold,
@@ -65,7 +68,7 @@ class _AddBranchPageState extends State<AddBranchPage> {
         child: Column(
           children: [
             TextFormField(
-              controller: _kiosController.kodeCabang,
+              controller: _cabangController.kodeCabang,
               decoration: InputDecoration(
                 labelText: 'Kode',
                 floatingLabelStyle: const TextStyle(
@@ -94,7 +97,7 @@ class _AddBranchPageState extends State<AddBranchPage> {
             ),
             const Gap(10),
             TextFormField(
-              controller: _kiosController.namaCabang,
+              controller: _cabangController.namaCabang,
               decoration: InputDecoration(
                 labelText: 'Branch Name',
                 floatingLabelStyle: const TextStyle(
@@ -123,7 +126,7 @@ class _AddBranchPageState extends State<AddBranchPage> {
             ),
             const Gap(10),
             TextFormField(
-              controller: _kiosController.alamatCabang,
+              controller: _cabangController.alamatCabang,
               maxLines: 3,
               decoration: InputDecoration(
                 labelText: 'Address',
@@ -156,7 +159,8 @@ class _AddBranchPageState extends State<AddBranchPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  _kiosController.saveBranch();
+                  _cabangController.saveBranch();
+                  _kiosController.fetchDataListKiosFinancial();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: MyColors.primary, // Button color

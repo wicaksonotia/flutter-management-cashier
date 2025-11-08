@@ -30,27 +30,27 @@ class OutletBranchModel {
 class DataListOutletBranch {
   int? id;
   int? idKios;
+  String? kode;
   String? cabang;
   String? alamat;
-  String? phone;
   bool? status;
   Details? details;
 
   DataListOutletBranch(
       {this.id,
       this.idKios,
+      this.kode,
       this.cabang,
       this.alamat,
-      this.phone,
       this.status,
       this.details});
 
   DataListOutletBranch.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     idKios = json['id_kios'];
+    kode = json['kode'];
     cabang = json['cabang'];
     alamat = json['alamat'];
-    phone = json['phone'];
     status = json['status'];
     details =
         json['details'] != null ? Details.fromJson(json['details']) : null;
@@ -60,9 +60,9 @@ class DataListOutletBranch {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['id_kios'] = idKios;
+    data['kode'] = kode;
     data['cabang'] = cabang;
     data['alamat'] = alamat;
-    data['phone'] = phone;
     data['status'] = status;
     if (details != null) {
       data['details'] = details!.toJson();

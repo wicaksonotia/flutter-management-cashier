@@ -1,62 +1,46 @@
 import 'package:cashier_management/controllers/cabang_controller.dart';
-import 'package:cashier_management/controllers/kios_controller.dart';
-import 'package:cashier_management/database/api_endpoints.dart';
-import 'package:cashier_management/models/kios_model.dart';
+import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/currency.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:cashier_management/pages/navigation_drawer.dart'
-    as custom_drawer;
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-class OutletPage extends StatefulWidget {
-  const OutletPage({super.key});
+class BranchPage extends StatefulWidget {
+  const BranchPage({super.key});
 
   @override
-  State<OutletPage> createState() => _OutletPageState();
+  State<BranchPage> createState() => _BranchPageState();
 }
 
-class _OutletPageState extends State<OutletPage> {
-  final KiosController _kiosController = Get.put(KiosController());
+class _BranchPageState extends State<BranchPage> {
   final CabangController _cabangController = Get.put(CabangController());
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _kiosController.fetchDataListKiosFinancial();
-    });
-  }
-
   Future<void> _refresh() async {
-    _kiosController.fetchDataListKiosFinancial();
+    _cabangController.fetchDataListCabangFinancial();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const custom_drawer.NavigationDrawer(),
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Get.toNamed(RouterClass.outlet);
+          },
         ),
         surfaceTintColor: Colors.transparent,
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Outlet Settings',
+              'Outlet Branch Settings',
               style: TextStyle(
                   fontSize: MySizes.fontSizeHeader,
                   fontWeight: FontWeight.bold),
@@ -68,14 +52,14 @@ class _OutletPageState extends State<OutletPage> {
           IconButton(
             icon: const Icon(Icons.add_box_outlined),
             onPressed: () {
-              _kiosController.clearOutletController();
-              Get.toNamed(RouterClass.addoutlet);
+              _cabangController.branchId.value = 0;
+              Get.toNamed(RouterClass.addbranch);
             },
           ),
         ],
       ),
       body: Obx(() {
-        if (_kiosController.isLoadingFinancialKios.value) {
+        if (_cabangController.isLoadingList.value) {
           return ListView.builder(
             itemCount: 8,
             itemBuilder: (context, index) {
@@ -101,12 +85,11 @@ class _OutletPageState extends State<OutletPage> {
           onRefresh: _refresh,
           child: ListView.builder(
             padding: const EdgeInsets.all(12),
-            itemCount: _kiosController.listKiosFinancial.length,
+            itemCount: _cabangController.resultItem.length,
             itemBuilder: (context, index) {
               return QuotationCard(
-                  controller: _kiosController,
-                  cabangController: _cabangController,
-                  quotation: _kiosController.listKiosFinancial[index]);
+                  controller: _cabangController,
+                  quotation: _cabangController.resultItem[index]);
             },
           ),
         );
@@ -117,18 +100,13 @@ class _OutletPageState extends State<OutletPage> {
 
 class QuotationCard extends StatelessWidget {
   const QuotationCard(
-      {super.key,
-      required this.quotation,
-      required this.controller,
-      required this.cabangController});
+      {super.key, required this.quotation, required this.controller});
 
-  final KiosModel quotation;
-  final KiosController controller;
-  final CabangController cabangController;
+  final DataListOutletBranch quotation;
+  final CabangController controller;
 
   @override
   Widget build(BuildContext context) {
-    final KiosController kiosController = Get.find<KiosController>();
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -142,53 +120,35 @@ class QuotationCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: quotation.logo != null
-                          ? Image.network(
-                              '${ApiEndPoints.ipPublic}images/logo/${quotation.logo}',
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.contain,
-                            )
-                          : Image.asset('assets/stmj.png',
-                              width: 80, height: 80, fit: BoxFit.contain),
-                    ),
-                    const Gap(12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            quotation.kios ?? '',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const Gap(4),
-                          Text(
-                            quotation.keterangan ?? '',
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                          const Gap(8),
                           Row(
                             children: [
+                              Text(
+                                quotation.cabang ?? '',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const Gap(8),
                               InkWell(
                                 onTap: () {
                                   // DIALOG CONFIRMATION ACTIVE OR INACTIVE
                                   Get.bottomSheet(
                                     ConfirmDialog(
-                                        title: quotation.isActive == true
-                                            ? 'Non-Activate Outlet'
-                                            : 'Activate Outlet',
-                                        message: quotation.isActive == true
-                                            ? 'This outlet will be deactivated.\nAre you sure you want to continue?'
-                                            : 'This outlet will be activated.\nAre you sure you want to continue?',
+                                        title: quotation.status == true
+                                            ? 'Non-Activate Outlet Branch'
+                                            : 'Activate Outlet Branch',
+                                        message: quotation.status == true
+                                            ? 'This outlet branch will be deactivated.\nAre you sure you want to continue?'
+                                            : 'This outlet branch will be activated.\nAre you sure you want to continue?',
                                         onConfirm: () async {
-                                          controller.updateStatusOutlet(
-                                              quotation.idKios!,
-                                              !quotation.isActive!);
+                                          controller.updateStatusBranch(
+                                              quotation.id!,
+                                              !quotation.status!);
                                         }),
                                     isScrollControlled: true,
                                     backgroundColor: Colors.white,
@@ -202,42 +162,25 @@ class QuotationCard extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: quotation.isActive == true
+                                    color: quotation.status == true
                                         ? Colors.green[200]
                                         : Colors.red[200],
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
-                                    quotation.isActive == true
+                                    quotation.status == true
                                         ? 'Active'
                                         : 'Inactive',
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                 ),
                               ),
-                              const Gap(8),
-                              InkWell(
-                                onTap: () {
-                                  cabangController.kiosId.value =
-                                      quotation.idKios!;
-                                  cabangController
-                                      .fetchDataListCabangFinancial();
-                                  Get.toNamed(RouterClass.branch);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue[200],
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    'Cabang: ${quotation.totalCabang ?? 0}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                              ),
                             ],
+                          ),
+                          const Gap(4),
+                          Text(
+                            quotation.alamat ?? '',
+                            style: TextStyle(color: Colors.grey[600]),
                           ),
                         ],
                       ),
@@ -250,25 +193,15 @@ class QuotationCard extends StatelessWidget {
                   child: PopupMenuButton<String>(
                     onSelected: (value) {
                       if (value == "edit") {
-                        kiosController.editKios(quotation);
-                        Get.toNamed(RouterClass.addoutlet);
+                        controller.editBranch(quotation);
+                        Get.toNamed(RouterClass.addbranch);
                         return;
                       }
                       if (value == "delete") {
-                        if (quotation.totalCabang != 0) {
-                          Get.snackbar(
-                            'Error',
-                            'Cannot delete this outlet, it has branches.',
-                            snackPosition: SnackPosition.TOP,
-                            backgroundColor: Colors.red[100],
-                            colorText: Colors.red[800],
-                          );
-                          return;
-                        }
                         // Check if the quotation has any financial records
-                        if (quotation.totalIncome != 0 ||
-                            quotation.totalExpense != 0 ||
-                            quotation.totalBalance != 0) {
+                        if (quotation.details!.income != 0 ||
+                            quotation.details!.expense != 0 ||
+                            quotation.details!.balance != 0) {
                           Get.snackbar(
                             'Error',
                             'Cannot delete this outlet, it has financial records.',
@@ -286,7 +219,7 @@ class QuotationCard extends StatelessWidget {
                             message:
                                 'Are you sure, you want to delete this history?',
                             onConfirm: () async {
-                              controller.deleteOutlet(quotation.idKios!);
+                              controller.deleteBranch(quotation.id!);
                             },
                           ),
                           isScrollControlled: true,
@@ -296,14 +229,6 @@ class QuotationCard extends StatelessWidget {
                                 BorderRadius.vertical(top: Radius.circular(20)),
                           ),
                         );
-                        return;
-                      }
-
-                      if (value == "branch") {
-                        cabangController.kiosId(quotation.idKios!);
-                        cabangController.headerNamaKios(quotation.kios!);
-                        cabangController.branchId.value = 0;
-                        Get.toNamed(RouterClass.addbranch);
                         return;
                       }
                     },
@@ -328,16 +253,6 @@ class QuotationCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
-                        value: "branch",
-                        child: Row(
-                          children: [
-                            Icon(Icons.home_outlined),
-                            Gap(8),
-                            Text("Add Branch"),
-                          ],
-                        ),
-                      ),
                     ],
                     icon: const Icon(Icons.more_vert),
                   ),
@@ -351,19 +266,19 @@ class QuotationCard extends StatelessWidget {
                 _buildFinancialInfo(
                   icon: Icons.arrow_downward,
                   label: "Income",
-                  value: quotation.totalIncome ?? 0,
+                  value: quotation.details!.income ?? 0,
                   color: Colors.green,
                 ),
                 _buildFinancialInfo(
                   icon: Icons.arrow_upward,
                   label: "Expense",
-                  value: quotation.totalExpense ?? 0,
+                  value: quotation.details!.expense ?? 0,
                   color: Colors.red,
                 ),
                 _buildFinancialInfo(
                   icon: Icons.account_balance_wallet,
                   label: "Balance",
-                  value: quotation.totalBalance ?? 0,
+                  value: quotation.details!.balance ?? 0,
                   color: Colors.blue,
                 ),
               ],

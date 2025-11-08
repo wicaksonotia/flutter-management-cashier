@@ -60,10 +60,9 @@ class RemoteDataSource {
     }
   }
 
-  static Future<OutletBranchModel?> homeTotalBranchSaldo() async {
+  static Future<OutletBranchModel?> homeTotalBranchSaldo(int idKios) async {
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var rawFormat = jsonEncode({'id_kios': prefs.getInt('id_kios')});
+      var rawFormat = jsonEncode({'id_kios': idKios});
       var url = ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.homeTotalBranchSaldo;
       Response response = await Dio().post(
@@ -178,6 +177,25 @@ class RemoteDataSource {
     }
   }
 
+  static Future<bool> updateStatusOutlet(int id, bool status) async {
+    try {
+      var rawFormat = jsonEncode({'id': id, 'status': status});
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateStatusOutlet;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   static Future<bool> saveBranch(
     Map<String, dynamic> rawFormat,
   ) async {
@@ -197,11 +215,29 @@ class RemoteDataSource {
     }
   }
 
-  static Future<bool> updateStatusOutlet(int id, bool status) async {
+  static Future<bool> deleteBranch(int id) async {
+    try {
+      var rawFormat = jsonEncode({'id': id});
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteBranch;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> updateStatusBranch(int id, bool status) async {
     try {
       var rawFormat = jsonEncode({'id': id, 'status': status});
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateStatusOutlet;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateStatusBranch;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(

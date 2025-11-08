@@ -14,7 +14,6 @@ class KiosController extends GetxController {
   var isLoading = true.obs;
   var isLoadingFinancialKios = true.obs;
   var isLoadingSaveKios = true.obs;
-  var isLoadingSaveCabang = true.obs;
   var idOwner = 0.obs;
   var idKios = 0.obs;
   var namaKios = ''.obs;
@@ -24,11 +23,7 @@ class KiosController extends GetxController {
   var logo = ''.obs;
   var oldLogo = ''.obs;
   var kiosId = 0.obs;
-  var headerNamaKios = ''.obs;
   Rx<XFile> pickedFile1 = XFile('').obs;
-  TextEditingController kodeCabang = TextEditingController();
-  TextEditingController namaCabang = TextEditingController();
-  TextEditingController alamatCabang = TextEditingController();
 
   @override
   void onInit() {
@@ -44,13 +39,6 @@ class KiosController extends GetxController {
     oldLogo.value = '';
     kiosId.value = 0;
     pickedFile1.value = XFile('');
-    update();
-  }
-
-  void clearBranchController() {
-    kodeCabang.clear();
-    namaCabang.clear();
-    alamatCabang.clear();
     update();
   }
 
@@ -95,7 +83,7 @@ class KiosController extends GetxController {
     }
   }
 
-  void changeBranchOutlet() {
+  void changeOutlet() {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setInt('id_kios', idKios.value);
       prefs.setString('kios', namaKios.value);
@@ -202,47 +190,6 @@ class KiosController extends GetxController {
     } else {
       Get.snackbar('Notification', 'Failed to delete data',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-    }
-  }
-
-  // === SIMPAN CABANG ===
-  void saveBranch() async {
-    try {
-      // === CEK VALIDASI DASAR ===
-      if (kodeCabang.text.isEmpty ||
-          namaCabang.text.isEmpty ||
-          alamatCabang.text.isEmpty) {
-        throw 'Please fill all fields';
-      }
-
-      var rawFormat = {
-        'kios_id': kiosId.value,
-        'kode_cabang': kodeCabang.text,
-        'nama_cabang': namaCabang.text,
-        'alamat_cabang': alamatCabang.text,
-      };
-      final result = await RemoteDataSource.saveBranch(rawFormat);
-      if (result) {
-        clearBranchController();
-        Get.snackbar(
-          'Success',
-          'Cabang saved successfully',
-          icon: const Icon(Icons.check_circle, color: Colors.green),
-          snackPosition: SnackPosition.TOP,
-        );
-      } else {
-        throw 'Failed to save branch outlet';
-      }
-    } catch (error) {
-      Get.snackbar(
-        'Notification',
-        error.toString(),
-        icon: const Icon(Icons.error),
-        snackPosition: SnackPosition.TOP,
-      );
-    } finally {
-      isLoadingSaveCabang(false);
-      fetchDataListKiosFinancial();
     }
   }
 

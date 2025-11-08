@@ -3,6 +3,7 @@ import 'package:cashier_management/models/chart_model.dart';
 import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TotalPerTypeController extends GetxController {
   var resultItem = <DataListOutletBranch>[].obs;
@@ -23,7 +24,9 @@ class TotalPerTypeController extends GetxController {
   void getTotalBranchSaldo() async {
     try {
       isLoading(true);
-      final result = await RemoteDataSource.homeTotalBranchSaldo();
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final result =
+          await RemoteDataSource.homeTotalBranchSaldo(prefs.getInt('id_kios')!);
       if (result != null && result.data != null) {
         resultItem.assignAll(result.data!);
       }
