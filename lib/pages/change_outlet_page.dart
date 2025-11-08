@@ -2,6 +2,7 @@ import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
+import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,98 +45,70 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
               horizontal: 12.0,
               vertical: 8.0,
             ),
-            child: GridView.builder(
+            child: ListView.builder(
               controller: scrollController,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount:
-                    2, // You can adjust the number of columns as needed
-                childAspectRatio: 1.0, // Adjust for desired tile shape
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
               itemCount: kiosController.listKios.length,
               itemBuilder: (context, index) {
-                final outlet = kiosController.listKios[index];
+                final kios = kiosController.listKios[index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 8,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: MyColors.notionBgPurple,
-                      borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  child: ListTile(
+                    title: Text(
+                      kios.kios!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    child: Stack(
-                      children: [
-                        // Positioned.fill(
-                        //   child: ClipRRect(
-                        //     borderRadius: BorderRadius.circular(8),
-                        //     child: Image.asset(
-                        //       'assets/es_jeruk.png',
-                        //       fit: BoxFit.cover,
-                        //     ),
-                        //   ),
-                        // ),
-                        Positioned(
-                          left: 8,
-                          top: 8,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            child: Text(
-                              outlet.kios!,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 8,
-                          right: 8,
-                          child: Obx(
-                            () => Icon(
-                              Icons.check_circle,
-                              color:
-                                  (outlet.idKios == kiosController.idKios.value)
-                                      ? Colors.lightGreen
-                                      : Colors.grey.shade300,
-                            ),
-                          ),
-                        ),
-                        Positioned.fill(
-                          child: Material(
+                    subtitle: Text(
+                      kios.keterangan!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: kios.logo != null
+                          ? Image.network(
+                              '${ApiEndPoints.ipPublic}images/logo/${kios.logo}',
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.contain,
+                            )
+                          : Image.asset('assets/no_image.jpg',
+                              width: 80, height: 80, fit: BoxFit.contain),
+                    ),
+                    trailing: Obx(
+                      () {
+                        if (kiosController.idKios.value == kios.idKios) {
+                          return const Icon(
+                            Icons.check,
+                            color: MyColors.primary,
+                          );
+                        } else {
+                          return const Icon(
+                            Icons.check,
                             color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                Get.back();
-                                //HOME
-                                kiosController.idKios.value = outlet.idKios!;
-                                kiosController.namaKios.value =
-                                    outlet.kios ?? '';
-                                kiosController.changeOutlet();
-                                totalPerTypeController.getTotalBranchSaldo();
-                                totalPerTypeController.getTotalPerMonth();
-
-                                // RIWAYAT TRANSAKSI
-                                historyController.changeOutlet();
-
-                                // MONITORING OUTLET
-                                monitoringOutletController.changeOutlet();
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                          );
+                        }
+                      },
                     ),
+                    onTap: () {
+                      //HOME
+                      kiosController.idKios.value = kios.idKios!;
+                      kiosController.namaKios.value = kios.kios ?? '';
+                      kiosController.changeOutlet();
+                      totalPerTypeController.getTotalBranchSaldo();
+                      totalPerTypeController.getTotalPerMonth();
+
+                      // RIWAYAT TRANSAKSI
+                      historyController.changeOutlet();
+
+                      // MONITORING OUTLET
+                      monitoringOutletController.changeOutlet();
+                      Get.back();
+                    },
                   ),
                 );
               },
