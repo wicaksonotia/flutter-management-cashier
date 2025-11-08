@@ -245,4 +245,16 @@ class KiosController extends GetxController {
       fetchDataListKiosFinancial();
     }
   }
+
+  void updateStatusOutlet(int id, bool status) async {
+    var resultUpdate = await RemoteDataSource.updateStatusOutlet(id, status);
+    if (resultUpdate) {
+      Get.snackbar('Notification', 'Data updated successfully',
+          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      fetchDataListKiosFinancial();
+    } else {
+      Get.snackbar('Notification', 'Failed to update data',
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+    }
+  }
 }

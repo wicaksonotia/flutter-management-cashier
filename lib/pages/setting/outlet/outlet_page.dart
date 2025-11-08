@@ -2,7 +2,7 @@ import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:cashier_management/models/kios_model.dart';
 import 'package:cashier_management/routes.dart';
-import 'package:cashier_management/utils/confirm_delete.dart';
+import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/currency.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
@@ -167,20 +167,45 @@ class QuotationCard extends StatelessWidget {
                           const Gap(8),
                           Row(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: quotation.isActive == true
-                                      ? Colors.green[200]
-                                      : Colors.red[200],
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  quotation.isActive == true
-                                      ? 'Active'
-                                      : 'Inactive',
-                                  style: const TextStyle(fontSize: 12),
+                              InkWell(
+                                onTap: () {
+                                  // DIALOG CONFIRMATION ACTIVE OR INACTIVE
+                                  Get.bottomSheet(
+                                    ConfirmDialog(
+                                        title: quotation.isActive == true
+                                            ? 'Non-Activate Outlet'
+                                            : 'Activate Outlet',
+                                        message: quotation.isActive == true
+                                            ? 'This outlet will be deactivated.\nAre you sure you want to continue?'
+                                            : 'This outlet will be activated.\nAre you sure you want to continue?',
+                                        onConfirm: () async {
+                                          controller.updateStatusOutlet(
+                                              quotation.idKios!,
+                                              !quotation.isActive!);
+                                        }),
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.white,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(20)),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: quotation.isActive == true
+                                        ? Colors.green[200]
+                                        : Colors.red[200],
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    quotation.isActive == true
+                                        ? 'Active'
+                                        : 'Inactive',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
                                 ),
                               ),
                               const Gap(8),
@@ -240,7 +265,7 @@ class QuotationCard extends StatelessWidget {
 
                         // Show confirmation dialog
                         Get.bottomSheet(
-                          ConfirmDelete(
+                          ConfirmDialog(
                             title: 'Delete History',
                             message:
                                 'Are you sure, you want to delete this history?',

@@ -1,6 +1,6 @@
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
-import 'package:cashier_management/utils/confirm_delete.dart';
+import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/currency.dart';
@@ -124,7 +124,7 @@ class _HistoryListState extends State<HistoryList> {
                             onPressed: (context) {
                               // showModalBottomSheet(
                               //   context: context,
-                              //   builder: (context) => ConfirmDelete(
+                              //   builder: (context) => ConfirmDialog(
                               //     title: 'Delete History',
                               //     message:
                               //         'Are you sure you want to delete this history?',
@@ -140,7 +140,7 @@ class _HistoryListState extends State<HistoryList> {
                               //   ),
                               // );
                               Get.bottomSheet(
-                                ConfirmDelete(
+                                ConfirmDialog(
                                   title: 'Delete History',
                                   message:
                                       'Are you sure, you want to delete this history?',

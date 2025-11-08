@@ -197,6 +197,25 @@ class RemoteDataSource {
     }
   }
 
+  static Future<bool> updateStatusOutlet(int id, bool status) async {
+    try {
+      var rawFormat = jsonEncode({'id': id, 'status': status});
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateStatusOutlet;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   static Future<List<KiosModel>?> getListKiosAndDetail(
     Map<String, dynamic> rawFormat,
   ) async {

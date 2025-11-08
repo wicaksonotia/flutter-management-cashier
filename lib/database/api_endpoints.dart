@@ -20,6 +20,7 @@ class _AuthEndPoints {
   // KIOS
   final String saveKios = 'FinancialSaveKios';
   final String deleteKios = 'FinancialDeleteKios';
+  final String updateStatusOutlet = 'FinancialUpdateStatusOutlet';
   final String saveCabang = 'FinancialSaveCabang';
   final String listKiosAndDetail = 'FinancialListKiosAndDetail';
   final String listKios = 'FinancialListKios';

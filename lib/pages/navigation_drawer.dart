@@ -3,7 +3,7 @@ import 'package:cashier_management/controllers/monitoring_outlet_controller.dart
 import 'package:cashier_management/pages/change_outlet_page.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/routes.dart';
-import 'package:cashier_management/utils/confirm_delete.dart';
+import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -102,7 +102,7 @@ class NavigationDrawer extends StatelessWidget {
               text: "Log Out",
               onTap: () {
                 Get.bottomSheet(
-                  ConfirmDelete(
+                  ConfirmDialog(
                     title: 'Logout',
                     message: 'Are you sure, you want to logout?',
                     onConfirm: () async {

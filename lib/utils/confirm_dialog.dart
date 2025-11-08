@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class ConfirmDelete extends StatelessWidget {
+class ConfirmDialog extends StatelessWidget {
   final String title;
   final String message;
   final Future<void> Function() onConfirm; // callback dinamis
   final String confirmText;
   final String cancelText;
 
-  const ConfirmDelete({
+  const ConfirmDialog({
     super.key,
     required this.title,
     required this.message,
