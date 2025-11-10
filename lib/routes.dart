@@ -1,3 +1,4 @@
+import 'package:cashier_management/controllers/employee_controller.dart';
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
@@ -14,6 +15,7 @@ import 'package:cashier_management/pages/monitoring_outlet/monitoring_page.dart'
 import 'package:cashier_management/pages/history/history_page.dart';
 import 'package:cashier_management/pages/setting/branch/add_branch_page.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
+import 'package:cashier_management/pages/setting/employee/employee_page.dart';
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
 import 'package:cashier_management/pages/setting/user/change_password_page.dart';
@@ -43,6 +45,7 @@ class RouterClass {
   static String userSetting = '/userSetting';
   static String changePassword = "/change_password";
   static String profile = "/profile";
+  static String cashier = "/cashier";
 
   static List<GetPage> routes = [
     GetPage(page: () => const LoginPage(), name: login),
@@ -110,22 +113,20 @@ class RouterClass {
         Get.put<KiosController>(KiosController());
       }),
     ),
-    GetPage(
-      page: () => const AddOutletPage(),
-      name: addoutlet,
-    ),
+    GetPage(page: () => const AddOutletPage(), name: addoutlet),
     // BRANCH
-    GetPage(
-      page: () => const BranchPage(),
-      name: branch,
-    ),
-    GetPage(
-      page: () => const AddBranchPage(),
-      name: addbranch,
-    ),
+    GetPage(page: () => const BranchPage(), name: branch),
+    GetPage(page: () => const AddBranchPage(), name: addbranch),
     // PROFILE
     GetPage(page: () => const UserSetting(), name: userSetting),
     GetPage(page: () => const ChangePassword(), name: changePassword),
     GetPage(page: () => const ProfilePage(), name: profile),
+    // CASHIER
+    GetPage(
+        page: () => const EmployeePage(),
+        name: cashier,
+        binding: BindingsBuilder(() {
+          Get.put<EmployeeController>(EmployeeController());
+        })),
   ];
 }

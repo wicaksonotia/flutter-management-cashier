@@ -11,24 +11,26 @@ class _AuthEndPoints {
   final String homeTotalBranchSaldo = 'FinancialTotalBranchSaldo';
   final String homeTotalPerMonth = 'FinanciaGetSaldoPerBulan';
 
-  //HISTORY
+  // HISTORY
   final String histories = 'FinancialHistories';
   final String saveTransactionExpense = 'FinancialSaveTransactionExpense';
   final String saveTransactionIncome = 'FinancialSaveTransactionIncome';
   final String deleteHistory = 'FinancialDeleteHistory';
 
   // KIOS
+  final String listKiosAndDetail = 'FinancialListKiosAndDetail';
+  final String listKios = 'FinancialListKios';
   final String saveKios = 'FinancialSaveKios';
   final String deleteKios = 'FinancialDeleteKios';
   final String updateStatusOutlet = 'FinancialUpdateStatusOutlet';
+
+  // CABANG
   final String saveCabang = 'FinancialSaveCabang';
   final String deleteBranch = 'FinancialDeleteBranch';
   final String updateStatusBranch = 'FinancialUpdateStatusBranch';
-  final String listKiosAndDetail = 'FinancialListKiosAndDetail';
-  final String listKios = 'FinancialListKios';
   final String listCabangKios = 'FinancialListCabangKios';
 
-  //PROFILE
+  // PROFILE
   final String updateProfile = 'FinancialUpdateProfile';
   final String changePassword = 'FinancialChangePassword';
 
@@ -40,7 +42,15 @@ class _AuthEndPoints {
   final String updateCategoryStatus = 'FinancialUpdateCategoryStatus';
   final String deleteCategory = 'FinancialDeleteCategory';
 
-  //MONITORING
+  // MONITORING
   final String monitoringByDateRange = 'FinancialMonitoringOutletByDateRange';
   final String monitoringByMonth = 'FinancialMonitoringOutletByMonth';
+
+  // EMPLOYEE
+  final String listEmployee = 'FinancialListEmployee';
+  final String saveEmployee = 'FinancialSaveEmployee';
+  final String detailEmployee = 'FinancialDetailEmployee';
+  final String updateEmployee = 'FinancialUpdateEmployee';
+  final String updateEmployeeStatus = 'FinancialUpdateEmployeeStatus';
+  final String deleteEmployee = 'FinancialDeleteEmployee';
 }

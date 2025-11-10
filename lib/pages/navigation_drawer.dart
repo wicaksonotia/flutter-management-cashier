@@ -88,8 +88,11 @@ class NavigationDrawer extends StatelessWidget {
             ),
             buildDrawerItem(
               icon: Icons.manage_accounts,
-              text: "User Outlet",
-              onTap: () => '',
+              text: "Employee",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.cashier);
+              },
             ),
             buildDrawerItem(
               icon: Icons.production_quantity_limits,

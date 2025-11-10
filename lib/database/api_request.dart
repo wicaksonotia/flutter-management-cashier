@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cashier_management/models/chart_model.dart';
+import 'package:cashier_management/models/employee_model.dart';
 import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:dio/dio.dart';
 import 'package:cashier_management/database/api_endpoints.dart';
@@ -555,6 +556,26 @@ class RemoteDataSource {
         final MonitoringOutletModel res =
             MonitoringOutletModel.fromJson(response.data);
         return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // ===================== EMPLOYEE =====================
+  static Future<List<DataEmployee>?> getListEmployee(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listEmployee;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = response.data['data'];
+        return jsonData.map((e) => DataEmployee.fromJson(e)).toList();
       }
       return null;
     } catch (e) {

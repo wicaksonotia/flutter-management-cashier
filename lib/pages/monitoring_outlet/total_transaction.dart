@@ -29,7 +29,7 @@ class TotalTransaction extends StatelessWidget {
                         ),
                         elevation: 0.5,
                         child: Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(8),
                           child: Shimmer.fromColors(
                             baseColor: Colors.grey[300]!,
                             highlightColor: Colors.grey[100]!,
@@ -65,7 +65,7 @@ class TotalTransaction extends StatelessWidget {
                         ),
                         elevation: 0.5,
                         child: Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(8),
                           child: Align(
                             alignment: Alignment.center,
                             child: Column(
@@ -111,7 +111,7 @@ class TotalTransaction extends StatelessWidget {
                         ),
                         elevation: 0.5,
                         child: Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(8),
                           child: Shimmer.fromColors(
                             baseColor: Colors.grey[300]!,
                             highlightColor: Colors.grey[100]!,
@@ -147,7 +147,7 @@ class TotalTransaction extends StatelessWidget {
                         ),
                         elevation: 0.5,
                         child: Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(8),
                           child: Align(
                             alignment: Alignment.center,
                             child: Column(
@@ -190,7 +190,7 @@ class TotalTransaction extends StatelessWidget {
                         ),
                         elevation: 0.5,
                         child: Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(8),
                           child: Shimmer.fromColors(
                             baseColor: Colors.grey[300]!,
                             highlightColor: Colors.grey[100]!,
@@ -226,7 +226,7 @@ class TotalTransaction extends StatelessWidget {
                         ),
                         elevation: 0.5,
                         child: Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(8),
                           child: Align(
                             alignment: Alignment.center,
                             child: Column(
@@ -234,8 +234,8 @@ class TotalTransaction extends StatelessWidget {
                               children: [
                                 Image.asset(
                                   'assets/balance.png',
-                                  height: 33,
-                                  width: 40,
+                                  height: 30,
+                                  width: 30,
                                 ),
                                 const Text(
                                   'Balance',
