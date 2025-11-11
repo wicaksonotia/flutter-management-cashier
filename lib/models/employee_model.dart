@@ -33,6 +33,7 @@ class DataEmployee {
   String? phoneKasir;
   String? usernameKasir;
   bool? statusKasir;
+  bool? statusTransaksi;
   int? defaultOutlet;
   String? defaultOutletName;
   int? idKios;
@@ -46,6 +47,7 @@ class DataEmployee {
       this.phoneKasir,
       this.usernameKasir,
       this.statusKasir,
+      this.statusTransaksi,
       this.defaultOutlet,
       this.defaultOutletName,
       this.idKios,
@@ -59,6 +61,7 @@ class DataEmployee {
     phoneKasir = json['phone_kasir'];
     usernameKasir = json['username_kasir'];
     statusKasir = json['status_kasir'];
+    statusTransaksi = json['status_transaksi'];
     defaultOutlet = json['default_outlet'];
     defaultOutletName = json['default_outlet_name'];
     idKios = json['id_kios'];
@@ -74,6 +77,7 @@ class DataEmployee {
     data['phone_kasir'] = phoneKasir;
     data['username_kasir'] = usernameKasir;
     data['status_kasir'] = statusKasir;
+    data['status_transaksi'] = statusTransaksi;
     data['default_outlet'] = defaultOutlet;
     data['default_outlet_name'] = defaultOutletName;
     data['id_kios'] = idKios;

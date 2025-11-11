@@ -16,7 +16,6 @@ import 'package:cashier_management/pages/history/history_page.dart';
 import 'package:cashier_management/pages/setting/branch/add_branch_page.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
 import 'package:cashier_management/pages/setting/employee/add_employee_page.dart';
-import 'package:cashier_management/pages/setting/employee/employee_page.dart';
 import 'package:cashier_management/pages/setting/employee/list_employee_page.dart';
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';

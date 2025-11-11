@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/employee_model.dart';
 import 'package:cashier_management/models/kios_model.dart';
@@ -21,6 +23,7 @@ class EmployeeController extends GetxController {
   var idCabang = 0.obs;
   var selectedCabang = 'Cabang'.obs;
 
+  var idKasir = 0.obs;
   TextEditingController usernameController = TextEditingController();
   TextEditingController namaController = TextEditingController();
   TextEditingController noTelponController = TextEditingController();
@@ -29,6 +32,26 @@ class EmployeeController extends GetxController {
   void onInit() {
     super.onInit();
     fetchDataListKios();
+  }
+
+  void clearEmployeeController() {
+    idKasir.value = 0;
+    usernameController.clear();
+    namaController.clear();
+    noTelponController.clear();
+    idCabang.value = 0;
+    selectedCabang.value = 'Cabang';
+    update();
+  }
+
+  void editEmployee(DataEmployee employeeModel) {
+    idKasir.value = employeeModel.idKasir!;
+    usernameController.text = employeeModel.usernameKasir!;
+    namaController.text = employeeModel.namaKasir!;
+    noTelponController.text = employeeModel.phoneKasir!;
+    idCabang.value = employeeModel.defaultOutlet!;
+    selectedCabang.value = employeeModel.defaultOutletName!;
+    update();
   }
 
   void fetchDataListEmployee() async {
@@ -53,13 +76,14 @@ class EmployeeController extends GetxController {
       var result = await RemoteDataSource.getListKios(rawFormat);
       if (result != null) {
         resultDataKios.assignAll(result);
-        idKios.value = result.first.idKios!;
+        idKios.value = prefs.getInt('id_kios')!;
         selectedKios.value = result.first.kios!;
         listKios.assignAll(result.map((category) => {
               'value': category.idKios,
               'nama': category.kios!,
             }));
-        fetchDataListEmployee();
+        fetchDataListCabang();
+        // fetchDataListEmployee();
       }
     } finally {
       isLoadingKios(false);
@@ -88,12 +112,25 @@ class EmployeeController extends GetxController {
   Future<void> saveEmployee() async {
     try {
       isLoadingSave(true);
+      if (usernameController.text.isEmpty ||
+          namaController.text.isEmpty ||
+          noTelponController.text.isEmpty) {
+        throw "* All fields are required";
+      }
+      if (usernameController.text.contains(' ')) {
+        throw "* Username cannot contain spaces";
+      }
+      if (idCabang.value == 0) {
+        throw "* Please select a branch";
+      }
       var rawFormat = {
+        "id_kasir": idKasir.value,
         "username": usernameController.text,
         "nama_kasir": namaController.text,
         "phone_kasir": noTelponController.text,
         "id_cabang": idCabang.value,
       };
+      print(jsonEncode(rawFormat));
       bool result = await RemoteDataSource.saveEmployee(rawFormat);
       if (result) {
         Get.snackbar(
@@ -131,15 +168,31 @@ class EmployeeController extends GetxController {
     }
   }
 
-  void updateDefaultOutlet(int idEmployee, int idOutlet) async {
-    var rawFormat = {'id_kasir': idEmployee, 'default_outlet': idOutlet};
-    var resultUpdate = await RemoteDataSource.updateDefaultOutlet(rawFormat);
+  void processKasirCabang(int idEmployee, int idOutlet, String proses) async {
+    var rawFormat = {
+      'id_kasir': idEmployee,
+      'id_kios_cabang': idOutlet,
+      'proses': proses
+    };
+    var resultUpdate = await RemoteDataSource.updateEmployeeBranch(rawFormat);
     if (resultUpdate) {
       Get.snackbar('Notification', 'Data updated successfully',
           icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
       fetchDataListEmployee();
     } else {
       Get.snackbar('Notification', 'Failed to update data',
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+    }
+  }
+
+  void deleteEmployee(int id) async {
+    var resultUpdate = await RemoteDataSource.deleteEmployee(id);
+    if (resultUpdate) {
+      Get.snackbar('Notification', 'Data deleted successfully',
+          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      fetchDataListEmployee();
+    } else {
+      Get.snackbar('Notification', 'Failed to delete data',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     }
   }

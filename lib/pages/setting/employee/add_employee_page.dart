@@ -171,62 +171,75 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                           ),
                         ),
                         const Gap(16),
-                        InkWell(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              constraints: const BoxConstraints(
-                                minWidth: double.infinity,
-                              ),
-                              builder: (context) => const ChangeOutletPage(),
-                              isScrollControlled: true,
-                              backgroundColor: Colors.white,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                              ),
-                            );
-                          },
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              labelText: 'Set Default Outlet',
-                              labelStyle: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                              border: const OutlineInputBorder(),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 14,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Obx(
-                                  () => Text(
-                                    employeeController.selectedKios.value,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black87,
+                        Obx(
+                          () {
+                            if (employeeController.idKasir.value == 0) {
+                              return Column(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        constraints: const BoxConstraints(
+                                          minWidth: double.infinity,
+                                        ),
+                                        builder: (context) =>
+                                            const ChangeOutletPage(),
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.white,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: InputDecorator(
+                                      decoration: InputDecoration(
+                                        labelText: 'Set Default Outlet',
+                                        labelStyle: const TextStyle(
+                                          color: Colors.black54,
+                                        ),
+                                        border: const OutlineInputBorder(),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.grey.shade300,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 14,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            employeeController
+                                                .selectedKios.value,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 16,
+                                            color: MyColors.primary,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
-                                  color: MyColors.primary,
-                                ),
-                              ],
-                            ),
-                          ),
+                                  const Gap(16),
+                                ],
+                              );
+                            }
+                            return Container();
+                          },
                         ),
-                        const Gap(16),
                         InkWell(
                           onTap: () {
                             showModalBottomSheet(

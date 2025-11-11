@@ -52,6 +52,6 @@ class _AuthEndPoints {
   final String detailEmployee = 'FinancialDetailEmployee';
   final String updateEmployee = 'FinancialUpdateEmployee';
   final String updateEmployeeStatus = 'FinancialUpdateEmployeeStatus';
-  final String updateDefaultOutlet = 'FinancialUpdateDefaultOutlet';
+  final String updateEmployeeBranch = 'FinancialUpdateEmployeeBranch';
   final String deleteEmployee = 'FinancialDeleteEmployee';
 }

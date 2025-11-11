@@ -620,11 +620,30 @@ class RemoteDataSource {
     }
   }
 
-  static Future<bool> updateDefaultOutlet(
+  static Future<bool> updateEmployeeBranch(
       Map<String, dynamic> rawFormat) async {
     try {
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.updateEmployeeBranch;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> deleteEmployee(int id) async {
+    try {
+      var rawFormat = jsonEncode({'id': id});
       var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateDefaultOutlet;
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteEmployee;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
