@@ -28,74 +28,58 @@ class EmployeeModel {
 }
 
 class DataEmployee {
-  int? idKios;
-  String? kios;
-  int? idCabang;
-  String? cabang;
-  String? alamatCabang;
-  String? phoneCabang;
-  bool? statusCabang;
   int? idKasir;
-  String? usernameKasir;
-  String? passwordKasir;
   String? namaKasir;
   String? phoneKasir;
+  String? usernameKasir;
   bool? statusKasir;
-  String? keterangan;
   int? defaultOutlet;
+  String? defaultOutletName;
+  int? idKios;
+  String? namaKios;
+  List<int>? idCabang;
+  List<String>? cabang;
 
   DataEmployee(
-      {this.idKios,
-      this.kios,
-      this.idCabang,
-      this.cabang,
-      this.alamatCabang,
-      this.phoneCabang,
-      this.statusCabang,
-      this.idKasir,
-      this.usernameKasir,
-      this.passwordKasir,
+      {this.idKasir,
       this.namaKasir,
       this.phoneKasir,
+      this.usernameKasir,
       this.statusKasir,
-      this.keterangan,
-      this.defaultOutlet});
+      this.defaultOutlet,
+      this.defaultOutletName,
+      this.idKios,
+      this.namaKios,
+      this.idCabang,
+      this.cabang});
 
   DataEmployee.fromJson(Map<String, dynamic> json) {
-    idKios = json['id_kios'];
-    kios = json['kios'];
-    idCabang = json['id_cabang'];
-    cabang = json['cabang'];
-    alamatCabang = json['alamat_cabang'];
-    phoneCabang = json['phone_cabang'];
-    statusCabang = json['status_cabang'];
     idKasir = json['id_kasir'];
-    usernameKasir = json['username_kasir'];
-    passwordKasir = json['password_kasir'];
     namaKasir = json['nama_kasir'];
     phoneKasir = json['phone_kasir'];
+    usernameKasir = json['username_kasir'];
     statusKasir = json['status_kasir'];
-    keterangan = json['keterangan'];
     defaultOutlet = json['default_outlet'];
+    defaultOutletName = json['default_outlet_name'];
+    idKios = json['id_kios'];
+    namaKios = json['nama_kios'];
+    idCabang = json['id_cabang'].cast<int>();
+    cabang = json['cabang'].cast<String>();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id_kios'] = idKios;
-    data['kios'] = kios;
-    data['id_cabang'] = idCabang;
-    data['cabang'] = cabang;
-    data['alamat_cabang'] = alamatCabang;
-    data['phone_cabang'] = phoneCabang;
-    data['status_cabang'] = statusCabang;
     data['id_kasir'] = idKasir;
-    data['username_kasir'] = usernameKasir;
-    data['password_kasir'] = passwordKasir;
     data['nama_kasir'] = namaKasir;
     data['phone_kasir'] = phoneKasir;
+    data['username_kasir'] = usernameKasir;
     data['status_kasir'] = statusKasir;
-    data['keterangan'] = keterangan;
     data['default_outlet'] = defaultOutlet;
+    data['default_outlet_name'] = defaultOutletName;
+    data['id_kios'] = idKios;
+    data['nama_kios'] = namaKios;
+    data['id_cabang'] = idCabang;
+    data['cabang'] = cabang;
     return data;
   }
 }

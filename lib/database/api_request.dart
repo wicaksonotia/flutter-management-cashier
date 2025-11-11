@@ -182,9 +182,8 @@ class RemoteDataSource {
     }
   }
 
-  static Future<bool> updateStatusOutlet(int id, bool status) async {
+  static Future<bool> updateOutletStatus(Map<String, dynamic> rawFormat) async {
     try {
-      var rawFormat = jsonEncode({'id': id, 'status': status});
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateStatusOutlet;
       Response response = await Dio().post(url,
@@ -580,6 +579,63 @@ class RemoteDataSource {
       return null;
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  static Future<bool> saveEmployee(Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveEmployee;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> updateEmployeeStatus(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.updateEmployeeStatus;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> updateDefaultOutlet(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateDefaultOutlet;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
     }
   }
 }

@@ -15,7 +15,9 @@ import 'package:cashier_management/pages/monitoring_outlet/monitoring_page.dart'
 import 'package:cashier_management/pages/history/history_page.dart';
 import 'package:cashier_management/pages/setting/branch/add_branch_page.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
+import 'package:cashier_management/pages/setting/employee/add_employee_page.dart';
 import 'package:cashier_management/pages/setting/employee/employee_page.dart';
+import 'package:cashier_management/pages/setting/employee/list_employee_page.dart';
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
 import 'package:cashier_management/pages/setting/user/change_password_page.dart';
@@ -45,7 +47,8 @@ class RouterClass {
   static String userSetting = '/userSetting';
   static String changePassword = "/change_password";
   static String profile = "/profile";
-  static String cashier = "/cashier";
+  static String listemployee = "/listemployee";
+  static String addemployee = "/addemployee";
 
   static List<GetPage> routes = [
     GetPage(page: () => const LoginPage(), name: login),
@@ -122,9 +125,10 @@ class RouterClass {
     GetPage(page: () => const ChangePassword(), name: changePassword),
     GetPage(page: () => const ProfilePage(), name: profile),
     // CASHIER
+    GetPage(page: () => const AddEmployeePage(), name: addemployee),
     GetPage(
-        page: () => const EmployeePage(),
-        name: cashier,
+        page: () => const ListEmployeePage(),
+        name: listemployee,
         binding: BindingsBuilder(() {
           Get.put<EmployeeController>(EmployeeController());
         })),

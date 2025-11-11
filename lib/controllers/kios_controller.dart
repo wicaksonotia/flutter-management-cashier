@@ -194,7 +194,8 @@ class KiosController extends GetxController {
   }
 
   void updateStatusOutlet(int id, bool status) async {
-    var resultUpdate = await RemoteDataSource.updateStatusOutlet(id, status);
+    var rawFormat = {'id': id, 'status': status};
+    var resultUpdate = await RemoteDataSource.updateOutletStatus(rawFormat);
     if (resultUpdate) {
       Get.snackbar('Notification', 'Data updated successfully',
           icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);

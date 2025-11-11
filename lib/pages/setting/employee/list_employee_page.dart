@@ -12,24 +12,20 @@ import 'package:get/get.dart';
 import 'package:cashier_management/pages/navigation_drawer.dart'
     as custom_drawer;
 
-class EmployeePage extends StatefulWidget {
-  const EmployeePage({super.key});
+class ListEmployeePage extends StatefulWidget {
+  const ListEmployeePage({super.key});
 
   @override
-  State<EmployeePage> createState() => _EmployeePageState();
+  State<ListEmployeePage> createState() => _ListEmployeePageState();
 }
 
-class _EmployeePageState extends State<EmployeePage>
+class _ListEmployeePageState extends State<ListEmployeePage>
     with SingleTickerProviderStateMixin {
   final EmployeeController employeeController = Get.find<EmployeeController>();
   bool isDropdownKiosOpen = false;
-  bool isDropdownCabangOpen = false;
-
   late AnimationController _controller;
   late Animation<double> _opacityAnimation;
   late Animation<Offset> _slideAnimation;
-  // late Animation<double> _scaleAnimation;
-
   @override
   void initState() {
     super.initState();
@@ -48,26 +44,12 @@ class _EmployeePageState extends State<EmployeePage>
       parent: _controller,
       curve: Curves.easeOutBack,
     ));
-    // _scaleAnimation = Tween<double>(begin: 0.98, end: 1).animate(
-    //   CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    // );
   }
 
   void toggleDropdownKios() {
     setState(() {
       isDropdownKiosOpen = !isDropdownKiosOpen;
       if (isDropdownKiosOpen) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
-  }
-
-  void toggleDropdownCabang() {
-    setState(() {
-      isDropdownCabangOpen = !isDropdownCabangOpen;
-      if (isDropdownCabangOpen) {
         _controller.forward();
       } else {
         _controller.reverse();
@@ -121,40 +103,42 @@ class _EmployeePageState extends State<EmployeePage>
       body: SafeArea(
         child: Stack(
           children: [
-            Column(
-              children: [
-                const Gap(70), // beri jarak agar header tidak ketimpa
-                Expanded(child: Obx(
-                  () {
-                    if (employeeController.isLoadingEmployee.value) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      return ListView.builder(
-                        itemCount: employeeController.resultDataEmployee.length,
-                        itemBuilder: (context, index) {
-                          var employee =
-                              employeeController.resultDataEmployee[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Card(
-                              color: Colors.white,
-                              child: _buildAccountTile(
-                                id: employee.idKasir!,
-                                name: employee.namaKasir!,
-                                username: employee.usernameKasir!,
-                                phone: employee.phoneKasir!,
-                                isActive: employee.statusKasir!,
-                              ),
+            Obx(
+              () {
+                if (employeeController.isLoadingEmployee.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 70),
+                    child: ListView.builder(
+                      itemCount: employeeController.resultDataEmployee.length,
+                      itemBuilder: (context, index) {
+                        var employee =
+                            employeeController.resultDataEmployee[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Card(
+                            color: Colors.white,
+                            child: _buildAccountTile(
+                              id: employee.idKasir!,
+                              name: employee.namaKasir!,
+                              username: employee.usernameKasir!,
+                              phone: employee.phoneKasir!,
+                              cabangId: employee.idCabang!,
+                              cabang: employee.cabang!,
+                              defaultOutletName: employee.defaultOutletName!,
+                              defaultOutletId: employee.defaultOutlet!,
+                              isActive: employee.statusKasir!,
                             ),
-                          );
-                        },
-                      );
-                    }
-                  },
-                )),
-              ],
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }
+              },
             ),
 
             /// --- BACKDROP BLUR (HANYA MENUTUP LIST) ---
@@ -163,19 +147,6 @@ class _EmployeePageState extends State<EmployeePage>
                 top: 60, // mulai blur setelah tombol lokasi
                 child: GestureDetector(
                   onTap: toggleDropdownKios,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.2),
-                    ),
-                  ),
-                ),
-              ),
-            if (isDropdownCabangOpen)
-              Positioned.fill(
-                top: 60, // mulai blur setelah tombol lokasi
-                child: GestureDetector(
-                  onTap: toggleDropdownCabang,
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                     child: Container(
@@ -198,23 +169,7 @@ class _EmployeePageState extends State<EmployeePage>
                       label: employeeController.selectedKios.value,
                       isOpen: isDropdownKiosOpen,
                       isLoading: employeeController.isLoadingKios.value,
-                      isDisabled:
-                          isDropdownCabangOpen, // 👈 disable saat cabang open
                       onTap: toggleDropdownKios,
-                    );
-                  }),
-
-                  const Gap(10),
-
-                  // CABANG
-                  Obx(() {
-                    return DropdownTabButton(
-                      label: employeeController.selectedCabang.value,
-                      isOpen: isDropdownCabangOpen,
-                      isLoading: employeeController.isLoadingCabang.value,
-                      isDisabled:
-                          isDropdownKiosOpen, // 👈 disable saat cabang open
-                      onTap: toggleDropdownCabang,
                     );
                   }),
                 ],
@@ -241,27 +196,6 @@ class _EmployeePageState extends State<EmployeePage>
               },
               onClose: toggleDropdownKios,
             ),
-
-            _buildDropdownMenu(
-              isOpen: isDropdownCabangOpen,
-              opacityAnimation: _opacityAnimation,
-              slideAnimation: _slideAnimation,
-              source: employeeController.listCabang,
-              selectedValue: employeeController.idCabang.value,
-              onChanged: (val) {
-                employeeController.idCabang.value = val;
-                final selectedItem = employeeController.listCabang.firstWhere(
-                  (item) => item['value'] == val,
-                  orElse: () => {},
-                );
-                if (selectedItem.isNotEmpty) {
-                  employeeController.selectedCabang.value =
-                      selectedItem['nama'];
-                }
-                employeeController.fetchDataListEmployee();
-              },
-              onClose: toggleDropdownCabang,
-            ),
           ],
         ),
       ),
@@ -273,8 +207,13 @@ class _EmployeePageState extends State<EmployeePage>
     required String name,
     required String username,
     required String phone,
+    required List<int> cabangId,
+    required List<String> cabang,
+    required String defaultOutletName,
+    required int defaultOutletId,
     bool isActive = false,
   }) {
+    int? selectedId;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Stack(
@@ -373,6 +312,63 @@ class _EmployeePageState extends State<EmployeePage>
                         ),
                       ),
                     ],
+                  ),
+                  const Gap(2),
+                  SizedBox(
+                    width: 300,
+                    child: ChipsChoice<int>.single(
+                      wrapped: true,
+                      padding: EdgeInsets.zero,
+                      value: selectedId ?? defaultOutletId, // default terpilih
+                      onChanged: (val) {
+                        // Jika yang diklik adalah default outlet, abaikan
+                        if (val == defaultOutletId) return;
+
+                        final index = cabangId.indexOf(val);
+                        if (index != -1) {
+                          final selectedNama = cabang[index];
+                          print('Cabang dipilih: $selectedNama ($val)');
+                          setState(() => selectedId = val);
+
+                          // contoh panggil controller
+                          // employeeController.selectCabang(id, val);
+                          Get.bottomSheet(
+                            ConfirmDialog(
+                                title: 'Change Default Outlet',
+                                message:
+                                    'This cashier will be changed .\nAre you sure you want to continue?',
+                                onConfirm: () async {
+                                  employeeController.updateDefaultOutlet(
+                                      id, val);
+                                }),
+                            isScrollControlled: true,
+                            backgroundColor: Colors.white,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20)),
+                            ),
+                          );
+                        }
+                      },
+                      choiceItems: List.generate(
+                        cabang.length,
+                        (i) => C2Choice<int>(
+                          value: cabangId[i],
+                          label: cabang[i],
+                        ),
+                      ),
+                      choiceCheckmark: false,
+                      choiceStyle: C2ChipStyle.filled(
+                        borderRadius: BorderRadius.circular(25),
+                        color: Colors.grey.shade100,
+                        selectedStyle: const C2ChipStyle(
+                          backgroundColor: MyColors.primary,
+                          borderRadius: BorderRadius.all(Radius.circular(25)),
+                        ),
+                      ),
+                      spacing: 6,
+                      runSpacing: 6,
+                    ),
                   ),
                 ],
               ),
@@ -509,7 +505,6 @@ class DropdownTabButton extends StatelessWidget {
   final bool isOpen;
   final bool isLoading;
   final VoidCallback onTap;
-  final bool isDisabled; // 👈 tambahan
 
   const DropdownTabButton({
     super.key,
@@ -517,13 +512,12 @@ class DropdownTabButton extends StatelessWidget {
     required this.isOpen,
     required this.isLoading,
     required this.onTap,
-    this.isDisabled = false, // 👈 default false
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isDisabled ? null : onTap, // 👈 tidak bisa diklik saat disable
+      onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -531,34 +525,31 @@ class DropdownTabButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: isOpen ? Colors.white : Colors.grey.shade300,
         ),
-        child: Opacity(
-          opacity: isDisabled ? 0.5 : 1.0,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
               ),
-              const SizedBox(width: 4),
-              isLoading
-                  ? const SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Icon(
-                      isOpen
-                          ? Icons.keyboard_arrow_up
-                          : Icons.keyboard_arrow_down,
-                      color: MyColors.grey,
-                    ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 4),
+            isLoading
+                ? const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    isOpen
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: MyColors.grey,
+                  ),
+          ],
         ),
       ),
     );

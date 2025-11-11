@@ -312,7 +312,7 @@ class QuotationCard extends StatelessWidget {
                         value: "edit",
                         child: Row(
                           children: [
-                            Icon(Icons.edit_outlined),
+                            Icon(Icons.edit),
                             Gap(8),
                             Text("Edit"),
                           ],
@@ -322,7 +322,7 @@ class QuotationCard extends StatelessWidget {
                         value: "delete",
                         child: Row(
                           children: [
-                            Icon(Icons.delete_outline),
+                            Icon(Icons.delete),
                             Gap(8),
                             Text("Delete"),
                           ],
@@ -332,13 +332,14 @@ class QuotationCard extends StatelessWidget {
                         value: "branch",
                         child: Row(
                           children: [
-                            Icon(Icons.home_outlined),
+                            Icon(Icons.home),
                             Gap(8),
                             Text("Add Branch"),
                           ],
                         ),
                       ),
                     ],
+                    color: Colors.white,
                     icon: const Icon(Icons.more_vert),
                   ),
                 ),

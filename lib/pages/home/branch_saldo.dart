@@ -121,25 +121,21 @@ class BranchSaldo extends StatelessWidget {
     });
   }
 
-  AnimatedSmoothIndicator buildIndicator(
-      TotalPerTypeController totalPerTypeController) {
-    // if there are no items, don't build the indicator to avoid division by zero / NaN
-    if (totalPerTypeController.resultItem.isEmpty) {
-      return const AnimatedSmoothIndicator(
-        activeIndex: 0,
-        count: 0,
-        effect: ExpandingDotsEffect(
-          dotHeight: 0,
-          dotWidth: 0,
-          activeDotColor: Colors.transparent,
-          dotColor: Colors.transparent,
-        ),
-      );
+  Widget buildIndicator(TotalPerTypeController totalPerTypeController) {
+    final int count = totalPerTypeController.resultItem.length;
+
+    // Jika tidak ada item, jangan render indikator sama sekali
+    if (count == 0) {
+      return const SizedBox.shrink();
     }
 
-    final int count = totalPerTypeController.resultItem.length;
+    // Pastikan indexSlider aman
     final int rawIndex = totalPerTypeController.indexSlider.value;
-    final int activeIndex = (rawIndex >= 0 && rawIndex < count) ? rawIndex : 0;
+    final int activeIndex = (rawIndex.isNaN || rawIndex.isInfinite)
+        ? 0
+        : (rawIndex >= 0 && rawIndex < count)
+            ? rawIndex
+            : 0;
 
     return AnimatedSmoothIndicator(
       activeIndex: activeIndex,

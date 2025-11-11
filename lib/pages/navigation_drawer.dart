@@ -91,7 +91,7 @@ class NavigationDrawer extends StatelessWidget {
               text: "Employee",
               onTap: () {
                 Navigator.of(context).pop();
-                Get.toNamed(RouterClass.cashier);
+                Get.toNamed(RouterClass.listemployee);
               },
             ),
             buildDrawerItem(
