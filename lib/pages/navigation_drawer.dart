@@ -24,8 +24,8 @@ class NavigationDrawer extends StatelessWidget {
         color: Colors.white,
         child: ListView(
           children: [
-            buildDrawerHeader(),
-            buildDrawerItem(
+            _buildDrawerHeader(),
+            _buildDrawerItem(
               icon: Icons.shopping_cart,
               text: "Home",
               onTap: () {
@@ -34,7 +34,7 @@ class NavigationDrawer extends StatelessWidget {
               },
               selected: Get.currentRoute == RouterClass.home,
             ),
-            buildDrawerItem(
+            _buildDrawerItem(
               icon: Icons.home_work,
               text: "Transaksi Per Outlet",
               onTap: () {
@@ -53,7 +53,7 @@ class NavigationDrawer extends StatelessWidget {
                   style: TextStyle(
                       fontSize: MySizes.fontSizeLg, letterSpacing: 1)),
             ),
-            buildDrawerItem(
+            _buildDrawerItem(
               icon: Icons.edit_document,
               text: "Input Transaksi",
               onTap: () {
@@ -62,7 +62,7 @@ class NavigationDrawer extends StatelessWidget {
               },
               selected: Get.currentRoute == RouterClass.addtransaction,
             ),
-            buildDrawerItem(
+            _buildDrawerItem(
               icon: Icons.history,
               text: "Riwayat",
               onTap: () {
@@ -78,29 +78,45 @@ class NavigationDrawer extends StatelessWidget {
                   style: TextStyle(
                       fontSize: MySizes.fontSizeLg, letterSpacing: 1)),
             ),
-            buildDrawerItem(
-              icon: Icons.manage_accounts,
+            _buildDrawerItem(
+              icon: Icons.store,
               text: "Outlet",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.outlet);
               },
             ),
-            buildDrawerItem(
-              icon: Icons.manage_accounts,
+            _buildDrawerItem(
+              icon: Icons.supervisor_account,
               text: "Employee",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.listemployee);
               },
             ),
-            buildDrawerItem(
-              icon: Icons.production_quantity_limits,
-              text: "Product",
-              onTap: () => '',
+            Container(
+              color: Colors.transparent,
+              child: const ListTile(
+                leading: Icon(Icons.inventory, color: Colors.black),
+                title: Text('Product', style: TextStyle(color: Colors.black)),
+              ),
+            ),
+            _buildSubItem(
+              text: "Category",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.productcategory);
+              },
+            ),
+            _buildSubItem(
+              text: "List Product",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.listproduct);
+              },
             ),
             Divider(color: Colors.grey.shade300),
-            buildDrawerItem(
+            _buildDrawerItem(
               icon: Icons.manage_accounts,
               text: "Account",
               onTap: () {
@@ -108,7 +124,7 @@ class NavigationDrawer extends StatelessWidget {
                 Get.toNamed(RouterClass.userSetting);
               },
             ),
-            buildDrawerItem(
+            _buildDrawerItem(
               icon: Icons.logout,
               text: "Log Out",
               onTap: () {
@@ -135,7 +151,7 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget buildDrawerHeader() {
+  Widget _buildDrawerHeader() {
     return FutureBuilder<SharedPreferences>(
       future: SharedPreferences.getInstance(),
       builder: (context, snapshot) {
@@ -217,7 +233,7 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget buildDrawerItem({
+  Widget _buildDrawerItem({
     required String text,
     required IconData icon,
     required VoidCallback onTap,
@@ -235,6 +251,30 @@ class NavigationDrawer extends StatelessWidget {
         title: Text(text,
             style:
                 TextStyle(color: selected ? MyColors.primary : Colors.black)),
+        selected: selected,
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _buildSubItem({
+    required String text,
+    required VoidCallback onTap,
+    bool selected = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 50, right: 25),
+      child: ListTile(
+        dense: true,
+        contentPadding: EdgeInsets.zero,
+        title: Text(text,
+            style:
+                TextStyle(color: selected ? MyColors.primary : Colors.black)),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: selected ? MyColors.primary : Colors.black,
+          size: MySizes.iconXs,
+        ),
         selected: selected,
         onTap: onTap,
       ),

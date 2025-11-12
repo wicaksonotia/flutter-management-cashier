@@ -45,6 +45,11 @@ class _ListEmployeePageState extends State<ListEmployeePage>
       parent: _controller,
       curve: Curves.easeOutBack,
     ));
+    employeeController.fetchDataListKios(
+      onAfterSuccess: () => employeeController.fetchDataListCabang(
+        onAfterSuccess: () async => employeeController.fetchDataListEmployee(),
+      ),
+    );
   }
 
   void toggleDropdownKios() {
@@ -196,7 +201,10 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                 if (selectedItem.isNotEmpty) {
                   employeeController.selectedKios.value = selectedItem['nama'];
                 }
-                employeeController.fetchDataListCabang();
+                employeeController.fetchDataListCabang(
+                  onAfterSuccess: () async =>
+                      employeeController.fetchDataListEmployee(),
+                );
               },
               onClose: toggleDropdownKios,
             ),

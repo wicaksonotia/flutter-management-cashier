@@ -1,17 +1,12 @@
-import 'package:cashier_management/controllers/employee_controller.dart';
+import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ChangeOutletPage extends StatefulWidget {
-  const ChangeOutletPage({super.key});
+class ChangeOutletPage<T extends BaseController> extends StatelessWidget {
+  final T controller;
 
-  @override
-  State<ChangeOutletPage> createState() => _ChangeOutletPageState();
-}
-
-class _ChangeOutletPageState extends State<ChangeOutletPage> {
-  final EmployeeController employeeController = Get.find<EmployeeController>();
+  const ChangeOutletPage({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +17,7 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
       minChildSize: .2,
       builder: (context, scrollController) {
         return Obx(() {
-          if (employeeController.isLoadingKios.value) {
+          if (controller.isLoadingKios.value) {
             return const Center(child: CircularProgressIndicator());
           }
           return Padding(
@@ -32,9 +27,9 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
             ),
             child: ListView.builder(
               controller: scrollController,
-              itemCount: employeeController.resultDataKios.length,
+              itemCount: controller.resultDataKios.length,
               itemBuilder: (context, index) {
-                final outlet = employeeController.resultDataKios[index];
+                final outlet = controller.resultDataKios[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 4,
@@ -42,9 +37,10 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                   ),
                   child: ListTile(
                     onTap: () {
-                      employeeController.idKios.value = outlet.idKios!;
-                      employeeController.selectedKios.value = outlet.kios!;
-                      employeeController.fetchDataListCabang();
+                      Get.back();
+                      controller.idKios.value = outlet.idKios!;
+                      controller.selectedKios.value = outlet.kios!;
+                      controller.fetchDataListCabang();
                     },
                     title: Text(
                       outlet.kios!,
@@ -60,10 +56,9 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                     trailing: Obx(
                       () => Icon(
                         Icons.check_circle,
-                        color:
-                            (outlet.idKios == employeeController.idKios.value)
-                                ? Colors.lightGreen
-                                : Colors.grey.shade300,
+                        color: (outlet.idKios == controller.idKios.value)
+                            ? Colors.lightGreen
+                            : Colors.grey.shade300,
                       ),
                     ),
                   ),

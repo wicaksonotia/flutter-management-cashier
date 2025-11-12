@@ -49,9 +49,15 @@ class _AuthEndPoints {
   // EMPLOYEE
   final String listEmployee = 'FinancialListEmployee';
   final String saveEmployee = 'FinancialSaveEmployee';
-  final String detailEmployee = 'FinancialDetailEmployee';
-  final String updateEmployee = 'FinancialUpdateEmployee';
   final String updateEmployeeStatus = 'FinancialUpdateEmployeeStatus';
   final String updateEmployeeBranch = 'FinancialUpdateEmployeeBranch';
   final String deleteEmployee = 'FinancialDeleteEmployee';
+
+  // PRODUCT CATEGORY
+  final String listProductCategory = 'FinancialListProductCategory';
+  final String saveProductCategory = 'FinancialSaveProductCategory';
+  final String updateProductCategoryStatus =
+      'FinancialUpdateProductCategoryStatus';
+  final String deleteProductCategory = 'FinancialDeleteProductCategory';
+  final String updateCategorySorting = 'FinancialUpdateCategorySorting';
 }

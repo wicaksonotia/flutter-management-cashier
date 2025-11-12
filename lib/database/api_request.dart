@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cashier_management/models/chart_model.dart';
 import 'package:cashier_management/models/employee_model.dart';
 import 'package:cashier_management/models/outlet_branch_model.dart';
+import 'package:cashier_management/models/product_category_model.dart';
 import 'package:dio/dio.dart';
 import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:cashier_management/models/category_model.dart';
@@ -279,9 +280,8 @@ class RemoteDataSource {
     }
   }
 
-  static Future<bool> updateStatusBranch(int id, bool status) async {
+  static Future<bool> updateStatusBranch(Map<String, dynamic> rawFormat) async {
     try {
-      var rawFormat = jsonEncode({'id': id, 'status': status});
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateStatusBranch;
       Response response = await Dio().post(url,
@@ -644,6 +644,106 @@ class RemoteDataSource {
       var rawFormat = jsonEncode({'id': id});
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteEmployee;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // ===================== PRODUCT CATEGORY =====================
+  static Future<List<DataProductCategory>?> getListProductCategory(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listProductCategory;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = response.data['data'];
+        return jsonData.map((e) => DataProductCategory.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<bool> saveProductCategory(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveProductCategory;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<dynamic> updateCategorySorting(
+      List<Map<String, dynamic>> data) async {
+    try {
+      var rawFormat = jsonEncode({"data": data});
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.updateCategorySorting;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> updateStatusProductCategory(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.updateProductCategoryStatus;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> deleteProductCategory(int id) async {
+    try {
+      var rawFormat = jsonEncode({'id': id});
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.deleteProductCategory;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(

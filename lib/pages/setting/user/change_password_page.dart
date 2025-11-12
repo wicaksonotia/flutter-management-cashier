@@ -26,7 +26,7 @@ class _ChangePasswordState extends State<ChangePassword> {
               context: context,
               removeTop: true,
               child: BackgroundForm(
-                headerTitle: 'Ganti Kata Sandi',
+                headerTitle: 'Change Password',
                 container: containerPage(),
               )),
         ),
@@ -123,29 +123,26 @@ class _ChangePasswordState extends State<ChangePassword> {
             textAlign: TextAlign.center,
           ),
           const Gap(50),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  _loginController.changePasswordProcess();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: MyColors.primary,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 15,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                _loginController.changePasswordProcess();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MyColors.primary,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 15,
                 ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                    fontSize: MySizes.fontSizeMd,
-                    color: Colors.white,
-                  ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+              child: const Text(
+                'Save',
+                style: TextStyle(
+                  fontSize: MySizes.fontSizeMd,
+                  color: Colors.white,
                 ),
               ),
             ),

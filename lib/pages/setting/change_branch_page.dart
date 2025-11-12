@@ -1,17 +1,12 @@
-import 'package:cashier_management/controllers/employee_controller.dart';
+import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ChangeBranchPage extends StatefulWidget {
-  const ChangeBranchPage({super.key});
+class ChangeBranchPage<T extends BaseController> extends StatelessWidget {
+  final T controller;
 
-  @override
-  State<ChangeBranchPage> createState() => _ChangeBranchPageState();
-}
-
-class _ChangeBranchPageState extends State<ChangeBranchPage> {
-  final EmployeeController employeeController = Get.find<EmployeeController>();
+  const ChangeBranchPage({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +17,7 @@ class _ChangeBranchPageState extends State<ChangeBranchPage> {
       minChildSize: .2,
       builder: (context, scrollController) {
         return Obx(() {
-          if (employeeController.isLoadingCabang.value) {
+          if (controller.isLoadingCabang.value) {
             return const Center(child: CircularProgressIndicator());
           }
           return Padding(
@@ -32,9 +27,9 @@ class _ChangeBranchPageState extends State<ChangeBranchPage> {
             ),
             child: ListView.builder(
               controller: scrollController,
-              itemCount: employeeController.resultDataCabang.length,
+              itemCount: controller.resultDataCabang.length,
               itemBuilder: (context, index) {
-                final outlet = employeeController.resultDataCabang[index];
+                final outlet = controller.resultDataCabang[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 4,
@@ -42,8 +37,9 @@ class _ChangeBranchPageState extends State<ChangeBranchPage> {
                   ),
                   child: ListTile(
                     onTap: () {
-                      employeeController.idCabang.value = outlet.id!;
-                      employeeController.selectedCabang.value = outlet.cabang!;
+                      Get.back();
+                      controller.idCabang.value = outlet.id!;
+                      controller.selectedCabang.value = outlet.cabang!;
                     },
                     title: Text(
                       outlet.cabang!,
@@ -59,7 +55,7 @@ class _ChangeBranchPageState extends State<ChangeBranchPage> {
                     trailing: Obx(
                       () => Icon(
                         Icons.check_circle,
-                        color: (outlet.id == employeeController.idCabang.value)
+                        color: (outlet.id == controller.idCabang.value)
                             ? Colors.lightGreen
                             : Colors.grey.shade300,
                       ),

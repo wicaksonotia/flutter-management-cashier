@@ -211,7 +211,8 @@ class QuotationCard extends StatelessWidget {
                                     quotation.isActive == true
                                         ? 'Active'
                                         : 'Inactive',
-                                    style: const TextStyle(fontSize: 12),
+                                    style: const TextStyle(
+                                        fontSize: MySizes.fontSizeXsm),
                                   ),
                                 ),
                               ),
@@ -233,7 +234,8 @@ class QuotationCard extends StatelessWidget {
                                   ),
                                   child: Text(
                                     'Cabang: ${quotation.totalCabang ?? 0}',
-                                    style: const TextStyle(fontSize: 12),
+                                    style: const TextStyle(
+                                        fontSize: MySizes.fontSizeXsm),
                                   ),
                                 ),
                               ),
@@ -424,4 +426,3 @@ class QuotationCard extends StatelessWidget {
     );
   }
 }
-// ...existing code...

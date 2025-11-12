@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/employee_controller.dart';
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
+import 'package:cashier_management/controllers/product_category_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
@@ -19,6 +20,9 @@ import 'package:cashier_management/pages/setting/employee/add_employee_page.dart
 import 'package:cashier_management/pages/setting/employee/list_employee_page.dart';
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
+import 'package:cashier_management/pages/setting/product/list_product/list_product_page.dart';
+import 'package:cashier_management/pages/setting/product/product_category/add_product_category.dart';
+import 'package:cashier_management/pages/setting/product/product_category/list_product_category_page.dart';
 import 'package:cashier_management/pages/setting/user/change_password_page.dart';
 import 'package:cashier_management/pages/setting/user/profile_page.dart';
 import 'package:cashier_management/pages/setting/user/user_setting.dart';
@@ -39,15 +43,18 @@ class RouterClass {
   static String income = '/income';
   static String calculator = '/calculator';
   // SETTING
+  static String profile = "/profile";
+  static String userSetting = '/userSetting';
+  static String changePassword = "/change_password";
   static String outlet = '/outlet';
   static String addoutlet = '/addoutlet';
   static String branch = '/branch';
   static String addbranch = '/addbranch';
-  static String userSetting = '/userSetting';
-  static String changePassword = "/change_password";
-  static String profile = "/profile";
   static String listemployee = "/listemployee";
   static String addemployee = "/addemployee";
+  static String addproductcategory = "/addproductcategory";
+  static String productcategory = "/productcategory";
+  static String listproduct = "/listproduct";
 
   static List<GetPage> routes = [
     GetPage(page: () => const LoginPage(), name: login),
@@ -107,6 +114,10 @@ class RouterClass {
     // =============================================================
     // SETTING
     // =============================================================
+    // PROFILE
+    GetPage(page: () => const UserSetting(), name: userSetting),
+    GetPage(page: () => const ChangePassword(), name: changePassword),
+    GetPage(page: () => const ProfilePage(), name: profile),
     // OUTLET
     GetPage(
       page: () => const OutletPage(),
@@ -119,17 +130,24 @@ class RouterClass {
     // BRANCH
     GetPage(page: () => const BranchPage(), name: branch),
     GetPage(page: () => const AddBranchPage(), name: addbranch),
-    // PROFILE
-    GetPage(page: () => const UserSetting(), name: userSetting),
-    GetPage(page: () => const ChangePassword(), name: changePassword),
-    GetPage(page: () => const ProfilePage(), name: profile),
     // CASHIER
     GetPage(page: () => const AddEmployeePage(), name: addemployee),
     GetPage(
-        page: () => const ListEmployeePage(),
-        name: listemployee,
-        binding: BindingsBuilder(() {
-          Get.put<EmployeeController>(EmployeeController());
-        })),
+      page: () => const ListEmployeePage(),
+      name: listemployee,
+      binding: BindingsBuilder(() {
+        Get.put<EmployeeController>(EmployeeController());
+      }),
+    ),
+    // PRODUCT CATEGORY
+    GetPage(page: () => const AddProductCategory(), name: addproductcategory),
+    GetPage(page: () => const ListProductCategoryPage(), name: productcategory),
+    GetPage(
+      page: () => const ListProduct(),
+      name: listproduct,
+      binding: BindingsBuilder(() {
+        Get.put<ProductCategoryController>(ProductCategoryController());
+      }),
+    ),
   ];
 }

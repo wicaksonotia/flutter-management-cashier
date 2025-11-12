@@ -1,38 +1,31 @@
-import 'dart:convert';
+// import 'dart:convert';
 
+import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/employee_model.dart';
-import 'package:cashier_management/models/kios_model.dart';
-import 'package:cashier_management/models/outlet_branch_model.dart';
+// import 'package:cashier_management/models/kios_model.dart';
+// import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
-class EmployeeController extends GetxController {
+class EmployeeController extends BaseController {
   var resultDataEmployee = <DataEmployee>[].obs;
-  var resultDataKios = <KiosModel>[].obs;
-  var resultDataCabang = <DataListOutletBranch>[].obs;
-  RxList<Map<String, dynamic>> listKios = <Map<String, dynamic>>[].obs;
-  RxList<Map<String, dynamic>> listCabang = <Map<String, dynamic>>[].obs;
   var isLoadingSave = true.obs;
   var isLoadingEmployee = true.obs;
-  var isLoadingKios = true.obs;
-  var isLoadingCabang = true.obs;
-  var idKios = 0.obs;
-  var selectedKios = 'Kios'.obs;
-  var idCabang = 0.obs;
-  var selectedCabang = 'Cabang'.obs;
 
   var idKasir = 0.obs;
   TextEditingController usernameController = TextEditingController();
   TextEditingController namaController = TextEditingController();
   TextEditingController noTelponController = TextEditingController();
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchDataListKios();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   fetchDataListKios(
+  //     onAfterSuccess: () async => fetchDataListEmployee(),
+  //   );
+  // }
 
   void clearEmployeeController() {
     idKasir.value = 0;
@@ -69,46 +62,6 @@ class EmployeeController extends GetxController {
     }
   }
 
-  void fetchDataListKios() async {
-    try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var rawFormat = {'id_owner': prefs.getInt('id_owner')!};
-      var result = await RemoteDataSource.getListKios(rawFormat);
-      if (result != null) {
-        resultDataKios.assignAll(result);
-        idKios.value = prefs.getInt('id_kios')!;
-        selectedKios.value = result.first.kios!;
-        listKios.assignAll(result.map((category) => {
-              'value': category.idKios,
-              'nama': category.kios!,
-            }));
-        fetchDataListCabang();
-        // fetchDataListEmployee();
-      }
-    } finally {
-      isLoadingKios(false);
-    }
-  }
-
-  void fetchDataListCabang() async {
-    try {
-      var rawFormat = {'id_kios': idKios.value};
-      var result = await RemoteDataSource.getListCabangKios(rawFormat);
-      if (result != null) {
-        resultDataCabang.assignAll(result);
-        idCabang.value = result.first.id!;
-        selectedCabang.value = result.first.cabang!;
-        listCabang.assignAll(result.map((category) => {
-              'value': category.id,
-              'nama': category.cabang!,
-            }));
-        fetchDataListEmployee();
-      }
-    } finally {
-      isLoadingCabang(false);
-    }
-  }
-
   Future<void> saveEmployee() async {
     try {
       isLoadingSave(true);
@@ -130,7 +83,6 @@ class EmployeeController extends GetxController {
         "phone_kasir": noTelponController.text,
         "id_cabang": idCabang.value,
       };
-      print(jsonEncode(rawFormat));
       bool result = await RemoteDataSource.saveEmployee(rawFormat);
       if (result) {
         Get.snackbar(

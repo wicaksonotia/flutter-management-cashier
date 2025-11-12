@@ -97,7 +97,8 @@ class CabangController extends GetxController {
   }
 
   void updateStatusBranch(int id, bool status) async {
-    var resultUpdate = await RemoteDataSource.updateStatusBranch(id, status);
+    var rawFormat = {'id': id, 'status': status};
+    var resultUpdate = await RemoteDataSource.updateStatusBranch(rawFormat);
     if (resultUpdate) {
       Get.snackbar('Notification', 'Data updated successfully',
           icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
