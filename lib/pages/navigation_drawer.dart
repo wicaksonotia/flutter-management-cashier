@@ -85,6 +85,7 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.outlet);
               },
+              selected: Get.currentRoute == RouterClass.outlet,
             ),
             _buildDrawerItem(
               icon: Icons.supervisor_account,
@@ -93,12 +94,22 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.listemployee);
               },
+              selected: Get.currentRoute == RouterClass.listemployee,
             ),
             Container(
               color: Colors.transparent,
-              child: const ListTile(
-                leading: Icon(Icons.inventory, color: Colors.black),
-                title: Text('Product', style: TextStyle(color: Colors.black)),
+              child: ListTile(
+                leading: Icon(Icons.inventory,
+                    color: (Get.currentRoute == RouterClass.listproduct ||
+                            Get.currentRoute == RouterClass.productcategory)
+                        ? MyColors.primary
+                        : Colors.black),
+                title: Text('Product',
+                    style: TextStyle(
+                        color: (Get.currentRoute == RouterClass.listproduct ||
+                                Get.currentRoute == RouterClass.productcategory)
+                            ? MyColors.primary
+                            : Colors.black)),
               ),
             ),
             _buildSubItem(
@@ -107,6 +118,7 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.productcategory);
               },
+              selected: Get.currentRoute == RouterClass.productcategory,
             ),
             _buildSubItem(
               text: "List Product",
@@ -114,6 +126,7 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.listproduct);
               },
+              selected: Get.currentRoute == RouterClass.listproduct,
             ),
             Divider(color: Colors.grey.shade300),
             _buildDrawerItem(
@@ -123,6 +136,7 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.userSetting);
               },
+              selected: Get.currentRoute == RouterClass.userSetting,
             ),
             _buildDrawerItem(
               icon: Icons.logout,
@@ -262,7 +276,8 @@ class NavigationDrawer extends StatelessWidget {
     required VoidCallback onTap,
     bool selected = false,
   }) {
-    return Padding(
+    return Container(
+      color: selected ? MyColors.notionBgPurple : Colors.transparent,
       padding: const EdgeInsets.only(left: 50, right: 25),
       child: ListTile(
         dense: true,

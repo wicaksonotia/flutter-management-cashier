@@ -477,6 +477,26 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                   );
                   return;
                 }
+                if (value == "reset_password") {
+                  // Show confirmation dialog
+                  Get.bottomSheet(
+                    ConfirmDialog(
+                      title: 'Reset Password',
+                      message:
+                          'Are you sure, you want to reset password this employee?',
+                      onConfirm: () async {
+                        employeeController.resetPassword(id);
+                      },
+                    ),
+                    isScrollControlled: true,
+                    backgroundColor: Colors.white,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                  );
+                  return;
+                }
               },
               itemBuilder: (context) => [
                 const PopupMenuItem(
@@ -496,6 +516,16 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                       Icon(Icons.delete),
                       Gap(8),
                       Text("Delete"),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: "reset_password",
+                  child: Row(
+                    children: [
+                      Icon(Icons.password),
+                      Gap(8),
+                      Text("Reset Password"),
                     ],
                   ),
                 ),

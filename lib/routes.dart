@@ -1,7 +1,6 @@
 import 'package:cashier_management/controllers/employee_controller.dart';
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
-import 'package:cashier_management/controllers/product_category_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
@@ -20,8 +19,9 @@ import 'package:cashier_management/pages/setting/employee/add_employee_page.dart
 import 'package:cashier_management/pages/setting/employee/list_employee_page.dart';
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
+import 'package:cashier_management/pages/setting/product/list_product/add_product_page.dart';
 import 'package:cashier_management/pages/setting/product/list_product/list_product_page.dart';
-import 'package:cashier_management/pages/setting/product/product_category/add_product_category.dart';
+import 'package:cashier_management/pages/setting/product/product_category/add_product_category_page.dart';
 import 'package:cashier_management/pages/setting/product/product_category/list_product_category_page.dart';
 import 'package:cashier_management/pages/setting/user/change_password_page.dart';
 import 'package:cashier_management/pages/setting/user/profile_page.dart';
@@ -54,6 +54,7 @@ class RouterClass {
   static String addemployee = "/addemployee";
   static String addproductcategory = "/addproductcategory";
   static String productcategory = "/productcategory";
+  static String addproduct = "/addproduct";
   static String listproduct = "/listproduct";
 
   static List<GetPage> routes = [
@@ -140,14 +141,11 @@ class RouterClass {
       }),
     ),
     // PRODUCT CATEGORY
-    GetPage(page: () => const AddProductCategory(), name: addproductcategory),
-    GetPage(page: () => const ListProductCategoryPage(), name: productcategory),
     GetPage(
-      page: () => const ListProduct(),
-      name: listproduct,
-      binding: BindingsBuilder(() {
-        Get.put<ProductCategoryController>(ProductCategoryController());
-      }),
-    ),
+        page: () => const AddProductCategoryPage(), name: addproductcategory),
+    GetPage(page: () => const ListProductCategoryPage(), name: productcategory),
+    // PRODUCT
+    GetPage(page: () => const AddProductPage(), name: addproduct),
+    GetPage(page: () => const ListProductPage(), name: listproduct),
   ];
 }

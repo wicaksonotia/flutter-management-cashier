@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class AddProductCategory extends StatefulWidget {
-  const AddProductCategory({super.key});
+class AddProductCategoryPage extends StatefulWidget {
+  const AddProductCategoryPage({super.key});
 
   @override
-  State<AddProductCategory> createState() => _AddProductCategoryState();
+  State<AddProductCategoryPage> createState() => _AddProductCategoryPageState();
 }
 
-class _AddProductCategoryState extends State<AddProductCategory> {
+class _AddProductCategoryPageState extends State<AddProductCategoryPage> {
   final ProductCategoryController _productCategoryController =
       Get.find<ProductCategoryController>();
 

@@ -19,14 +19,6 @@ class EmployeeController extends BaseController {
   TextEditingController namaController = TextEditingController();
   TextEditingController noTelponController = TextEditingController();
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   fetchDataListKios(
-  //     onAfterSuccess: () async => fetchDataListEmployee(),
-  //   );
-  // }
-
   void clearEmployeeController() {
     idKasir.value = 0;
     usernameController.clear();
@@ -145,6 +137,17 @@ class EmployeeController extends BaseController {
       fetchDataListEmployee();
     } else {
       Get.snackbar('Notification', 'Failed to delete data',
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+    }
+  }
+
+  void resetPassword(int id) async {
+    var result = await RemoteDataSource.resetPassword(id);
+    if (result) {
+      Get.snackbar('Notification', 'Reset password successfully',
+          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+    } else {
+      Get.snackbar('Notification', 'Failed to reset password',
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     }
   }

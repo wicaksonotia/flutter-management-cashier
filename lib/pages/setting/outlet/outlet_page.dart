@@ -130,6 +130,7 @@ class QuotationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final KiosController kiosController = Get.find<KiosController>();
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 2,

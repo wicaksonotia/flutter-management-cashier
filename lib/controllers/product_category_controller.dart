@@ -10,12 +10,13 @@ class ProductCategoryController extends BaseController {
   var isLoadingSave = true.obs;
   TextEditingController productCategoryNameController = TextEditingController();
   var idProductCategory = 0.obs;
+  var nameProductCategory = 'Category'.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchDataListKios();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   fetchDataListKios();
+  // }
 
   void clearProductCategoryController() {
     idProductCategory.value = 0;
@@ -30,14 +31,22 @@ class ProductCategoryController extends BaseController {
     update();
   }
 
-  void fetchDataListProductCategory() async {
+  Future<void> fetchDataListProductCategory({
+    Future<void> Function()? onAfterSuccess,
+  }) async {
     try {
       var rawFormat = {
         'id_kios': idKios.value,
       };
       var result = await RemoteDataSource.getListProductCategory(rawFormat);
-      if (result != null) {
-        resultDataProductCategory.assignAll(result);
+      if (result == null || result.isEmpty) {
+        resultDataProductCategory.clear();
+        return;
+      }
+      resultDataProductCategory.assignAll(result);
+      // ✅ Jalankan callback opsional (jika dikirim)
+      if (onAfterSuccess != null) {
+        await onAfterSuccess();
       }
     } finally {
       isLoadingList(false);

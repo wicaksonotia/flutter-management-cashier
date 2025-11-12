@@ -4,6 +4,7 @@ import 'package:cashier_management/models/chart_model.dart';
 import 'package:cashier_management/models/employee_model.dart';
 import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:cashier_management/models/product_category_model.dart';
+import 'package:cashier_management/models/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:cashier_management/models/category_model.dart';
@@ -658,6 +659,24 @@ class RemoteDataSource {
     }
   }
 
+  static Future<bool> resetPassword(int id) async {
+    try {
+      var rawFormat = jsonEncode({'id': id});
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.resetPassword;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   // ===================== PRODUCT CATEGORY =====================
   static Future<List<DataProductCategory>?> getListProductCategory(
       Map<String, dynamic> rawFormat) async {
@@ -705,7 +724,7 @@ class RemoteDataSource {
     try {
       var rawFormat = jsonEncode({"data": data});
       var url = ApiEndPoints.baseUrl +
-          ApiEndPoints.authEndpoints.updateCategorySorting;
+          ApiEndPoints.authEndpoints.updateProductCategorySorting;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
@@ -744,6 +763,121 @@ class RemoteDataSource {
       var rawFormat = jsonEncode({'id': id});
       var url = ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.deleteProductCategory;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // ===================== PRODUCT =====================
+  static Future<List<DataProduct>?> getListProduct(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listProduct;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = response.data['data'];
+        return jsonData.map((e) => DataProduct.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<bool> saveProduct(Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveProduct;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<dynamic> updateProductSorting(
+      List<Map<String, dynamic>> data) async {
+    try {
+      var rawFormat = jsonEncode({"data": data});
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.updateProductSorting;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> updateStatusProduct(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateProductStatus;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> deleteProduct(int id) async {
+    try {
+      var rawFormat = jsonEncode({'id': id});
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteProduct;
+      Response response = await Dio().post(url,
+          data: rawFormat,
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> toggleFavoriteProduct(
+      Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.updateProductFavorite;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(
