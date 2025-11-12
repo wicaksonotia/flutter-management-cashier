@@ -1,21 +1,21 @@
-import 'package:cashier_management/controllers/product_controller.dart';
+import 'package:cashier_management/controllers/product_category_controller.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-class ChooseCategoryPage extends StatelessWidget {
-  final ProductController controller;
+class ChangeOutletPage extends StatelessWidget {
+  final ProductCategoryController controller;
 
-  const ChooseCategoryPage({super.key, required this.controller});
+  const ChangeOutletPage({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Product Category',
+          'Outlet',
           style: TextStyle(
               fontSize: MySizes.fontSizeHeader, fontWeight: FontWeight.bold),
         ),
@@ -23,7 +23,7 @@ class ChooseCategoryPage extends StatelessWidget {
       ),
       backgroundColor: Colors.grey.shade50,
       body: Obx(() {
-        if (controller.isLoadingList.value) {
+        if (controller.isLoadingKios.value) {
           ListView.builder(
             itemCount: 8,
             itemBuilder: (context, index) {
@@ -53,25 +53,32 @@ class ChooseCategoryPage extends StatelessWidget {
               color: Colors.grey.shade300,
             );
           },
-          itemCount: controller.resultDataProductCategory.length,
+          itemCount: controller.resultDataKios.length,
           itemBuilder: (context, index) {
-            final data = controller.resultDataProductCategory[index];
+            final outlet = controller.resultDataKios[index];
             return ListTile(
               onTap: () async {
-                controller.productCategoryId.value = data.idCategories!;
-                controller.productCategoryName.value = data.name!;
-                await controller.fetchDataListProduct(); // tunggu selesai
+                controller.idKios.value = outlet.idKios!;
+                controller.selectedKios.value = outlet.kios!;
+                await controller.fetchDataListProductCategory();
                 Get.back();
               },
-              title: Text(data.name!),
-              trailing: Obx(
-                () => Icon(
-                  Icons.check_circle,
-                  color:
-                      (data.idCategories == controller.productCategoryId.value)
-                          ? MyColors.primary
-                          : Colors.grey.shade300,
+              title: Text(
+                outlet.kios!,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                outlet.keterangan!,
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: MySizes.fontSizeSm,
                 ),
+              ),
+              trailing: Icon(
+                Icons.check_circle,
+                color: outlet.idKios == controller.idKios.value
+                    ? MyColors.primary
+                    : Colors.grey.shade300,
               ),
             );
           },

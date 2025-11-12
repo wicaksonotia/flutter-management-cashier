@@ -1,5 +1,6 @@
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -19,7 +20,11 @@ class _ExpenseFromListPageState extends State<ExpenseFromListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cabang Kios'),
+        title: const Text(
+          'Outlet Branch',
+          style: TextStyle(
+              fontSize: MySizes.fontSizeHeader, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey.shade50,
@@ -57,7 +62,17 @@ class _ExpenseFromListPageState extends State<ExpenseFromListPage> {
                   final category =
                       _transactionController.resultDataExpenseFrom[index];
                   return ListTile(
-                    title: Text(category.cabang!),
+                    title: Text(
+                      category.cabang!,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      category.alamat!,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: MySizes.fontSizeSm,
+                      ),
+                    ),
                     onTap: () {
                       _transactionController.idCabang.value = category.id!;
                       _transactionController.cabang.value = category.cabang!;

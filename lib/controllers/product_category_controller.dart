@@ -12,12 +12,6 @@ class ProductCategoryController extends BaseController {
   var idProductCategory = 0.obs;
   var nameProductCategory = 'Category'.obs;
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   fetchDataListKios();
-  // }
-
   void clearProductCategoryController() {
     idProductCategory.value = 0;
     productCategoryNameController.clear();

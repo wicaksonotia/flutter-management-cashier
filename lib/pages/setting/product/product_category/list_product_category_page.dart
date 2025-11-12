@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:cashier_management/controllers/product_category_controller.dart';
 import 'package:cashier_management/models/product_category_model.dart';
+import 'package:cashier_management/pages/setting/product/product_category/change_outlet_page.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/sizes.dart';
-import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:cashier_management/pages/navigation_drawer.dart'
     as custom_drawer;
@@ -25,49 +25,14 @@ class _ListProductCategoryPageState extends State<ListProductCategoryPage>
     with SingleTickerProviderStateMixin {
   final ProductCategoryController _productCategoryController =
       Get.put(ProductCategoryController());
-  bool isDropdownKiosOpen = false;
-  late AnimationController _controller;
-  late Animation<double> _opacityAnimation;
-  late Animation<Offset> _slideAnimation;
+
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 350),
-      vsync: this,
-    );
-    _opacityAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, -0.05),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutBack,
-    ));
     _productCategoryController.fetchDataListKios(
       onAfterSuccess: () async =>
           _productCategoryController.fetchDataListProductCategory(),
     );
-  }
-
-  void toggleDropdownKios() {
-    setState(() {
-      isDropdownKiosOpen = !isDropdownKiosOpen;
-      if (isDropdownKiosOpen) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -109,75 +74,8 @@ class _ListProductCategoryPageState extends State<ListProductCategoryPage>
         ],
       ),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            Obx(
-              () {
-                if (_productCategoryController.isLoadingList.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 60),
-                    child: Obx(() {
-                      final items =
-                          _productCategoryController.resultDataProductCategory;
-
-                      if (items.isEmpty) {
-                        return const Center(child: Text("No data found"));
-                      }
-
-                      return ReorderableListView.builder(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: items.length,
-                        // penting: key unik untuk setiap item
-                        itemBuilder: (context, index) {
-                          final data = items[index];
-                          return Padding(
-                            key: ValueKey(data
-                                .idCategories), // gunakan ID unik dari model
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            child: ReorderableDragStartListener(
-                              index: index,
-                              child: Card(
-                                color: Colors.white,
-                                child: _buildAccountTile(
-                                  dataProductCategory: data,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-
-                        // Fungsi dijalankan saat urutan berubah
-                        onReorder: (oldIndex, newIndex) {
-                          _productCategoryController.reorderCategory(
-                              oldIndex, newIndex);
-                        },
-                      );
-                    }),
-                  );
-                }
-              },
-            ),
-
-            /// --- BACKDROP BLUR (HANYA MENUTUP LIST) ---
-            if (isDropdownKiosOpen)
-              Positioned.fill(
-                top: 60, // mulai blur setelah tombol lokasi
-                child: GestureDetector(
-                  onTap: toggleDropdownKios,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.2),
-                    ),
-                  ),
-                ),
-              ),
-
             /// --- MENU ---
             Container(
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -189,36 +87,63 @@ class _ListProductCategoryPageState extends State<ListProductCategoryPage>
                   Obx(() {
                     return DropdownTabButton(
                       label: _productCategoryController.selectedKios.value,
-                      isOpen: isDropdownKiosOpen,
                       isLoading: _productCategoryController.isLoadingKios.value,
-                      onTap: toggleDropdownKios,
+                      onTap: () {
+                        Get.to(
+                          () => ChangeOutletPage(
+                              controller: Get.put(ProductCategoryController())),
+                          transition: Transition.rightToLeft,
+                          duration: const Duration(milliseconds: 300),
+                        );
+                      },
                     );
                   }),
                 ],
               ),
             ),
+            Expanded(
+              child: Obx(() {
+                if (_productCategoryController.isLoadingList.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  final items =
+                      _productCategoryController.resultDataProductCategory;
+                  if (items.isEmpty) {
+                    return const Center(child: Text("No data found"));
+                  }
+                  return ReorderableListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: items.length,
+                    // penting: key unik untuk setiap item
+                    itemBuilder: (context, index) {
+                      final data = items[index];
+                      return Padding(
+                        key: ValueKey(
+                            data.idCategories), // gunakan ID unik dari model
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        child: ReorderableDragStartListener(
+                          index: index,
+                          child: Card(
+                            color: Colors.white,
+                            child: _buildAccountTile(
+                              dataProductCategory: data,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
 
-            /// --- DROPDOWN MENU ---
-            _buildDropdownMenu(
-              isOpen: isDropdownKiosOpen,
-              opacityAnimation: _opacityAnimation,
-              slideAnimation: _slideAnimation,
-              source: _productCategoryController.listKios,
-              selectedValue: _productCategoryController.idKios.value,
-              onChanged: (val) {
-                _productCategoryController.idKios.value = val;
-                final selectedItem =
-                    _productCategoryController.listKios.firstWhere(
-                  (item) => item['value'] == val,
-                  orElse: () => {},
-                );
-                if (selectedItem.isNotEmpty) {
-                  _productCategoryController.selectedKios.value =
-                      selectedItem['nama'];
+                    // Fungsi dijalankan saat urutan berubah
+                    onReorder: (oldIndex, newIndex) {
+                      _productCategoryController.reorderCategory(
+                          oldIndex, newIndex);
+                    },
+                  );
                 }
-                _productCategoryController.fetchDataListProductCategory();
-              },
-              onClose: toggleDropdownKios,
+              }),
             ),
           ],
         ),
@@ -359,86 +284,16 @@ class _ListProductCategoryPageState extends State<ListProductCategoryPage>
       ),
     );
   }
-
-  Widget _buildDropdownMenu({
-    required bool isOpen,
-    required Animation<double> opacityAnimation,
-    required Animation<Offset> slideAnimation,
-    required List<Map<String, dynamic>> source,
-    required int selectedValue,
-    required ValueChanged<int> onChanged,
-    required VoidCallback onClose,
-  }) {
-    return Positioned(
-      top: 58,
-      left: 0,
-      right: 0,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        switchInCurve: Curves.easeOutBack,
-        switchOutCurve: Curves.easeIn,
-        child: isOpen
-            ? FadeTransition(
-                opacity: opacityAnimation,
-                child: SlideTransition(
-                  position: slideAnimation,
-                  child: Container(
-                    width: double.infinity,
-                    key: const ValueKey("dropdown"),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 16,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    constraints: const BoxConstraints(maxHeight: 200),
-                    padding: const EdgeInsets.fromLTRB(12, 20, 12, 20),
-                    child: ChipsChoice.single(
-                      wrapped: true,
-                      padding: EdgeInsets.zero,
-                      value: selectedValue,
-                      onChanged: (val) {
-                        onChanged(val);
-                        onClose();
-                      },
-                      choiceItems: C2Choice.listFrom<int, Map<String, dynamic>>(
-                        source: source,
-                        value: (i, v) => v['value']!,
-                        label: (i, v) => v['nama']!,
-                      ),
-                      choiceCheckmark: false,
-                      choiceStyle: C2ChipStyle.filled(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Colors.grey.shade100,
-                        selectedStyle: const C2ChipStyle(
-                          backgroundColor: MyColors.primary,
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            : const SizedBox.shrink(),
-      ),
-    );
-  }
 }
 
 class DropdownTabButton extends StatelessWidget {
   final String label;
-  final bool isOpen;
   final bool isLoading;
   final VoidCallback onTap;
 
   const DropdownTabButton({
     super.key,
     required this.label,
-    required this.isOpen,
     required this.isLoading,
     required this.onTap,
   });
@@ -450,9 +305,9 @@ class DropdownTabButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        height: isOpen ? 50 : 40,
+        height: 40,
         decoration: BoxDecoration(
-          color: isOpen ? Colors.white : Colors.grey.shade300,
+          color: Colors.grey.shade300,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -472,10 +327,8 @@ class DropdownTabButton extends StatelessWidget {
                     height: 14,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Icon(
-                    isOpen
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
+                : const Icon(
+                    Icons.keyboard_arrow_down,
                     color: MyColors.grey,
                   ),
           ],

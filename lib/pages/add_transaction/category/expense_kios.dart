@@ -1,5 +1,6 @@
 import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -18,7 +19,11 @@ class _ExpenseKiosState extends State<ExpenseKios> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kios'),
+        title: const Text(
+          'Outlet',
+          style: TextStyle(
+              fontSize: MySizes.fontSizeHeader, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey.shade50,
@@ -55,7 +60,17 @@ class _ExpenseKiosState extends State<ExpenseKios> {
                 itemBuilder: (context, index) {
                   final kios = _kiosController.listKios[index];
                   return ListTile(
-                    title: Text(kios.kios!),
+                    title: Text(
+                      kios.kios!,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      kios.keterangan!,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: MySizes.fontSizeSm,
+                      ),
+                    ),
                     onTap: () {
                       _kiosController.idKios.value = kios.idKios!;
                       _kiosController.namaKios.value = kios.kios!;

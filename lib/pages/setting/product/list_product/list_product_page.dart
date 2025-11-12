@@ -90,20 +90,11 @@ class _ListProductPageState extends State<ListProductPage>
                       label: _productController.selectedKios.value,
                       isLoading: _productController.isLoadingKios.value,
                       onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          constraints: const BoxConstraints(
-                            minWidth: double.infinity,
-                          ),
-                          builder: (_) => ChooseOutletPage(
+                        Get.to(
+                          () => ChooseOutletPage(
                               controller: Get.find<ProductController>()),
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                          ),
+                          transition: Transition.rightToLeft,
+                          duration: const Duration(milliseconds: 300),
                         );
                       },
                     );
@@ -115,20 +106,11 @@ class _ListProductPageState extends State<ListProductPage>
                       label: _productController.productCategoryName.value,
                       isLoading: _productController.isLoadingList.value,
                       onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          constraints: const BoxConstraints(
-                            minWidth: double.infinity,
-                          ),
-                          builder: (_) => ChooseCategoryPage(
+                        Get.to(
+                          () => ChooseCategoryPage(
                               controller: Get.find<ProductController>()),
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                          ),
+                          transition: Transition.rightToLeft,
+                          duration: const Duration(milliseconds: 300),
                         );
                       },
                     );
@@ -190,7 +172,6 @@ class _ListProductPageState extends State<ListProductPage>
     required DataProduct dataProduct,
   }) {
     return BoxContainer(
-      margin: const EdgeInsets.only(top: 10),
       shadow: true,
       child: Stack(
         children: [

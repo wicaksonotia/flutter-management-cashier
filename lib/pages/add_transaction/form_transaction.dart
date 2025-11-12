@@ -92,10 +92,10 @@ class _AddTransactionPageState extends State<AddTransactionPage>
                   dividerColor: Colors.transparent,
                   tabs: const [
                     Tab(
-                      text: 'Pengeluaran',
+                      text: 'Expense',
                     ),
                     Tab(
-                      text: 'Pemasukan',
+                      text: 'Income',
                     )
                   ],
                 ),

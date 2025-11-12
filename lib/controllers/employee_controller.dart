@@ -39,7 +39,7 @@ class EmployeeController extends BaseController {
     update();
   }
 
-  void fetchDataListEmployee() async {
+  Future<void> fetchDataListEmployee() async {
     try {
       var rawFormat = {
         'id_kios': idKios.value,

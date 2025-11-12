@@ -18,14 +18,6 @@ class AddEmployeePage extends StatefulWidget {
 class _AddEmployeePageState extends State<AddEmployeePage> {
   final EmployeeController employeeController = Get.find<EmployeeController>();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   employeeController.fetchDataListKios(
-  //     onAfterSuccess: () => employeeController.fetchDataListCabang(),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,20 +110,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     children: [
                       InkWell(
                         onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            constraints: const BoxConstraints(
-                              minWidth: double.infinity,
-                            ),
-                            builder: (_) => ChangeOutletPage(
+                          Get.to(
+                            () => ChangeOutletPage(
                                 controller: Get.find<EmployeeController>()),
-                            isScrollControlled: true,
-                            backgroundColor: Colors.white,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(20),
-                              ),
-                            ),
+                            transition: Transition.rightToLeft,
+                            duration: const Duration(milliseconds: 300),
                           );
                         },
                         child: InputDecorator(
@@ -179,20 +162,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             ),
             InkWell(
               onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  constraints: const BoxConstraints(
-                    minWidth: double.infinity,
-                  ),
-                  builder: (_) => ChangeBranchPage(
+                Get.to(
+                  () => ChangeBranchPage(
                       controller: Get.find<EmployeeController>()),
-                  isScrollControlled: true,
-                  backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                  ),
+                  transition: Transition.rightToLeft,
+                  duration: const Duration(milliseconds: 300),
                 );
               },
               child: InputDecorator(

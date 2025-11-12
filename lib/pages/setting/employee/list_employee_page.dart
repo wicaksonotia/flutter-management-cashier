@@ -1,12 +1,10 @@
-import 'dart:ui';
-
 import 'package:cashier_management/controllers/employee_controller.dart';
 import 'package:cashier_management/models/employee_model.dart';
+import 'package:cashier_management/pages/setting/employee/change_outlet_page.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/sizes.dart';
-import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -23,50 +21,15 @@ class ListEmployeePage extends StatefulWidget {
 class _ListEmployeePageState extends State<ListEmployeePage>
     with SingleTickerProviderStateMixin {
   final EmployeeController employeeController = Get.find<EmployeeController>();
-  bool isDropdownKiosOpen = false;
-  late AnimationController _controller;
-  late Animation<double> _opacityAnimation;
-  late Animation<Offset> _slideAnimation;
+
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 350),
-      vsync: this,
-    );
-    _opacityAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, -0.05),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutBack,
-    ));
     employeeController.fetchDataListKios(
       onAfterSuccess: () => employeeController.fetchDataListCabang(
         onAfterSuccess: () async => employeeController.fetchDataListEmployee(),
       ),
     );
-  }
-
-  void toggleDropdownKios() {
-    setState(() {
-      isDropdownKiosOpen = !isDropdownKiosOpen;
-      if (isDropdownKiosOpen) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -108,63 +71,8 @@ class _ListEmployeePageState extends State<ListEmployeePage>
         ],
       ),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            Obx(
-              () {
-                if (employeeController.isLoadingEmployee.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 70),
-                    child: ListView.builder(
-                      itemCount: employeeController.resultDataEmployee.length,
-                      itemBuilder: (context, index) {
-                        var employee =
-                            employeeController.resultDataEmployee[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Card(
-                            color: Colors.white,
-                            child: _buildAccountTile(
-                              id: employee.idKasir!,
-                              name: employee.namaKasir!,
-                              username: employee.usernameKasir!,
-                              phone: employee.phoneKasir!,
-                              cabangId: employee.idCabang!,
-                              cabang: employee.cabang!,
-                              defaultOutletName: employee.defaultOutletName!,
-                              defaultOutletId: employee.defaultOutlet!,
-                              isActive: employee.statusKasir!,
-                              statusTransaksi: employee.statusTransaksi!,
-                              dataEmployee: employee,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }
-              },
-            ),
-
-            /// --- BACKDROP BLUR (HANYA MENUTUP LIST) ---
-            if (isDropdownKiosOpen)
-              Positioned.fill(
-                top: 60, // mulai blur setelah tombol lokasi
-                child: GestureDetector(
-                  onTap: toggleDropdownKios,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.2),
-                    ),
-                  ),
-                ),
-              ),
-
             /// --- MENU ---
             Container(
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -176,37 +84,60 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                   Obx(() {
                     return DropdownTabButton(
                       label: employeeController.selectedKios.value,
-                      isOpen: isDropdownKiosOpen,
                       isLoading: employeeController.isLoadingKios.value,
-                      onTap: toggleDropdownKios,
+                      onTap: () {
+                        Get.to(
+                          () => ChangeOutletPage(
+                              controller: Get.find<EmployeeController>()),
+                          transition: Transition.rightToLeft,
+                          duration: const Duration(milliseconds: 300),
+                        );
+                      },
                     );
                   }),
                 ],
               ),
             ),
-
-            /// --- DROPDOWN MENU ---
-            _buildDropdownMenu(
-              isOpen: isDropdownKiosOpen,
-              opacityAnimation: _opacityAnimation,
-              slideAnimation: _slideAnimation,
-              source: employeeController.listKios,
-              selectedValue: employeeController.idKios.value,
-              onChanged: (val) {
-                employeeController.idKios.value = val;
-                final selectedItem = employeeController.listKios.firstWhere(
-                  (item) => item['value'] == val,
-                  orElse: () => {},
-                );
-                if (selectedItem.isNotEmpty) {
-                  employeeController.selectedKios.value = selectedItem['nama'];
-                }
-                employeeController.fetchDataListCabang(
-                  onAfterSuccess: () async =>
-                      employeeController.fetchDataListEmployee(),
-                );
-              },
-              onClose: toggleDropdownKios,
+            Expanded(
+              child: Obx(
+                () {
+                  if (employeeController.isLoadingEmployee.value) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    final items = employeeController.resultDataEmployee;
+                    if (items.isEmpty) {
+                      return const Center(child: Text("No data found"));
+                    }
+                    return ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        var data = items[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Card(
+                            color: Colors.white,
+                            child: _buildAccountTile(
+                              id: data.idKasir!,
+                              name: data.namaKasir!,
+                              username: data.usernameKasir!,
+                              phone: data.phoneKasir!,
+                              cabangId: data.idCabang!,
+                              cabang: data.cabang!,
+                              defaultOutletName: data.defaultOutletName!,
+                              defaultOutletId: data.defaultOutlet!,
+                              isActive: data.statusKasir!,
+                              statusTransaksi: data.statusTransaksi!,
+                              dataEmployee: data,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),
@@ -538,86 +469,16 @@ class _ListEmployeePageState extends State<ListEmployeePage>
       ),
     );
   }
-
-  Widget _buildDropdownMenu({
-    required bool isOpen,
-    required Animation<double> opacityAnimation,
-    required Animation<Offset> slideAnimation,
-    required List<Map<String, dynamic>> source,
-    required int selectedValue,
-    required ValueChanged<int> onChanged,
-    required VoidCallback onClose,
-  }) {
-    return Positioned(
-      top: 58,
-      left: 0,
-      right: 0,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        switchInCurve: Curves.easeOutBack,
-        switchOutCurve: Curves.easeIn,
-        child: isOpen
-            ? FadeTransition(
-                opacity: opacityAnimation,
-                child: SlideTransition(
-                  position: slideAnimation,
-                  child: Container(
-                    width: double.infinity,
-                    key: const ValueKey("dropdown"),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 16,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    constraints: const BoxConstraints(maxHeight: 200),
-                    padding: const EdgeInsets.fromLTRB(12, 20, 12, 20),
-                    child: ChipsChoice.single(
-                      wrapped: true,
-                      padding: EdgeInsets.zero,
-                      value: selectedValue,
-                      onChanged: (val) {
-                        onChanged(val);
-                        onClose();
-                      },
-                      choiceItems: C2Choice.listFrom<int, Map<String, dynamic>>(
-                        source: source,
-                        value: (i, v) => v['value']!,
-                        label: (i, v) => v['nama']!,
-                      ),
-                      choiceCheckmark: false,
-                      choiceStyle: C2ChipStyle.filled(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Colors.grey.shade100,
-                        selectedStyle: const C2ChipStyle(
-                          backgroundColor: MyColors.primary,
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            : const SizedBox.shrink(),
-      ),
-    );
-  }
 }
 
 class DropdownTabButton extends StatelessWidget {
   final String label;
-  final bool isOpen;
   final bool isLoading;
   final VoidCallback onTap;
 
   const DropdownTabButton({
     super.key,
     required this.label,
-    required this.isOpen,
     required this.isLoading,
     required this.onTap,
   });
@@ -629,9 +490,9 @@ class DropdownTabButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        height: isOpen ? 50 : 40,
+        height: 40,
         decoration: BoxDecoration(
-          color: isOpen ? Colors.white : Colors.grey.shade300,
+          color: Colors.grey.shade300,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -651,10 +512,8 @@ class DropdownTabButton extends StatelessWidget {
                     height: 14,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Icon(
-                    isOpen
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
+                : const Icon(
+                    Icons.keyboard_arrow_down,
                     color: MyColors.grey,
                   ),
           ],

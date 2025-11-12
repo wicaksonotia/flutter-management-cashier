@@ -35,7 +35,7 @@ class ProductController extends ProductCategoryController {
     update();
   }
 
-  void fetchDataListProduct() async {
+  Future<void> fetchDataListProduct() async {
     try {
       var rawFormat = {
         'id_product_categories': productCategoryId.value,

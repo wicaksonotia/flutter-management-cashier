@@ -28,7 +28,7 @@ class _AddProductPageState extends State<AddProductPage> {
             context: context,
             removeTop: true,
             child: BackgroundForm(
-              headerTitle: 'Product Category Form',
+              headerTitle: 'Product Form',
               container: containerPage(),
             )),
       ),
@@ -48,20 +48,11 @@ class _AddProductPageState extends State<AddProductPage> {
         children: [
           InkWell(
             onTap: () {
-              showModalBottomSheet(
-                context: context,
-                constraints: const BoxConstraints(
-                  minWidth: double.infinity,
-                ),
-                builder: (_) =>
+              Get.to(
+                () =>
                     ChooseOutletPage(controller: Get.find<ProductController>()),
-                isScrollControlled: true,
-                backgroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                ),
+                transition: Transition.rightToLeft,
+                duration: const Duration(milliseconds: 300),
               );
             },
             child: InputDecorator(
@@ -105,20 +96,11 @@ class _AddProductPageState extends State<AddProductPage> {
           const Gap(16),
           InkWell(
             onTap: () {
-              showModalBottomSheet(
-                context: context,
-                constraints: const BoxConstraints(
-                  minWidth: double.infinity,
-                ),
-                builder: (_) => ChooseCategoryPage(
+              Get.to(
+                () => ChooseCategoryPage(
                     controller: Get.find<ProductController>()),
-                isScrollControlled: true,
-                backgroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                ),
+                transition: Transition.rightToLeft,
+                duration: const Duration(milliseconds: 300),
               );
             },
             child: InputDecorator(

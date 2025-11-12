@@ -47,20 +47,11 @@ class _AddProductCategoryPageState extends State<AddProductCategoryPage> {
         children: [
           InkWell(
             onTap: () {
-              showModalBottomSheet(
-                context: context,
-                constraints: const BoxConstraints(
-                  minWidth: double.infinity,
-                ),
-                builder: (_) => ChangeOutletPage(
+              Get.to(
+                () => ChangeOutletPage(
                     controller: Get.find<ProductCategoryController>()),
-                isScrollControlled: true,
-                backgroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                ),
+                transition: Transition.rightToLeft,
+                duration: const Duration(milliseconds: 300),
               );
             },
             child: InputDecorator(
