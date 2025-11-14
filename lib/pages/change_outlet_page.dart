@@ -37,7 +37,7 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
       minChildSize: .2,
       builder: (context, scrollController) {
         return Obx(() {
-          if (kiosController.isLoading.value) {
+          if (kiosController.isLoadingKios.value) {
             return const Center(child: CircularProgressIndicator());
           }
           return Padding(

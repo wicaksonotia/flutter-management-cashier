@@ -12,22 +12,28 @@ abstract class BaseController extends GetxController {
   var resultDataCabang = <DataListOutletBranch>[].obs;
   RxList<Map<String, dynamic>> listKios = <Map<String, dynamic>>[].obs;
   RxList<Map<String, dynamic>> listCabang = <Map<String, dynamic>>[].obs;
+  var idOwner = 0.obs;
   var idKios = 0.obs;
   var selectedKios = 'Brand'.obs;
   var idCabang = 0.obs;
   var selectedCabang = 'Outlet'.obs;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    final prefs = await SharedPreferences.getInstance();
+    idKios.value = prefs.getInt('id_kios')!;
+    selectedKios.value = prefs.getString('kios')!;
+  }
 
   Future<void> fetchDataListKios({
     Future<void> Function()? onAfterSuccess,
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final idOwner = prefs.getInt('id_owner');
-      if (idOwner == null) {
-        throw Exception("Owner ID tidak ditemukan di SharedPreferences");
-      }
+      idOwner.value = prefs.getInt('id_owner')!;
 
-      final rawFormat = {'id_owner': idOwner};
+      final rawFormat = {'id_owner': idOwner.value};
       final result = await RemoteDataSource.getListKios(rawFormat);
 
       if (result == null || result.isEmpty) {
@@ -37,8 +43,10 @@ abstract class BaseController extends GetxController {
 
       // ✅ Assign data utama
       resultDataKios.assignAll(result);
-      idKios.value = result.first.idKios!;
-      selectedKios.value = result.first.kios!;
+      idKios.value = prefs.getInt('id_kios') ?? result.first.idKios!;
+      selectedKios.value = prefs.getString('kios') ?? result.first.kios!;
+      // idKios.value = result.first.idKios!;
+      // selectedKios.value = result.first.kios!;
 
       // ✅ Bentuk list dropdown
       listKios.assignAll(result.map((e) => {
@@ -62,6 +70,7 @@ abstract class BaseController extends GetxController {
   }) async {
     try {
       var rawFormat = {'id_kios': idKios.value};
+      print(rawFormat);
       var result = await RemoteDataSource.getListCabangKios(rawFormat);
       if (result == null || result.isEmpty) {
         resultDataCabang.clear();

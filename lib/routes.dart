@@ -64,13 +64,8 @@ class RouterClass {
     ),
     GetPage(page: () => const FormTransaction(), name: addtransaction),
     GetPage(
-      page: () => const TransactionHistoryPage(),
-      name: transactionhistory,
-    ),
-    GetPage(
-      page: () => const MonitoringPage(),
-      name: monitoringoutlet,
-    ),
+        page: () => const TransactionHistoryPage(), name: transactionhistory),
+    GetPage(page: () => const MonitoringPage(), name: monitoringoutlet),
     GetPage(page: () => const CalculatorPage(), name: calculator),
     // =============================================================
     // SETTING

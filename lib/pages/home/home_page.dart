@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
                     Text(
                       kiosController.selectedKios.value,
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: MySizes.fontSizeMd,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),

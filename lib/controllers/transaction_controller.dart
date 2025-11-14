@@ -1,5 +1,6 @@
 import 'package:cashier_management/controllers/category_controller.dart';
 import 'package:cashier_management/controllers/history_controller.dart';
+import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'package:intl/intl.dart';
 
 class TransactionController extends CategoryController {
   final HistoryController _historyController = Get.find<HistoryController>();
+  final TotalPerTypeController _totalPerTypeController =
+      Get.find<TotalPerTypeController>();
   TextEditingController amountController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   var selectTransactionExpenseDate = DateTime.now().obs;
@@ -130,6 +133,10 @@ class TransactionController extends CategoryController {
         amountController.clear();
         descriptionController.clear();
         _historyController.getHistoriesByFilter();
+        _historyController.getHistoriesBySingleDate();
+        _totalPerTypeController.getTotalSaldo();
+        _totalPerTypeController.getTotalBranchSaldo();
+        _totalPerTypeController.getTotalPerMonth();
       }
     } catch (e) {
       Get.snackbar('Error', e.toString(),

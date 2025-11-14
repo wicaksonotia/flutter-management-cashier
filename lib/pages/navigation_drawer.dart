@@ -34,9 +34,16 @@ class NavigationDrawer extends StatelessWidget {
               },
               selected: Get.currentRoute == RouterClass.home,
             ),
+            Divider(color: Colors.grey.shade300),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Text("Transactions",
+                  style: TextStyle(
+                      fontSize: MySizes.fontSizeLg, letterSpacing: 1)),
+            ),
             _buildDrawerItem(
               icon: Icons.home_work,
-              text: "Transaction Per Outlet",
+              text: "History Per Outlet",
               onTap: () {
                 Navigator.of(context).pop();
                 final MonitoringOutletController monitoringOutletController =
@@ -54,7 +61,7 @@ class NavigationDrawer extends StatelessWidget {
                             Get.currentRoute == RouterClass.productcategory)
                         ? MyColors.primary
                         : Colors.black),
-                title: Text('Income/Expenditure Transactions',
+                title: Text('Income/Expenditure',
                     style: TextStyle(
                         color: (Get.currentRoute == RouterClass.listproduct ||
                                 Get.currentRoute == RouterClass.productcategory)
@@ -63,7 +70,7 @@ class NavigationDrawer extends StatelessWidget {
               ),
             ),
             _buildSubItem(
-              text: "Transaction Form",
+              text: "Form",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.addtransaction);
@@ -200,54 +207,54 @@ class NavigationDrawer extends StatelessWidget {
           );
         }
         final prefs = snapshot.data!;
-        return UserAccountsDrawerHeader(
-          decoration: const BoxDecoration(color: MyColors.primary),
-          accountName: Text(
-            prefs.getString('kios') ?? '',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: MySizes.fontSizeLg,
-            ),
-          ),
-          accountEmail: Row(
-            children: [
-              Text(
-                prefs.getString('phone') ?? '',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: MySizes.fontSizeMd,
+        return InkWell(
+          onTap: () {
+            Get.back();
+            showModalBottomSheet(
+              context: context,
+              constraints: const BoxConstraints(
+                minWidth: double.infinity,
+              ),
+              builder: (context) => const ChangeOutletPage(),
+              isScrollControlled: true,
+              backgroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
                 ),
               ),
-              const Gap(10),
-              GestureDetector(
-                onTap: () {
-                  Get.back();
-                  showModalBottomSheet(
-                    context: context,
-                    constraints: const BoxConstraints(
-                      minWidth: double.infinity,
-                    ),
-                    builder: (context) => const ChangeOutletPage(),
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
-                    ),
-                  );
-                },
-                child: const Icon(
+            );
+          },
+          child: UserAccountsDrawerHeader(
+            decoration: const BoxDecoration(color: MyColors.primary),
+            accountName: Text(
+              prefs.getString('kios') ?? '',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: MySizes.fontSizeLg,
+              ),
+            ),
+            accountEmail: Row(
+              children: [
+                Text(
+                  prefs.getString('phone') ?? '',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: MySizes.fontSizeMd,
+                  ),
+                ),
+                const Gap(10),
+                const Icon(
                   Icons.keyboard_arrow_down_rounded,
                   color: Colors.white,
                   size: MySizes.iconSm,
                 ),
-              ),
-            ],
-          ),
-          currentAccountPicture: const CircleAvatar(
-            backgroundImage: AssetImage('assets/clerk.png'),
-            backgroundColor: Colors.white,
+              ],
+            ),
+            currentAccountPicture: const CircleAvatar(
+              backgroundImage: AssetImage('assets/clerk.png'),
+              backgroundColor: Colors.white,
+            ),
           ),
         );
       },

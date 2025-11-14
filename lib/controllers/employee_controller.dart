@@ -24,8 +24,6 @@ class EmployeeController extends BaseController {
     usernameController.clear();
     namaController.clear();
     noTelponController.clear();
-    idCabang.value = 0;
-    selectedCabang.value = 'Cabang';
     update();
   }
 

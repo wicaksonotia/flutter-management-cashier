@@ -111,7 +111,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         onTap: () {
                           Get.to(
                             () => SelectTableListPage(
-                              title: 'Outlet',
+                              title: 'Brand',
                               isLoading: employeeController.isLoadingKios,
                               items: employeeController.resultDataKios,
                               titleBuilder: (data) => data.kios!,
@@ -140,7 +140,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         },
                         child: InputDecorator(
                           decoration: InputDecoration(
-                            labelText: 'Set Default Outlet',
+                            labelText: 'Set Default Brand',
                             labelStyle: const TextStyle(
                               color: Colors.black54,
                             ),
@@ -208,7 +208,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               },
               child: InputDecorator(
                 decoration: InputDecoration(
-                  labelText: 'Set Default Branch',
+                  labelText: 'Set Default Outlet',
                   labelStyle: const TextStyle(
                     color: Colors.black54,
                   ),
