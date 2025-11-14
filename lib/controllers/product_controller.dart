@@ -13,8 +13,6 @@ class ProductController extends ProductCategoryController {
   TextEditingController productDescriptionController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
   var idProduct = 0.obs;
-  var productCategoryId = 0.obs;
-  var productCategoryName = 'Category'.obs;
 
   void clearProductController() {
     idProduct.value = 0;
@@ -28,7 +26,7 @@ class ProductController extends ProductCategoryController {
     final formatCurrency =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp.', decimalDigits: 0);
     idProduct.value = model.idProduct!;
-    productCategoryId.value = model.idProductCategories!;
+    idProductCategory.value = model.idProductCategories!;
     productNameController.text = model.name!;
     productDescriptionController.text = model.description!;
     productPriceController.text = formatCurrency.format(model.price);
@@ -38,7 +36,7 @@ class ProductController extends ProductCategoryController {
   Future<void> fetchDataListProduct() async {
     try {
       var rawFormat = {
-        'id_product_categories': productCategoryId.value,
+        'id_product_categories': idProductCategory.value,
       };
       var result = await RemoteDataSource.getListProduct(rawFormat);
       if (result != null) {
@@ -56,7 +54,7 @@ class ProductController extends ProductCategoryController {
       }
       var rawFormat = {
         "id_product": idProduct.value,
-        "id_product_categories": productCategoryId.value,
+        "id_product_categories": idProductCategory.value,
         "name": productNameController.text,
         "description": productDescriptionController.text,
         "price": int.parse(

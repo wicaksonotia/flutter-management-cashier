@@ -33,11 +33,15 @@ class ProductCategoryController extends BaseController {
         'id_kios': idKios.value,
       };
       var result = await RemoteDataSource.getListProductCategory(rawFormat);
-      if (result == null || result.isEmpty) {
-        resultDataProductCategory.clear();
-        return;
+      // if (result == null || result.isEmpty) {
+      //   resultDataProductCategory.clear();
+      //   return;
+      // }
+      if (result != null) {
+        resultDataProductCategory.assignAll(result);
+        idProductCategory.value = result.first.idCategories!;
+        nameProductCategory.value = result.first.name!;
       }
-      resultDataProductCategory.assignAll(result);
       // ✅ Jalankan callback opsional (jika dikirim)
       if (onAfterSuccess != null) {
         await onAfterSuccess();

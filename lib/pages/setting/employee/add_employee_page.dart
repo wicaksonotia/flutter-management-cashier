@@ -1,6 +1,5 @@
 import 'package:cashier_management/controllers/employee_controller.dart';
-import 'package:cashier_management/pages/setting/change_branch_page.dart';
-import 'package:cashier_management/pages/setting/change_outlet_page.dart';
+import 'package:cashier_management/pages/select_table_list_page.dart';
 import 'package:cashier_management/utils/background_form.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/sizes.dart';
@@ -111,8 +110,26 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       InkWell(
                         onTap: () {
                           Get.to(
-                            () => ChangeOutletPage(
-                                controller: Get.find<EmployeeController>()),
+                            () => SelectTableListPage(
+                              title: 'Outlet',
+                              isLoading: employeeController.isLoadingKios,
+                              items: employeeController.resultDataKios,
+                              titleBuilder: (data) => data.kios!,
+                              subtitleBuilder: (data) => data.keterangan ?? '',
+                              isSelected: (data) =>
+                                  data.idKios ==
+                                  employeeController.idKios.value,
+                              onItemTap: (data) async {
+                                employeeController.idKios.value = data.idKios!;
+                                employeeController.selectedKios.value =
+                                    data.kios!;
+                                await employeeController.fetchDataListCabang(
+                                  onAfterSuccess: () => employeeController
+                                      .fetchDataListEmployee(),
+                                );
+                                Get.back();
+                              },
+                            ),
                             transition: Transition.rightToLeft,
                             duration: const Duration(milliseconds: 300),
                           );
@@ -163,8 +180,20 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             InkWell(
               onTap: () {
                 Get.to(
-                  () => ChangeBranchPage(
-                      controller: Get.find<EmployeeController>()),
+                  () => SelectTableListPage(
+                    title: 'Outlet Branch',
+                    isLoading: employeeController.isLoadingCabang,
+                    items: employeeController.resultDataCabang,
+                    titleBuilder: (data) => data.cabang!,
+                    subtitleBuilder: (data) => data.alamat ?? '',
+                    isSelected: (data) =>
+                        data.id == employeeController.idCabang.value,
+                    onItemTap: (data) async {
+                      employeeController.idCabang.value = data.id!;
+                      employeeController.selectedCabang.value = data.cabang!;
+                      Get.back();
+                    },
+                  ),
                   transition: Transition.rightToLeft,
                   duration: const Duration(milliseconds: 300),
                 );

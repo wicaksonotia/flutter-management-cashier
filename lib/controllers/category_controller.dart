@@ -1,4 +1,6 @@
-import 'package:cashier_management/controllers/transaction_controller.dart';
+import 'dart:convert';
+
+import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/category_model.dart';
 import 'package:cashier_management/pages/master_categories/category_form.dart';
@@ -7,17 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class CategoryController extends GetxController {
-  final TransactionController _transactionController =
-      Get.put(TransactionController());
-  TextEditingController nameController = TextEditingController();
-  var tipeContoller = 'PENGELUARAN'.obs;
+class CategoryController extends BaseController {
   var resultData = <CategoryModel>[].obs;
+  var tipeContoller = 'PENGELUARAN'.obs;
   RxList<dynamic> tags = [].obs;
   RxBool isLoading = false.obs;
   var dataStatus = true.obs;
   RxBool isEmptyValueSearchBar = true.obs;
+  TextEditingController nameController = TextEditingController();
   TextEditingController searchBarController = TextEditingController();
+  var idCategoryTransaction = 0.obs;
+  var selectedCategoryTransaction = 'Category'.obs;
 
   void processSearch(String value) {
     getData(tags, value);
@@ -44,9 +46,6 @@ class CategoryController extends GetxController {
             icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
         nameController.clear();
         getData(tags, '');
-        // _transactionController.getListDataIncome();
-        _transactionController.getListDataExpense();
-        // _transactionController.getListDataExpenseFrom();
       } else {
         // NOTIF SAVE FAILED
         Get.snackbar('Notification', 'Failed to save data',
@@ -307,14 +306,14 @@ class CategoryController extends GetxController {
   }
 
   // LIST DATA CATEGORIES
-  void getData(Object kategori, String textSearch) async {
+  Future<void> getData(Object kategori, String textSearch) async {
     try {
-      isLoading(true);
       final result =
           await RemoteDataSource.listCategories(kategori, textSearch);
       if (result != null) {
         resultData.assignAll(result);
       }
+      print(jsonEncode(resultData));
     } catch (error) {
       Get.snackbar('Error', error.toString(),
           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);

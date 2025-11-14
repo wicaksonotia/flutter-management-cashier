@@ -47,9 +47,9 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
             ),
             child: ListView.builder(
               controller: scrollController,
-              itemCount: kiosController.listKios.length,
+              itemCount: kiosController.resultDataKios.length,
               itemBuilder: (context, index) {
-                final kios = kiosController.listKios[index];
+                final kios = kiosController.resultDataKios[index];
                 return Card(
                   color: Colors.white,
                   child: ListTile(
@@ -97,7 +97,7 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                     onTap: () {
                       //HOME
                       kiosController.idKios.value = kios.idKios!;
-                      kiosController.namaKios.value = kios.kios ?? '';
+                      kiosController.selectedKios.value = kios.kios ?? '';
                       kiosController.changeOutlet();
                       totalPerTypeController.getTotalBranchSaldo();
                       totalPerTypeController.getTotalPerMonth();

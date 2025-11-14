@@ -1,8 +1,6 @@
-import 'dart:ui';
-
 import 'package:cashier_management/controllers/product_category_controller.dart';
 import 'package:cashier_management/models/product_category_model.dart';
-import 'package:cashier_management/pages/setting/product/product_category/change_outlet_page.dart';
+import 'package:cashier_management/pages/select_table_list_page.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
@@ -90,8 +88,25 @@ class _ListProductCategoryPageState extends State<ListProductCategoryPage>
                       isLoading: _productCategoryController.isLoadingKios.value,
                       onTap: () {
                         Get.to(
-                          () => ChangeOutletPage(
-                              controller: Get.put(ProductCategoryController())),
+                          () => SelectTableListPage(
+                            title: 'Outlet',
+                            isLoading: _productCategoryController.isLoadingKios,
+                            items: _productCategoryController.resultDataKios,
+                            titleBuilder: (data) => data.kios!,
+                            subtitleBuilder: (data) => data.keterangan ?? '',
+                            isSelected: (data) =>
+                                data.idKios ==
+                                _productCategoryController.idKios.value,
+                            onItemTap: (data) async {
+                              _productCategoryController.idKios.value =
+                                  data.idKios!;
+                              _productCategoryController.selectedKios.value =
+                                  data.kios!;
+                              await _productCategoryController
+                                  .fetchDataListProductCategory();
+                              Get.back();
+                            },
+                          ),
                           transition: Transition.rightToLeft,
                           duration: const Duration(milliseconds: 300),
                         );

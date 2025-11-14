@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/kios_model.dart';
 import 'package:flutter/material.dart';
@@ -8,28 +9,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
-class KiosController extends GetxController {
-  var listKios = <KiosModel>[].obs;
+class KiosController extends BaseController {
   var listKiosFinancial = <KiosModel>[].obs;
   var isLoading = true.obs;
   var isLoadingFinancialKios = true.obs;
   var isLoadingSaveKios = true.obs;
   var idOwner = 0.obs;
-  var idKios = 0.obs;
-  var namaKios = ''.obs;
   TextEditingController kios = TextEditingController();
   TextEditingController phone = TextEditingController();
   TextEditingController description = TextEditingController();
   var logo = ''.obs;
   var oldLogo = ''.obs;
-  var kiosId = 0.obs;
   Rx<XFile> pickedFile1 = XFile('').obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-    fetchDataListKios();
-  }
 
   void clearOutletController() {
     kios.clear();
@@ -37,7 +28,7 @@ class KiosController extends GetxController {
     description.clear();
     logo.value = '';
     oldLogo.value = '';
-    kiosId.value = 0;
+    idKios.value = 0;
     pickedFile1.value = XFile('');
     update();
   }
@@ -48,25 +39,8 @@ class KiosController extends GetxController {
     description.text = kiosModel.keterangan!;
     logo.value = kiosModel.logo!;
     oldLogo.value = kiosModel.logo!;
-    kiosId.value = kiosModel.idKios!;
+    idKios.value = kiosModel.idKios!;
     update();
-  }
-
-  void fetchDataListKios() async {
-    try {
-      isLoading(false);
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      idOwner.value = prefs.getInt('id_owner')!;
-      idKios.value = prefs.getInt('id_kios')!;
-      namaKios.value = prefs.getString('kios') ?? '';
-      var rawFormat = {'id_owner': idOwner.value};
-      var result = await RemoteDataSource.getListKios(rawFormat);
-      if (result != null) {
-        listKios.assignAll(result);
-      }
-    } finally {
-      isLoading(false);
-    }
   }
 
   void fetchDataListKiosFinancial() async {
@@ -86,7 +60,7 @@ class KiosController extends GetxController {
   void changeOutlet() {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setInt('id_kios', idKios.value);
-      prefs.setString('kios', namaKios.value);
+      prefs.setString('kios', selectedKios.value);
     });
   }
 
@@ -124,7 +98,7 @@ class KiosController extends GetxController {
 
         formData = dio.FormData.fromMap({
           "id_owner": idOwner.value,
-          "kios_id": kiosId.value,
+          "kios_id": idKios.value,
           "kios": kios.text,
           "phone": phone.text,
           "description": description.text,
@@ -143,7 +117,7 @@ class KiosController extends GetxController {
 
         formData = dio.FormData.fromMap({
           "id_owner": idOwner.value,
-          "kios_id": kiosId.value,
+          "kios_id": idKios.value,
           "kios": kios.text,
           "phone": phone.text,
           "description": description.text,

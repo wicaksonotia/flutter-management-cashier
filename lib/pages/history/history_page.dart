@@ -79,7 +79,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 child: Row(
                   children: [
                     Text(
-                      _kiosController.namaKios.value,
+                      _kiosController.selectedKios.value,
                       style: const TextStyle(
                         fontSize: MySizes.fontSizeSm,
                         fontWeight: FontWeight.bold,

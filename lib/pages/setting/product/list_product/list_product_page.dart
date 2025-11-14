@@ -1,7 +1,6 @@
 import 'package:cashier_management/controllers/product_controller.dart';
 import 'package:cashier_management/models/product_model.dart';
-import 'package:cashier_management/pages/setting/product/list_product/choose_category_page.dart';
-import 'package:cashier_management/pages/setting/product/list_product/choose_outlet_page.dart';
+import 'package:cashier_management/pages/select_table_list_page.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/box_container.dart';
 import 'package:cashier_management/utils/colors.dart';
@@ -91,8 +90,26 @@ class _ListProductPageState extends State<ListProductPage>
                       isLoading: _productController.isLoadingKios.value,
                       onTap: () {
                         Get.to(
-                          () => ChooseOutletPage(
-                              controller: Get.find<ProductController>()),
+                          () => SelectTableListPage(
+                            title: 'Outlet',
+                            isLoading: _productController.isLoadingKios,
+                            items: _productController.resultDataKios,
+                            titleBuilder: (data) => data.kios!,
+                            subtitleBuilder: (data) => data.keterangan ?? '',
+                            isSelected: (data) =>
+                                data.idKios == _productController.idKios.value,
+                            onItemTap: (data) async {
+                              _productController.idKios.value = data.idKios!;
+                              _productController.selectedKios.value =
+                                  data.kios!;
+                              await _productController
+                                  .fetchDataListProductCategory(
+                                onAfterSuccess: () async =>
+                                    _productController.fetchDataListProduct(),
+                              );
+                              Get.back();
+                            },
+                          ),
                           transition: Transition.rightToLeft,
                           duration: const Duration(milliseconds: 300),
                         );
@@ -103,12 +120,28 @@ class _ListProductPageState extends State<ListProductPage>
                   // PRODUCT CATEGORY
                   Obx(() {
                     return DropdownTabButton(
-                      label: _productController.productCategoryName.value,
+                      label: _productController.nameProductCategory.value,
                       isLoading: _productController.isLoadingList.value,
                       onTap: () {
                         Get.to(
-                          () => ChooseCategoryPage(
-                              controller: Get.find<ProductController>()),
+                          () => SelectTableListPage(
+                            title: 'Product Category',
+                            isLoading: _productController.isLoadingList,
+                            items: _productController.resultDataProductCategory,
+                            titleBuilder: (data) => data.name!,
+                            subtitleBuilder: (data) => '',
+                            isSelected: (data) =>
+                                data.idCategories ==
+                                _productController.idProductCategory.value,
+                            onItemTap: (data) async {
+                              _productController.idProductCategory.value =
+                                  data.idCategories!;
+                              _productController.nameProductCategory.value =
+                                  data.name!;
+                              await _productController.fetchDataListProduct();
+                              Get.back();
+                            },
+                          ),
                           transition: Transition.rightToLeft,
                           duration: const Duration(milliseconds: 300),
                         );
@@ -429,7 +462,7 @@ class DropdownTabButton extends StatelessWidget {
                     height: 14,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Icon(
+                : const Icon(
                     Icons.keyboard_arrow_down,
                     color: MyColors.grey,
                   ),

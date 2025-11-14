@@ -1,6 +1,6 @@
 import 'package:cashier_management/controllers/employee_controller.dart';
 import 'package:cashier_management/models/employee_model.dart';
-import 'package:cashier_management/pages/setting/employee/change_outlet_page.dart';
+import 'package:cashier_management/pages/select_table_list_page.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
@@ -20,7 +20,7 @@ class ListEmployeePage extends StatefulWidget {
 
 class _ListEmployeePageState extends State<ListEmployeePage>
     with SingleTickerProviderStateMixin {
-  final EmployeeController employeeController = Get.find<EmployeeController>();
+  final EmployeeController employeeController = Get.put(EmployeeController());
 
   @override
   void initState() {
@@ -87,8 +87,25 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                       isLoading: employeeController.isLoadingKios.value,
                       onTap: () {
                         Get.to(
-                          () => ChangeOutletPage(
-                              controller: Get.find<EmployeeController>()),
+                          () => SelectTableListPage(
+                            title: 'Outlet',
+                            isLoading: employeeController.isLoadingKios,
+                            items: employeeController.resultDataKios,
+                            titleBuilder: (data) => data.kios!,
+                            subtitleBuilder: (data) => data.keterangan ?? '',
+                            isSelected: (data) =>
+                                data.idKios == employeeController.idKios.value,
+                            onItemTap: (data) async {
+                              employeeController.idKios.value = data.idKios!;
+                              employeeController.selectedKios.value =
+                                  data.kios!;
+                              await employeeController.fetchDataListCabang(
+                                onAfterSuccess: () =>
+                                    employeeController.fetchDataListEmployee(),
+                              );
+                              Get.back();
+                            },
+                          ),
                           transition: Transition.rightToLeft,
                           duration: const Duration(milliseconds: 300),
                         );

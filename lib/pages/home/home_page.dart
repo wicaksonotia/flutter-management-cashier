@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     Text(
-                      kiosController.namaKios.value,
+                      kiosController.selectedKios.value,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

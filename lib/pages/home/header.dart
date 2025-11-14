@@ -56,7 +56,7 @@ class Header extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            kiosController.namaKios.value,
+                            kiosController.selectedKios.value,
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

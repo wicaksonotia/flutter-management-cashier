@@ -40,8 +40,8 @@ class TransactionSqliteController extends GetxController {
     // selectedTabDate.value =
     //     DateTime.fromMillisecondsSinceEpoch(convertedDateBackToInt);
     // print(selectedTabDate.value);
-    DateTime now = new DateTime.now();
-    DateTime dateNow = new DateTime(now.year, now.month, now.day);
+    DateTime now = DateTime.now();
+    DateTime dateNow = DateTime(now.year, now.month, now.day);
     getData(kategoriSearch.value, dateNow.millisecondsSinceEpoch);
     // Get.back();
   }

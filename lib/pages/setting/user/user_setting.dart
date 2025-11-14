@@ -12,7 +12,7 @@ class UserSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LoginController _loginController = Get.find<LoginController>();
+    final LoginController loginController = Get.find<LoginController>();
 
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
@@ -64,7 +64,7 @@ class UserSetting extends StatelessWidget {
                       title: 'Logout',
                       message: 'Are you sure, you want to logout?',
                       onConfirm: () async {
-                        _loginController.logout();
+                        loginController.logout();
                       },
                     ),
                     isScrollControlled: true,
