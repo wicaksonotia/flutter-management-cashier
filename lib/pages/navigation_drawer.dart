@@ -53,38 +53,49 @@ class NavigationDrawer extends StatelessWidget {
               },
               selected: Get.currentRoute == RouterClass.monitoringoutlet,
             ),
-            Container(
-              color: Colors.transparent,
-              child: ListTile(
-                leading: Icon(Icons.account_balance_wallet,
-                    color: (Get.currentRoute == RouterClass.listproduct ||
-                            Get.currentRoute == RouterClass.productcategory)
-                        ? MyColors.primary
-                        : Colors.black),
-                title: Text('Income/Expenditure',
-                    style: TextStyle(
-                        color: (Get.currentRoute == RouterClass.listproduct ||
-                                Get.currentRoute == RouterClass.productcategory)
-                            ? MyColors.primary
-                            : Colors.black)),
-              ),
-            ),
-            _buildSubItem(
-              text: "Form",
-              onTap: () {
-                Navigator.of(context).pop();
-                Get.toNamed(RouterClass.addtransaction);
-              },
-              selected: Get.currentRoute == RouterClass.addtransaction,
-            ),
-            _buildSubItem(
-              text: "History",
+            _buildDrawerItem(
+              icon: Icons.account_balance_wallet,
+              text: "Income/Expenditure",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.transactionhistory);
               },
               selected: Get.currentRoute == RouterClass.transactionhistory,
             ),
+            // Container(
+            //   color: Colors.transparent,
+            //   child: ListTile(
+            //     leading: Icon(Icons.account_balance_wallet,
+            //         color: (Get.currentRoute == RouterClass.addtransaction ||
+            //                 Get.currentRoute == RouterClass.transactionhistory)
+            //             ? MyColors.primary
+            //             : Colors.black),
+            //     title: Text('Income/Expenditure',
+            //         style: TextStyle(
+            //             color:
+            //                 (Get.currentRoute == RouterClass.addtransaction ||
+            //                         Get.currentRoute ==
+            //                             RouterClass.transactionhistory)
+            //                     ? MyColors.primary
+            //                     : Colors.black)),
+            //   ),
+            // ),
+            // _buildSubItem(
+            //   text: "Form",
+            //   onTap: () {
+            //     Navigator.of(context).pop();
+            //     Get.toNamed(RouterClass.addtransaction);
+            //   },
+            //   selected: Get.currentRoute == RouterClass.addtransaction,
+            // ),
+            // _buildSubItem(
+            //   text: "History",
+            //   onTap: () {
+            //     Navigator.of(context).pop();
+            //     Get.toNamed(RouterClass.transactionhistory);
+            //   },
+            //   selected: Get.currentRoute == RouterClass.transactionhistory,
+            // ),
             Divider(color: Colors.grey.shade300),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 8, 16, 8),

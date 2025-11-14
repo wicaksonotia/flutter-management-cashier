@@ -6,6 +6,7 @@ import 'package:cashier_management/pages/history/filter_date_range.dart';
 import 'package:cashier_management/pages/history/filter_month.dart';
 import 'package:cashier_management/pages/history/history_list.dart';
 import 'package:cashier_management/pages/history/total_transaction.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/lists.dart';
 import 'package:cashier_management/utils/sizes.dart';
@@ -53,7 +54,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Riwayat Belanja',
+              'Income/Expenditure',
               style: TextStyle(
                   fontSize: MySizes.fontSizeHeader,
                   fontWeight: FontWeight.bold),
@@ -97,30 +98,11 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         ),
         backgroundColor: Colors.white,
         actions: [
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => FilterReport(_historyController),
-                isScrollControlled: true,
-                backgroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-              );
+          IconButton(
+            icon: const Icon(Icons.add_box_outlined),
+            onPressed: () {
+              Get.toNamed(RouterClass.addtransaction);
             },
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(
-                    width: 0.5,
-                    color: Colors.grey[300]!,
-                  ),
-                ),
-              ),
-              padding: const EdgeInsets.only(right: 10),
-              child: const Icon(Icons.filter_list),
-            ),
           ),
         ],
       ),
@@ -135,49 +117,80 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: context.width * .5,
+                    width: context.width * .6,
                     height: context.height * .05,
                     child: Row(
-                      children: List.generate(
-                        filterKategori.length,
-                        (index) => Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                groupValue = index;
-                              });
-                              _historyController.filterBy.value =
-                                  filterKategori[index]['value']!;
-                              _historyController.getHistoriesByFilter();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  right: BorderSide(
-                                    width: 0.5,
-                                    color: Colors.grey[300]!,
+                      children: [
+                        ...List.generate(
+                          filterKategori.length,
+                          (index) => Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  groupValue = index;
+                                });
+                                _historyController.filterBy.value =
+                                    filterKategori[index]['value']!;
+                                _historyController.getHistoriesByFilter();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    right: BorderSide(
+                                      width: 0.5,
+                                      color: Colors.grey[300]!,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              child: Center(
-                                child: Text(
-                                  filterKategori[index]['nama']!,
-                                  style: TextStyle(
-                                    color: groupValue == index
-                                        ? MyColors.primary
-                                        : Colors.black,
-                                    fontWeight: groupValue == index
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                child: Center(
+                                  child: Text(
+                                    filterKategori[index]['nama']!,
+                                    style: TextStyle(
+                                      color: groupValue == index
+                                          ? MyColors.primary
+                                          : Colors.black,
+                                      fontWeight: groupValue == index
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
+                        const Gap(10),
+                        // → Masukkan ke children list
+                        InkWell(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (context) =>
+                                  FilterReport(_historyController),
+                              isScrollControlled: true,
+                              backgroundColor: Colors.white,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20)),
+                              ),
+                            );
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(Icons.filter_list),
+                              Gap(5),
+                              Text(
+                                'Filter',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   // NEXT AND PREVIOUS MONTH YEAR
