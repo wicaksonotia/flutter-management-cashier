@@ -65,6 +65,9 @@ class _AddProductPageState extends State<AddProductPage> {
                     );
                     Get.back();
                   },
+                  onRefresh: () async {
+                    await _productController.fetchDataListKios(); // API fetch
+                  },
                 ),
                 transition: Transition.rightToLeft,
                 duration: const Duration(milliseconds: 300),
@@ -126,6 +129,10 @@ class _AddProductPageState extends State<AddProductPage> {
                         data.idCategories!;
                     _productController.nameProductCategory.value = data.name!;
                     Get.back();
+                  },
+                  onRefresh: () async {
+                    await _productController
+                        .fetchDataListProductCategory(); // API fetch
                   },
                 ),
                 transition: Transition.rightToLeft,

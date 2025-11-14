@@ -13,6 +13,9 @@ class SelectTableListPage<T> extends StatelessWidget {
   final bool Function(T) isSelected;
   final Future<void> Function(T) onItemTap;
 
+  /// 🔥 Baru: fungsi refresh
+  final Future<void> Function()? onRefresh;
+
   const SelectTableListPage({
     super.key,
     required this.title,
@@ -22,6 +25,7 @@ class SelectTableListPage<T> extends StatelessWidget {
     this.subtitleBuilder,
     required this.isSelected,
     required this.onItemTap,
+    this.onRefresh, // opsional
   });
 
   @override
@@ -38,62 +42,81 @@ class SelectTableListPage<T> extends StatelessWidget {
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey.shade50,
-      body: Obx(() {
-        if (isLoading.value) {
-          return ListView.builder(
-            itemCount: 8,
-            itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey.shade300,
-                highlightColor: Colors.white,
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
+      body: RefreshIndicator(
+        color: MyColors.primary,
+        onRefresh: () async {
+          // Tampilkan shimmer
+          isLoading.value = true;
+
+          // Jika ada refresh dari page pemanggil
+          if (onRefresh != null) {
+            await onRefresh!();
+          }
+
+          // Selesai → shimmer hilang
+          isLoading.value = false;
+        },
+        child: Obx(() {
+          if (isLoading.value) {
+            return ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: 8,
+              itemBuilder: (context, index) => Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey.shade300,
+                  highlightColor: Colors.white,
+                  child: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }
-
-        return ListView.separated(
-          separatorBuilder: (_, __) => Divider(
-            thickness: .5,
-            color: Colors.grey.shade300,
-          ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return ListTile(
-              onTap: () async {
-                await onItemTap(item);
-              },
-              title: Text(
-                titleBuilder(item),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: (subtitleBuilder != null &&
-                      subtitleBuilder!(item).trim().isNotEmpty)
-                  ? Text(
-                      subtitleBuilder!(item),
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: MySizes.fontSizeSm,
-                      ),
-                    )
-                  : null,
-              trailing: Icon(
-                Icons.check_circle,
-                color:
-                    isSelected(item) ? MyColors.primary : Colors.grey.shade300,
-              ),
             );
-          },
-        );
-      }),
+          }
+
+          return ListView.separated(
+            physics: const AlwaysScrollableScrollPhysics(),
+            separatorBuilder: (_, __) => Divider(
+              thickness: .5,
+              color: Colors.grey.shade300,
+            ),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return ListTile(
+                onTap: () async {
+                  await onItemTap(item);
+                },
+                title: Text(
+                  titleBuilder(item),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: (subtitleBuilder != null &&
+                        subtitleBuilder!(item).trim().isNotEmpty)
+                    ? Text(
+                        subtitleBuilder!(item),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: MySizes.fontSizeSm,
+                        ),
+                      )
+                    : null,
+                trailing: Icon(
+                  Icons.check_circle,
+                  color: isSelected(item)
+                      ? MyColors.primary
+                      : Colors.grey.shade300,
+                ),
+              );
+            },
+          );
+        }),
+      ),
     );
   }
 }

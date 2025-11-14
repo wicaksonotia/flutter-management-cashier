@@ -224,6 +224,8 @@ class QuotationCard extends StatelessWidget {
                                       quotation.idKios!;
                                   cabangController
                                       .fetchDataListCabangFinancial();
+                                  cabangController.headerNamaKios.value =
+                                      quotation.kios ?? '';
                                   Get.toNamed(RouterClass.branch);
                                 },
                                 child: Container(
@@ -234,7 +236,7 @@ class QuotationCard extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
-                                    'Cabang: ${quotation.totalCabang ?? 0}',
+                                    'Outlet: ${quotation.totalCabang ?? 0}',
                                     style: const TextStyle(
                                         fontSize: MySizes.fontSizeXsm),
                                   ),

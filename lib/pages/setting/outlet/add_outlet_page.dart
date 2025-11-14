@@ -51,11 +51,11 @@ class _AddOutletPageState extends State<AddOutletPage> {
           TextFormField(
             controller: _kiosController.kios,
             decoration: InputDecoration(
-              labelText: 'Kios',
+              labelText: 'Brand Name *',
               floatingLabelStyle: const TextStyle(
                 color: MyColors.primary,
               ),
-              hintText: 'Kios',
+              hintText: 'Brand Name *',
               hintStyle: TextStyle(
                 color: Colors.grey.shade300,
               ),
@@ -81,11 +81,11 @@ class _AddOutletPageState extends State<AddOutletPage> {
             controller: _kiosController.phone,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
-              labelText: 'Phone',
+              labelText: 'Phone *',
               floatingLabelStyle: const TextStyle(
                 color: MyColors.primary,
               ),
-              hintText: 'Phone',
+              hintText: 'Phone *',
               hintStyle: TextStyle(
                 color: Colors.grey.shade300,
               ),
@@ -111,7 +111,7 @@ class _AddOutletPageState extends State<AddOutletPage> {
             controller: _kiosController.description,
             maxLines: 3,
             decoration: InputDecoration(
-              labelText: 'Description',
+              labelText: 'Description *',
               floatingLabelStyle: const TextStyle(
                 color: MyColors.primary,
               ),
@@ -130,7 +130,7 @@ class _AddOutletPageState extends State<AddOutletPage> {
               ),
               filled: true,
               fillColor: Colors.white,
-              hintText: 'Description',
+              hintText: 'Description *',
               hintStyle: TextStyle(
                 color: Colors.grey.shade300,
               ),

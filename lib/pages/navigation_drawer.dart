@@ -36,7 +36,7 @@ class NavigationDrawer extends StatelessWidget {
             ),
             _buildDrawerItem(
               icon: Icons.home_work,
-              text: "Transaksi Per Outlet",
+              text: "Transaction Per Outlet",
               onTap: () {
                 Navigator.of(context).pop();
                 final MonitoringOutletController monitoringOutletController =
@@ -46,25 +46,32 @@ class NavigationDrawer extends StatelessWidget {
               },
               selected: Get.currentRoute == RouterClass.monitoringoutlet,
             ),
-            Divider(color: Colors.grey.shade300),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Text("Transaksi Belanja",
-                  style: TextStyle(
-                      fontSize: MySizes.fontSizeLg, letterSpacing: 1)),
+            Container(
+              color: Colors.transparent,
+              child: ListTile(
+                leading: Icon(Icons.account_balance_wallet,
+                    color: (Get.currentRoute == RouterClass.listproduct ||
+                            Get.currentRoute == RouterClass.productcategory)
+                        ? MyColors.primary
+                        : Colors.black),
+                title: Text('Income/Expenditure Transactions',
+                    style: TextStyle(
+                        color: (Get.currentRoute == RouterClass.listproduct ||
+                                Get.currentRoute == RouterClass.productcategory)
+                            ? MyColors.primary
+                            : Colors.black)),
+              ),
             ),
-            _buildDrawerItem(
-              icon: Icons.edit_document,
-              text: "Input Transaksi",
+            _buildSubItem(
+              text: "Transaction Form",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.addtransaction);
               },
               selected: Get.currentRoute == RouterClass.addtransaction,
             ),
-            _buildDrawerItem(
-              icon: Icons.history,
-              text: "Riwayat",
+            _buildSubItem(
+              text: "History",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.transactionhistory);
@@ -80,7 +87,7 @@ class NavigationDrawer extends StatelessWidget {
             ),
             _buildDrawerItem(
               icon: Icons.store,
-              text: "Outlet",
+              text: "Brand",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.outlet);

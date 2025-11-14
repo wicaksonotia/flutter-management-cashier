@@ -13,9 +13,9 @@ abstract class BaseController extends GetxController {
   RxList<Map<String, dynamic>> listKios = <Map<String, dynamic>>[].obs;
   RxList<Map<String, dynamic>> listCabang = <Map<String, dynamic>>[].obs;
   var idKios = 0.obs;
-  var selectedKios = 'Outlet'.obs;
+  var selectedKios = 'Brand'.obs;
   var idCabang = 0.obs;
-  var selectedCabang = 'Outlet Branch'.obs;
+  var selectedCabang = 'Outlet'.obs;
 
   Future<void> fetchDataListKios({
     Future<void> Function()? onAfterSuccess,

@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/cabang_controller.dart';
 import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:cashier_management/routes.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/currency.dart';
 import 'package:cashier_management/utils/sizes.dart';
@@ -36,16 +37,25 @@ class _BranchPageState extends State<BranchPage> {
           },
         ),
         surfaceTintColor: Colors.transparent,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Outlet Branch Settings',
-              style: TextStyle(
-                  fontSize: MySizes.fontSizeHeader,
-                  fontWeight: FontWeight.bold),
+        title: RichText(
+          text: TextSpan(
+            text: '${_cabangController.headerNamaKios}',
+            style: const TextStyle(
+              fontSize: MySizes.fontSizeHeader,
+              fontWeight: FontWeight.bold,
+              color: MyColors.primary,
             ),
-          ],
+            children: const [
+              TextSpan(
+                text: ' Outlet Setting',
+                style: TextStyle(
+                  fontSize: MySizes.fontSizeHeader,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
         ),
         backgroundColor: Colors.white,
         actions: [
@@ -140,11 +150,11 @@ class QuotationCard extends StatelessWidget {
                                   Get.bottomSheet(
                                     ConfirmDialog(
                                         title: quotation.status == true
-                                            ? 'Non-Activate Outlet Branch'
-                                            : 'Activate Outlet Branch',
+                                            ? 'Non-Activate Outlet'
+                                            : 'Activate Outlet',
                                         message: quotation.status == true
-                                            ? 'This outlet branch will be deactivated.\nAre you sure you want to continue?'
-                                            : 'This outlet branch will be activated.\nAre you sure you want to continue?',
+                                            ? 'This outlet will be deactivated.\nAre you sure you want to continue?'
+                                            : 'This outlet will be activated.\nAre you sure you want to continue?',
                                         onConfirm: () async {
                                           controller.updateStatusBranch(
                                               quotation.id!,

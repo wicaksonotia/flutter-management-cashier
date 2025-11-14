@@ -13,8 +13,7 @@ class _AuthEndPoints {
 
   // HISTORY
   final String histories = 'FinancialHistories';
-  final String saveTransactionExpense = 'FinancialSaveTransactionExpense';
-  final String saveTransactionIncome = 'FinancialSaveTransactionIncome';
+  final String saveTransaction = 'FinancialSaveTransaction';
   final String deleteHistory = 'FinancialDeleteHistory';
 
   // KIOS

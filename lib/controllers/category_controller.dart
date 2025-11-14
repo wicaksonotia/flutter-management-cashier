@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/category_model.dart';
@@ -25,10 +23,24 @@ class CategoryController extends BaseController {
     getData(tags, value);
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    getData([], '');
+  // LIST DATA CATEGORIES
+  Future<void> getData(Object kategori, String textSearch) async {
+    try {
+      final result =
+          await RemoteDataSource.listCategories(kategori, textSearch);
+      if (result != null) {
+        resultData.assignAll(result);
+        idCategoryTransaction.value = result.first.id ?? 0;
+        selectedCategoryTransaction.value =
+            result.first.categoryName ?? 'Category';
+      }
+    } catch (error) {
+      Get.snackbar('Error', error.toString(),
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      isLoading(false);
+    } finally {
+      isLoading(false);
+    }
   }
 
   void insertCategory() async {
@@ -303,23 +315,5 @@ class CategoryController extends BaseController {
         ),
       ),
     );
-  }
-
-  // LIST DATA CATEGORIES
-  Future<void> getData(Object kategori, String textSearch) async {
-    try {
-      final result =
-          await RemoteDataSource.listCategories(kategori, textSearch);
-      if (result != null) {
-        resultData.assignAll(result);
-      }
-      print(jsonEncode(resultData));
-    } catch (error) {
-      Get.snackbar('Error', error.toString(),
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      isLoading(false);
-    } finally {
-      isLoading(false);
-    }
   }
 }

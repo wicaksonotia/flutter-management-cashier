@@ -63,6 +63,10 @@ class _AddProductCategoryPageState extends State<AddProductCategoryPage> {
                         .fetchDataListProductCategory();
                     Get.back();
                   },
+                  onRefresh: () async {
+                    await _productCategoryController
+                        .fetchDataListKios(); // API fetch
+                  },
                 ),
                 transition: Transition.rightToLeft,
                 duration: const Duration(milliseconds: 300),

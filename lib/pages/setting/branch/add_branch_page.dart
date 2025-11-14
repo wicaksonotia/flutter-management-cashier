@@ -47,7 +47,7 @@ class _AddBranchPageState extends State<AddBranchPage> {
                 ),
               ),
               const TextSpan(
-                text: ' Outlet Branch',
+                text: ' Outlet',
                 style: TextStyle(
                   fontSize: MySizes.fontSizeHeader,
                   fontWeight: FontWeight.bold,
@@ -70,11 +70,11 @@ class _AddBranchPageState extends State<AddBranchPage> {
             TextFormField(
               controller: _cabangController.kodeCabang,
               decoration: InputDecoration(
-                labelText: 'Kode',
+                labelText: 'Outlet Code *',
                 floatingLabelStyle: const TextStyle(
                   color: MyColors.primary,
                 ),
-                hintText: 'Kode',
+                hintText: 'Outlet Code *',
                 hintStyle: TextStyle(
                   color: Colors.grey.shade300,
                 ),
@@ -99,11 +99,11 @@ class _AddBranchPageState extends State<AddBranchPage> {
             TextFormField(
               controller: _cabangController.namaCabang,
               decoration: InputDecoration(
-                labelText: 'Branch Name',
+                labelText: 'Outlet Name *',
                 floatingLabelStyle: const TextStyle(
                   color: MyColors.primary,
                 ),
-                hintText: 'Branch Name',
+                hintText: 'Outlet Name *',
                 hintStyle: TextStyle(
                   color: Colors.grey.shade300,
                 ),

@@ -129,6 +129,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                 );
                                 Get.back();
                               },
+                              onRefresh: () async {
+                                await employeeController
+                                    .fetchDataListKios(); // API fetch
+                              },
                             ),
                             transition: Transition.rightToLeft,
                             duration: const Duration(milliseconds: 300),
@@ -181,7 +185,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               onTap: () {
                 Get.to(
                   () => SelectTableListPage(
-                    title: 'Outlet Branch',
+                    title: 'Outlet',
                     isLoading: employeeController.isLoadingCabang,
                     items: employeeController.resultDataCabang,
                     titleBuilder: (data) => data.cabang!,
@@ -192,6 +196,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       employeeController.idCabang.value = data.id!;
                       employeeController.selectedCabang.value = data.cabang!;
                       Get.back();
+                    },
+                    onRefresh: () async {
+                      await employeeController
+                          .fetchDataListCabang(); // API fetch
                     },
                   ),
                   transition: Transition.rightToLeft,

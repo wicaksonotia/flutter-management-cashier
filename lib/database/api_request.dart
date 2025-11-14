@@ -483,30 +483,10 @@ class RemoteDataSource {
   }
 
   // ===================== TRANSACTION =====================
-  static Future<bool> saveTransactionExpense(
-      Map<String, dynamic> rawFormat) async {
+  static Future<bool> saveTransaction(Map<String, dynamic> rawFormat) async {
     try {
-      var url = ApiEndPoints.baseUrl +
-          ApiEndPoints.authEndpoints.saveTransactionExpense;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  static Future<bool> saveTransactionIncome(
-      Map<String, dynamic> rawFormat) async {
-    try {
-      var url = ApiEndPoints.baseUrl +
-          ApiEndPoints.authEndpoints.saveTransactionIncome;
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveTransaction;
       Response response = await Dio().post(url,
           data: rawFormat,
           options: Options(

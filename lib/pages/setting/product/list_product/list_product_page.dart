@@ -109,6 +109,10 @@ class _ListProductPageState extends State<ListProductPage>
                               );
                               Get.back();
                             },
+                            onRefresh: () async {
+                              await _productController
+                                  .fetchDataListKios(); // API fetch
+                            },
                           ),
                           transition: Transition.rightToLeft,
                           duration: const Duration(milliseconds: 300),
@@ -140,6 +144,10 @@ class _ListProductPageState extends State<ListProductPage>
                                   data.name!;
                               await _productController.fetchDataListProduct();
                               Get.back();
+                            },
+                            onRefresh: () async {
+                              await _productController
+                                  .fetchDataListProductCategory(); // API fetch
                             },
                           ),
                           transition: Transition.rightToLeft,

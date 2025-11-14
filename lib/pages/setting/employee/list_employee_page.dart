@@ -105,6 +105,10 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                               );
                               Get.back();
                             },
+                            onRefresh: () async {
+                              await employeeController
+                                  .fetchDataListKios(); // API fetch
+                            },
                           ),
                           transition: Transition.rightToLeft,
                           duration: const Duration(milliseconds: 300),
