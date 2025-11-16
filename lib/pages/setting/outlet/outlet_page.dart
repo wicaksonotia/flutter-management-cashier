@@ -101,12 +101,12 @@ class _OutletPageState extends State<OutletPage> {
           onRefresh: _refresh,
           child: ListView.builder(
             padding: const EdgeInsets.all(12),
-            itemCount: _kiosController.listKiosFinancial.length,
+            itemCount: _kiosController.resultDataKios.length,
             itemBuilder: (context, index) {
               return QuotationCard(
                   controller: _kiosController,
                   cabangController: _cabangController,
-                  quotation: _kiosController.listKiosFinancial[index]);
+                  quotation: _kiosController.resultDataKios[index]);
             },
           ),
         );

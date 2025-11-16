@@ -49,7 +49,7 @@ class _AddProductCategoryPageState extends State<AddProductCategoryPage> {
             onTap: () {
               Get.to(
                 () => SelectTableListPage(
-                  title: 'Outlet',
+                  title: 'Brand',
                   isLoading: _productCategoryController.isLoadingKios,
                   items: _productCategoryController.resultDataKios,
                   titleBuilder: (data) => data.kios!,
@@ -74,7 +74,7 @@ class _AddProductCategoryPageState extends State<AddProductCategoryPage> {
             },
             child: InputDecorator(
               decoration: InputDecoration(
-                labelText: 'Set Outlet',
+                labelText: 'Set Brand',
                 labelStyle: const TextStyle(
                   color: Colors.black54,
                 ),

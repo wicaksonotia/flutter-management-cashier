@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class SearchBarContainer extends StatelessWidget {
   SearchBarContainer({super.key});
-  final CategoryController _categoryController = Get.find<CategoryController>();
+  final CategoryController _categoryController = Get.put(CategoryController());
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class SearchBarContainer extends StatelessWidget {
                     onPressed: () {
                       _categoryController.searchBarController.clear();
                       _categoryController.isEmptyValueSearchBar.value = true;
-                      _categoryController.processSearch('');
+                      _categoryController.getData();
                     },
                   ),
           ),
@@ -54,7 +54,7 @@ class SearchBarContainer extends StatelessWidget {
             }
           },
           onSubmitted: (value) {
-            _categoryController.processSearch(value);
+            _categoryController.getData();
           },
         ),
       ),

@@ -33,7 +33,7 @@ class _CategoryFormState extends State<CategoryForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Tambah Kategori',
+              'Add Category',
               style: TextStyle(
                 fontSize: MySizes.fontSizeLg,
                 fontWeight: FontWeight.bold,
@@ -46,34 +46,26 @@ class _CategoryFormState extends State<CategoryForm> {
               height: 1,
             ),
             const Gap(15),
-            // Obx(
-            //   () => ToggleSwitch(
-            //     minWidth: 90.0,
-            //     initialLabelIndex:
-            //         categoryController.tipeContoller.value == "PEMASUKAN"
-            //             ? 0
-            //             : 1,
-            //     cornerRadius: 5.0,
-            //     activeFgColor: Colors.white,
-            //     inactiveBgColor: Colors.grey,
-            //     inactiveFgColor: Colors.white,
-            //     totalSwitches: 2,
-            //     labels: const ['Pengeluaran', 'Pemasukan'],
-            //     icons: const [Icons.download, Icons.upload],
-            //     activeBgColors: const [
-            //       [MyColors.red],
-            //       [MyColors.primary],
-            //     ],
-            //     onToggle: (index) {
-            //       if (index == 0) {
-            //         categoryController.tipeContoller.value = "PENGELUARAN";
-            //       } else {
-            //         categoryController.tipeContoller.value = "PEMASUKAN";
-            //       }
-            //     },
-            //   ),
-            // ),
-            // const Gap(15),
+            Obx(() {
+              return Row(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(categoryController.isPemasukan.value
+                      ? "Income"
+                      : "Expense"),
+                  const SizedBox(width: 8),
+                  Switch(
+                    activeColor: MyColors.primary,
+                    value: !categoryController
+                        .isPemasukan.value, // false = expense, true = income
+                    onChanged: (value) {
+                      categoryController.isPemasukan.value = !value;
+                    },
+                  ),
+                ],
+              );
+            }),
+            const Gap(15),
             TextFormField(
               controller: categoryController.nameController,
               decoration: InputDecoration(
@@ -92,14 +84,14 @@ class _CategoryFormState extends State<CategoryForm> {
                     color: Colors.grey.shade300,
                   ),
                 ),
-                hintText: "Nama Kategori",
+                hintText: "Category Name",
                 hintStyle: TextStyle(
                   color: Colors.grey.shade300,
                 ),
                 border: const OutlineInputBorder(
                   borderSide: BorderSide(color: MyColors.primary),
                 ),
-                labelText: "Nama Kategori",
+                labelText: "Category Name",
                 floatingLabelStyle: const TextStyle(
                   color: MyColors.primary,
                 ),
@@ -119,7 +111,7 @@ class _CategoryFormState extends State<CategoryForm> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  categoryController.insertCategory();
+                  categoryController.saveCategory();
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(

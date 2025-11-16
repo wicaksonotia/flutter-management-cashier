@@ -89,7 +89,7 @@ class _ListProductCategoryPageState extends State<ListProductCategoryPage>
                       onTap: () {
                         Get.to(
                           () => SelectTableListPage(
-                            title: 'Outlet',
+                            title: 'Brand',
                             isLoading: _productCategoryController.isLoadingKios,
                             items: _productCategoryController.resultDataKios,
                             titleBuilder: (data) => data.kios!,
@@ -173,133 +173,122 @@ class _ListProductCategoryPageState extends State<ListProductCategoryPage>
   Widget _buildAccountTile({
     required DataProductCategory dataProductCategory,
   }) {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Stack(
+    return ListTile(
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                dataProductCategory.name!,
-                style: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-              const Gap(10),
-              InkWell(
-                onTap: () {
-                  // DIALOG CONFIRMATION ACTIVE OR INACTIVE
-                  Get.bottomSheet(
-                    ConfirmDialog(
-                        title: dataProductCategory.status!
-                            ? 'Non-Activate Outlet'
-                            : 'Activate Outlet',
-                        message: dataProductCategory.status!
-                            ? 'This outlet will be deactivated.\nAre you sure you want to continue?'
-                            : 'This outlet will be activated.\nAre you sure you want to continue?',
-                        onConfirm: () async {
-                          _productCategoryController
-                              .updateStatusProductCategory(
-                                  dataProductCategory.idCategories!,
-                                  !dataProductCategory.status!);
-                        }),
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: dataProductCategory.status!
-                        ? Colors.green[200]
-                        : Colors.red[200],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    dataProductCategory.status! ? 'Active' : 'Inactive',
-                    style: const TextStyle(fontSize: MySizes.fontSizeXsm),
-                  ),
-                ),
-              ),
-            ],
+          Text(
+            dataProductCategory.name!,
+            style: const TextStyle(
+              fontWeight: FontWeight.normal,
+            ),
           ),
-          Positioned(
-            top: -10,
-            right: -10,
-            child: PopupMenuButton<String>(
-              onSelected: (value) {
-                if (value == "edit") {
-                  _productCategoryController
-                      .editProductCategory(dataProductCategory);
-                  Get.toNamed(RouterClass.addproductcategory);
-                  return;
-                }
-                if (value == "delete") {
-                  // can't delete product category, cause product category is in use
-                  if (dataProductCategory.statusProduk == 1) {
-                    Get.snackbar(
-                      'Error',
-                      'Cannot delete this product category. This product category is in use',
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: Colors.red[100],
-                      colorText: Colors.red[800],
-                    );
-                    return;
-                  }
-                  // Show confirmation dialog
-                  Get.bottomSheet(
-                    ConfirmDialog(
-                      title: 'Delete Product Category',
-                      message:
-                          'Are you sure, you want to delete this product category?',
-                      onConfirm: () async {
-                        _productCategoryController.deleteProductCategory(
-                            dataProductCategory.idCategories!);
-                      },
-                    ),
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                  );
-                  return;
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: "edit",
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit),
-                      Gap(8),
-                      Text("Edit"),
-                    ],
-                  ),
+          const Gap(10),
+          InkWell(
+            onTap: () {
+              // DIALOG CONFIRMATION ACTIVE OR INACTIVE
+              Get.bottomSheet(
+                ConfirmDialog(
+                    title: dataProductCategory.status!
+                        ? 'Non-Activate Outlet'
+                        : 'Activate Outlet',
+                    message: dataProductCategory.status!
+                        ? 'This outlet will be deactivated.\nAre you sure you want to continue?'
+                        : 'This outlet will be activated.\nAre you sure you want to continue?',
+                    onConfirm: () async {
+                      _productCategoryController.updateStatusProductCategory(
+                          dataProductCategory.idCategories!,
+                          !dataProductCategory.status!);
+                    }),
+                isScrollControlled: true,
+                backgroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-                const PopupMenuItem(
-                  value: "delete",
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete),
-                      Gap(8),
-                      Text("Delete"),
-                    ],
-                  ),
-                ),
-              ],
-              color: Colors.white,
-              icon: const Icon(Icons.more_vert),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: dataProductCategory.status!
+                    ? Colors.green[200]
+                    : Colors.red[200],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                dataProductCategory.status! ? 'Active' : 'Inactive',
+                style: const TextStyle(fontSize: MySizes.fontSizeXsm),
+              ),
             ),
           ),
         ],
+      ),
+      trailing: Positioned(
+        child: PopupMenuButton<String>(
+          onSelected: (value) {
+            if (value == "edit") {
+              _productCategoryController
+                  .editProductCategory(dataProductCategory);
+              Get.toNamed(RouterClass.addproductcategory);
+              return;
+            }
+            if (value == "delete") {
+              // can't delete product category, cause product category is in use
+              if (dataProductCategory.statusProduk == 1) {
+                Get.snackbar(
+                  'Error',
+                  'Cannot delete this product category. This product category is in use',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.red[100],
+                  colorText: Colors.red[800],
+                );
+                return;
+              }
+              // Show confirmation dialog
+              Get.bottomSheet(
+                ConfirmDialog(
+                  title: 'Delete Product Category',
+                  message:
+                      'Are you sure, you want to delete this product category?',
+                  onConfirm: () async {
+                    _productCategoryController.deleteProductCategory(
+                        dataProductCategory.idCategories!);
+                  },
+                ),
+                isScrollControlled: true,
+                backgroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+              );
+              return;
+            }
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: "edit",
+              child: Row(
+                children: [
+                  Icon(Icons.edit),
+                  Gap(8),
+                  Text("Edit"),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: "delete",
+              child: Row(
+                children: [
+                  Icon(Icons.delete),
+                  Gap(8),
+                  Text("Delete"),
+                ],
+              ),
+            ),
+          ],
+          color: Colors.white,
+          icon: const Icon(Icons.more_vert),
+        ),
       ),
     );
   }

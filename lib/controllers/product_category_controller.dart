@@ -33,14 +33,15 @@ class ProductCategoryController extends BaseController {
         'id_kios': idKios.value,
       };
       var result = await RemoteDataSource.getListProductCategory(rawFormat);
-      // if (result == null || result.isEmpty) {
-      //   resultDataProductCategory.clear();
-      //   return;
-      // }
       if (result != null) {
         resultDataProductCategory.assignAll(result);
-        idProductCategory.value = result.first.idCategories!;
-        nameProductCategory.value = result.first.name!;
+        if (result.isNotEmpty) {
+          idProductCategory.value = result.first.idCategories ?? 0;
+          nameProductCategory.value = result.first.name ?? '';
+        } else {
+          idProductCategory.value = 0;
+          nameProductCategory.value = 'Category';
+        }
       }
       // ✅ Jalankan callback opsional (jika dikirim)
       if (onAfterSuccess != null) {
@@ -115,17 +116,43 @@ class ProductCategoryController extends BaseController {
     await RemoteDataSource.updateCategorySorting(payload);
   }
 
-  void updateStatusProductCategory(int id, bool status) async {
-    var rawFormat = {'id': id, 'status': status};
-    var resultUpdate =
-        await RemoteDataSource.updateStatusProductCategory(rawFormat);
-    if (resultUpdate) {
-      Get.snackbar('Notification', 'Data updated successfully',
-          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-      fetchDataListProductCategory();
-    } else {
-      Get.snackbar('Notification', 'Failed to update data',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+  void updateStatusProductCategory(int id, bool newStatus) async {
+    try {
+      final rawFormat = {'id': id, 'status': newStatus};
+      final success =
+          await RemoteDataSource.updateStatusProductCategory(rawFormat);
+
+      if (success) {
+        // Update data lokal
+        final index = resultDataProductCategory
+            .indexWhere((item) => item.idCategories == id);
+        if (index != -1) {
+          resultDataProductCategory[index].status = newStatus;
+          resultDataProductCategory
+              .refresh(); // <--- update UI tanpa reload seluruh data
+        }
+
+        Get.snackbar(
+          'Notification',
+          'Status updated successfully',
+          icon: const Icon(Icons.check),
+          snackPosition: SnackPosition.TOP,
+        );
+      } else {
+        Get.snackbar(
+          'Notification',
+          'Failed to update data',
+          icon: const Icon(Icons.error),
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 

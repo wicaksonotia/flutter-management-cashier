@@ -62,40 +62,6 @@ class NavigationDrawer extends StatelessWidget {
               },
               selected: Get.currentRoute == RouterClass.transactionhistory,
             ),
-            // Container(
-            //   color: Colors.transparent,
-            //   child: ListTile(
-            //     leading: Icon(Icons.account_balance_wallet,
-            //         color: (Get.currentRoute == RouterClass.addtransaction ||
-            //                 Get.currentRoute == RouterClass.transactionhistory)
-            //             ? MyColors.primary
-            //             : Colors.black),
-            //     title: Text('Income/Expenditure',
-            //         style: TextStyle(
-            //             color:
-            //                 (Get.currentRoute == RouterClass.addtransaction ||
-            //                         Get.currentRoute ==
-            //                             RouterClass.transactionhistory)
-            //                     ? MyColors.primary
-            //                     : Colors.black)),
-            //   ),
-            // ),
-            // _buildSubItem(
-            //   text: "Form",
-            //   onTap: () {
-            //     Navigator.of(context).pop();
-            //     Get.toNamed(RouterClass.addtransaction);
-            //   },
-            //   selected: Get.currentRoute == RouterClass.addtransaction,
-            // ),
-            // _buildSubItem(
-            //   text: "History",
-            //   onTap: () {
-            //     Navigator.of(context).pop();
-            //     Get.toNamed(RouterClass.transactionhistory);
-            //   },
-            //   selected: Get.currentRoute == RouterClass.transactionhistory,
-            // ),
             Divider(color: Colors.grey.shade300),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -152,6 +118,15 @@ class NavigationDrawer extends StatelessWidget {
                 Get.toNamed(RouterClass.listproduct);
               },
               selected: Get.currentRoute == RouterClass.listproduct,
+            ),
+            _buildDrawerItem(
+              icon: Icons.supervisor_account,
+              text: "Category Income/Expenditure",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.category);
+              },
+              selected: Get.currentRoute == RouterClass.category,
             ),
             Divider(color: Colors.grey.shade300),
             _buildDrawerItem(

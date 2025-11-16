@@ -88,7 +88,7 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                       onTap: () {
                         Get.to(
                           () => SelectTableListPage(
-                            title: 'Outlet',
+                            title: 'Brand',
                             isLoading: employeeController.isLoadingKios,
                             items: employeeController.resultDataKios,
                             titleBuilder: (data) => data.kios!,
@@ -234,163 +234,167 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                 ),
               ),
               const Gap(20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.normal,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
-                  const Gap(2),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.account_box_outlined,
-                        size: 16,
-                        color: MyColors.grey,
-                      ),
-                      const Gap(5),
-                      Text(
-                        username,
-                        style: const TextStyle(
+                    const Gap(2),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.account_box_outlined,
+                          size: 16,
                           color: MyColors.grey,
-                          fontSize: MySizes.fontSizeSm,
                         ),
-                      ),
-                    ],
-                  ),
-                  const Gap(2),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.phone,
-                        size: 16,
-                        color: MyColors.grey,
-                      ),
-                      const Gap(5),
-                      Text(
-                        phone,
-                        style: const TextStyle(
+                        const Gap(5),
+                        Text(
+                          username,
+                          style: const TextStyle(
+                            color: MyColors.grey,
+                            fontSize: MySizes.fontSizeSm,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(2),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.phone,
+                          size: 16,
                           color: MyColors.grey,
-                          fontSize: MySizes.fontSizeSm,
                         ),
-                      ),
-                    ],
-                  ),
-                  const Gap(2),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.home,
-                        size: 16,
-                        color: MyColors.grey,
-                      ),
-                      const Gap(5),
-                      Text(
-                        defaultOutletName,
-                        style: const TextStyle(
+                        const Gap(5),
+                        Text(
+                          phone,
+                          style: const TextStyle(
+                            color: MyColors.grey,
+                            fontSize: MySizes.fontSizeSm,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(2),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.home,
+                          size: 16,
                           color: MyColors.grey,
-                          fontSize: MySizes.fontSizeSm,
                         ),
-                      ),
-                    ],
-                  ),
-                  const Gap(2),
-                  SizedBox(
-                    width: 300,
-                    child: Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children:
-                          employeeController.listCabang.map<Widget>((cabang) {
-                        final int cabangValue = cabang['value'];
-                        final String cabangNama = cabang['nama'];
-                        final bool isSelected = cabangId.contains(cabangValue);
-                        return GestureDetector(
-                          onTap: () {
-                            // print('Cabang dipilih: $cabangNama ($cabangValue)');
-                            if (isSelected) {
-                              // if selected just one then can't remove
-                              if (cabangId.length == 1) {
-                                Get.snackbar(
-                                  'Error',
-                                  'Cannot delete this employee, because there is only one branch assigned to this employee.',
-                                  snackPosition: SnackPosition.TOP,
-                                  backgroundColor: Colors.red[100],
-                                  colorText: Colors.red[800],
+                        const Gap(5),
+                        Text(
+                          defaultOutletName,
+                          style: const TextStyle(
+                            color: MyColors.grey,
+                            fontSize: MySizes.fontSizeSm,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(2),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children:
+                            employeeController.listCabang.map<Widget>((cabang) {
+                          final int cabangValue = cabang['value'];
+                          final String cabangNama = cabang['nama'];
+                          final bool isSelected =
+                              cabangId.contains(cabangValue);
+                          return GestureDetector(
+                            onTap: () {
+                              // print('Cabang dipilih: $cabangNama ($cabangValue)');
+                              if (isSelected) {
+                                // if selected just one then can't remove
+                                if (cabangId.length == 1) {
+                                  Get.snackbar(
+                                    'Error',
+                                    'Cannot delete this employee, because there is only one branch assigned to this employee.',
+                                    snackPosition: SnackPosition.TOP,
+                                    backgroundColor: Colors.red[100],
+                                    colorText: Colors.red[800],
+                                  );
+                                  return;
+                                }
+                                Get.bottomSheet(
+                                  ConfirmDialog(
+                                    title: 'Remove Employee from Outlet',
+                                    message:
+                                        'This employee will be removed from $cabangNama.\nAre you sure you want to continue?',
+                                    onConfirm: () async {
+                                      employeeController.processKasirCabang(
+                                          id, cabangValue, 'remove');
+                                    },
+                                  ),
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.white,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20)),
+                                  ),
                                 );
-                                return;
+                              } else {
+                                Get.bottomSheet(
+                                  ConfirmDialog(
+                                    title: 'Add Employee to Outlet',
+                                    message:
+                                        'This employee will be added to $cabangNama.\nAre you sure you want to continue?',
+                                    onConfirm: () async {
+                                      employeeController.processKasirCabang(
+                                          id, cabangValue, 'add');
+                                    },
+                                  ),
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.white,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20)),
+                                  ),
+                                );
                               }
-                              Get.bottomSheet(
-                                ConfirmDialog(
-                                  title: 'Remove Employee from Outlet',
-                                  message:
-                                      'This employee will be removed from $cabangNama.\nAre you sure you want to continue?',
-                                  onConfirm: () async {
-                                    employeeController.processKasirCabang(
-                                        id, cabangValue, 'remove');
-                                  },
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? MyColors.secondary
+                                    : Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Text(
+                                cabangNama,
+                                style: TextStyle(
+                                  fontSize: MySizes.fontSizeSm,
+                                  color:
+                                      isSelected ? Colors.white : Colors.black,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
-                                isScrollControlled: true,
-                                backgroundColor: Colors.white,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20)),
-                                ),
-                              );
-                            } else {
-                              Get.bottomSheet(
-                                ConfirmDialog(
-                                  title: 'Add Employee to Outlet',
-                                  message:
-                                      'This employee will be added to $cabangNama.\nAre you sure you want to continue?',
-                                  onConfirm: () async {
-                                    employeeController.processKasirCabang(
-                                        id, cabangValue, 'add');
-                                  },
-                                ),
-                                isScrollControlled: true,
-                                backgroundColor: Colors.white,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20)),
-                                ),
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? MyColors.secondary
-                                  : Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Text(
-                              cabangNama,
-                              style: TextStyle(
-                                fontSize: MySizes.fontSizeSm,
-                                color: isSelected ? Colors.white : Colors.black,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
           Positioned(
-            top: -10,
-            right: -10,
+            top: 0,
+            right: 0,
             child: PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == "edit") {

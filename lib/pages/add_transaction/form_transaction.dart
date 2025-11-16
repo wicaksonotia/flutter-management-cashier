@@ -27,7 +27,7 @@ class _FormTransactionState extends State<FormTransaction> {
     _transactionController.fetchDataListKios(
       onAfterSuccess: () => _transactionController.fetchDataListCabang(),
     );
-    _transactionController.getData(["PENGELUARAN"], "");
+    _transactionController.fetchAllCategory(_transactionController.kategori);
   }
 
   @override
@@ -61,7 +61,7 @@ class _FormTransactionState extends State<FormTransaction> {
             onTap: () {
               Get.to(
                 () => SelectTableListPage(
-                  title: 'Outlet',
+                  title: 'Brand',
                   isLoading: _transactionController.isLoadingKios,
                   items: _transactionController.resultDataKios,
                   titleBuilder: (data) => data.kios!,
@@ -97,7 +97,7 @@ class _FormTransactionState extends State<FormTransaction> {
                     () => Text(
                       _transactionController.selectedKios.value.isNotEmpty
                           ? _transactionController.selectedKios.value
-                          : 'Outlet',
+                          : 'Brand',
                       style:
                           const TextStyle(fontSize: 16, color: Colors.black54),
                     ),
@@ -182,10 +182,9 @@ class _FormTransactionState extends State<FormTransaction> {
                         _transactionController
                             .selectedCategoryTransaction.value = 'Category';
                         _transactionController.isIncome.value = !value;
-                        var type = _transactionController.isIncome.value
-                            ? "PEMASUKAN"
-                            : "PENGELUARAN";
-                        _transactionController.getData([type], "");
+                        _transactionController.setKategori();
+                        _transactionController
+                            .fetchAllCategory(_transactionController.kategori);
                       },
                     ),
                   ],
@@ -199,8 +198,9 @@ class _FormTransactionState extends State<FormTransaction> {
               Get.to(
                 () => SelectTableListPage(
                   title: 'Category',
-                  isLoading: _transactionController.isLoading,
-                  items: _transactionController.resultData,
+                  isLoading: _transactionController.isLoadingCategory,
+                  items: _transactionController
+                      .resultDataCategoryWithoutPagination,
                   titleBuilder: (data) => data.categoryName!,
                   subtitleBuilder: (data) => '',
                   isSelected: (data) =>
@@ -214,11 +214,8 @@ class _FormTransactionState extends State<FormTransaction> {
                     Get.back();
                   },
                   onRefresh: () async {
-                    var type = _transactionController.isIncome.value
-                        ? "PEMASUKAN"
-                        : "PENGELUARAN";
                     await _transactionController
-                        .getData([type], ""); // API fetch
+                        .fetchAllCategory(_transactionController.kategori);
                   },
                 ),
                 transition: Transition.rightToLeft,

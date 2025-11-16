@@ -364,47 +364,30 @@ class RemoteDataSource {
 
 // ===================== CATEGORY =====================
   // SAVE CATEGORY
-  static Future<bool> saveCategory(Map<String, dynamic> rawFormat) async {
+  static Future<Map<String, dynamic>?> saveCategory(
+      Map<String, dynamic> rawFormat) async {
     try {
-      // print(jsonEncode(rawFormat));
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveCategory;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
+
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
       if (response.statusCode == 200) {
-        return true;
+        return response.data; // <-- ini penting
       }
-      return false;
-    } catch (error) {
-      return false;
+
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 
-  // UPDATE CATEGORY STATUS
-  static Future<bool> updateCategory(int id, dynamic data) async {
+  static Future<bool> updateStatusCategory(
+      Map<String, dynamic> rawFormat) async {
     try {
-      data['id'] = id;
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateCategory;
-      Response response = await Dio().post(url,
-          data: jsonEncode(data),
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  static Future<bool> updateStatusCategory(int id, bool status) async {
-    try {
-      var rawFormat = jsonEncode({'id': id, 'status': !status});
       var url = ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.updateCategoryStatus;
       Response response = await Dio().post(url,
@@ -422,63 +405,51 @@ class RemoteDataSource {
   }
 
   //DELETE CATEGORY
-  static Future<bool> deleteCategory(int id) async {
+  static Future<int?> deleteCategory(int idCategory) async {
     try {
-      var rawFormat = jsonEncode({'id': id});
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteCategory;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        return true;
+
+      Response response = await Dio().post(
+        url,
+        data: {"id_category": idCategory},
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      if (response.statusCode == 200 && response.data["status"] == "ok") {
+        return response.data["data"]["id"]; // return id yang dihapus
       }
-      return false;
-    } catch (error) {
-      return false;
+
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 
   // LIST CATEGORIES
-  static Future<List<CategoryModel>?> listCategories(
-      Object kategori, String textSearch) async {
+  static Future<CategoryModel?> listCategories(
+      Map<String, dynamic> rawFormat) async {
     try {
-      var rawFormat = jsonEncode({
-        'kategori': kategori,
-        'textSearch': textSearch,
-      });
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listCategories;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = response.data;
-        return jsonData.map((e) => CategoryModel.fromJson(e)).toList();
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
 
-  // CATEGORY DETAIL
-  static Future<CategoryModel?> detailCategory(int id) async {
-    try {
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.detailCategory;
-      final response = await Dio().get('$url?id=$id');
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
       if (response.statusCode == 200) {
-        dynamic jsonData = response.data;
-        return CategoryModel.fromJson(jsonData);
+        // Pastikan data berupa Map, bukan String
+        final data =
+            response.data is String ? jsonDecode(response.data) : response.data;
+
+        return CategoryModel.fromJson(data);
       }
+
       return null;
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception("listCategories error: $e");
     }
   }
 

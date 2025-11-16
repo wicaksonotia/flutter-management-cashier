@@ -97,16 +97,42 @@ class EmployeeController extends BaseController {
     }
   }
 
-  void updateEmployeeStatus(int id, bool status) async {
-    var rawFormat = {'id': id, 'status': status};
-    var resultUpdate = await RemoteDataSource.updateEmployeeStatus(rawFormat);
-    if (resultUpdate) {
-      Get.snackbar('Notification', 'Data updated successfully',
-          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-      fetchDataListEmployee();
-    } else {
-      Get.snackbar('Notification', 'Failed to update data',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+  void updateEmployeeStatus(int id, bool newStatus) async {
+    try {
+      final rawFormat = {'id': id, 'status': newStatus};
+      final success = await RemoteDataSource.updateEmployeeStatus(rawFormat);
+
+      if (success) {
+        // Update data lokal
+        final index =
+            resultDataEmployee.indexWhere((item) => item.idKasir == id);
+        if (index != -1) {
+          resultDataEmployee[index].statusKasir = newStatus;
+          resultDataEmployee
+              .refresh(); // <--- update UI tanpa reload seluruh data
+        }
+
+        Get.snackbar(
+          'Notification',
+          'Status updated successfully',
+          icon: const Icon(Icons.check),
+          snackPosition: SnackPosition.TOP,
+        );
+      } else {
+        Get.snackbar(
+          'Notification',
+          'Failed to update data',
+          icon: const Icon(Icons.error),
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 

@@ -91,7 +91,7 @@ class _ListProductPageState extends State<ListProductPage>
                       onTap: () {
                         Get.to(
                           () => SelectTableListPage(
-                            title: 'Outlet',
+                            title: 'Brand',
                             isLoading: _productController.isLoadingKios,
                             items: _productController.resultDataKios,
                             titleBuilder: (data) => data.kios!,

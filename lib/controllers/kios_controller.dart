@@ -10,11 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
 class KiosController extends BaseController {
-  var listKiosFinancial = <KiosModel>[].obs;
+  var resultDataKios = <KiosModel>[].obs;
   var isLoading = true.obs;
   var isLoadingFinancialKios = true.obs;
   var isLoadingSaveKios = true.obs;
-  var idOwner = 0.obs;
   TextEditingController kios = TextEditingController();
   TextEditingController phone = TextEditingController();
   TextEditingController description = TextEditingController();
@@ -50,7 +49,7 @@ class KiosController extends BaseController {
       var rawFormat = {'id_owner': prefs.getInt('id_owner')!};
       var result = await RemoteDataSource.getListKiosAndDetail(rawFormat);
       if (result != null) {
-        listKiosFinancial.assignAll(result);
+        resultDataKios.assignAll(result);
       }
     } finally {
       isLoadingFinancialKios(false);
@@ -167,16 +166,40 @@ class KiosController extends BaseController {
     }
   }
 
-  void updateStatusOutlet(int id, bool status) async {
-    var rawFormat = {'id': id, 'status': status};
-    var resultUpdate = await RemoteDataSource.updateOutletStatus(rawFormat);
-    if (resultUpdate) {
-      Get.snackbar('Notification', 'Data updated successfully',
-          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-      fetchDataListKiosFinancial();
-    } else {
-      Get.snackbar('Notification', 'Failed to update data',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+  void updateStatusOutlet(int id, bool newStatus) async {
+    try {
+      final rawFormat = {'id': id, 'status': newStatus};
+      final success = await RemoteDataSource.updateOutletStatus(rawFormat);
+
+      if (success) {
+        // Update data lokal
+        final index = resultDataKios.indexWhere((item) => item.idKios == id);
+        if (index != -1) {
+          resultDataKios[index].isActive = newStatus;
+          resultDataKios.refresh(); // <--- update UI tanpa reload seluruh data
+        }
+
+        Get.snackbar(
+          'Notification',
+          'Status updated successfully',
+          icon: const Icon(Icons.check),
+          snackPosition: SnackPosition.TOP,
+        );
+      } else {
+        Get.snackbar(
+          'Notification',
+          'Failed to update data',
+          icon: const Icon(Icons.error),
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 }

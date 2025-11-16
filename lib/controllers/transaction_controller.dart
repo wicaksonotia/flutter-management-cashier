@@ -20,7 +20,19 @@ class TransactionController extends CategoryController {
   var dataCategoryIncomeId = 0.obs;
   var dataCategoryIncomeName = ''.obs;
   RxBool isLoadingSaveTransaction = true.obs;
+  var kategori = [];
   var isIncome = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    setKategori();
+  }
+
+  void setKategori() {
+    kategori = [];
+    isIncome.value ? kategori.add('PEMASUKAN') : kategori.add('PENGELUARAN');
+  }
 
   bool disableDate(DateTime day) {
     if ((day.isBefore(DateTime.now().add(const Duration(days: 0))))) {
@@ -145,56 +157,4 @@ class TransactionController extends CategoryController {
       isLoadingSaveTransaction(false);
     }
   }
-  //   if (idCategoryTransaction.value == 0) {
-  //     Get.snackbar('Error', 'Silakan pilih kategori belanja',
-  //         icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-  //   } else if (idCabang.value == 0) {
-  //     Get.snackbar('Error', 'Silakan pilih cabang kios',
-  //         icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-  //   } else if (amountController.text.isEmpty) {
-  //     Get.snackbar('Error', 'Silakan isi total belanja',
-  //         icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-  //   } else if (descriptionController.text.isEmpty) {
-  //     Get.snackbar('Error', 'Silakan isi deskripsi-nya',
-  //         icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-  //   } else {
-  //     try {
-  //       var rawFormat = {
-  //         'id_kios': _kiosController.idKios.value,
-  //         'id_cabang': idCabang.value,
-  //         'id_kategori_transaksi': idCategoryTransaction.value,
-  //         'nama_kategori': selectedCategoryTransaction.value,
-  //         'amount':
-  //             int.parse(amountController.text.replaceAll(RegExp('[^0-9]'), '')),
-  //         'description': descriptionController.text,
-  //         'transactionDate': selectTransactionExpenseDate.value.toString(),
-  //         'transactionTime': DateFormat('HH:mm:ss').format(
-  //           DateTime(
-  //             DateTime.now().year,
-  //             DateTime.now().month,
-  //             DateTime.now().day,
-  //             selectTransactionExpenseTime.value.hour,
-  //             selectTransactionExpenseTime.value.minute,
-  //           ),
-  //         ),
-  //       };
-  //       final result = await RemoteDataSource.saveTransactionExpense(rawFormat);
-  //       if (result) {
-  //         throw 'Transaction saved successfully';
-  //       }
-  //     } catch (error) {
-  //       Get.snackbar('Notification', error.toString(),
-  //           icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-  //     } finally {
-  //       isLoadingSaveTransaction(false);
-  //       _historyController.getHistoriesByFilter();
-  //     }
-  //     idCategoryTransaction.value = 0;
-  //     selectedCategoryTransaction.value = '';
-  //     amountController.clear();
-  //     descriptionController.clear();
-  //     selectTransactionExpenseDate.value = DateTime.now();
-  //     selectTransactionExpenseTime.value = TimeOfDay.now();
-  //   }
-  // }
 }

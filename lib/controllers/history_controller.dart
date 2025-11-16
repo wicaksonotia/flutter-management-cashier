@@ -73,12 +73,19 @@ class HistoryController extends GetxController {
   void getDataListCategoryPengeluaran() async {
     try {
       isLoadingCategoryPengeluaran(true);
-      final result = await RemoteDataSource.listCategories(['PENGELUARAN'], '');
+      var rawFormat = {
+        'kategori': ['PENGELUARAN'],
+        'textSearch': '',
+        'page': 1,
+        'limit': 999999,
+        'sort': "ASC"
+      };
+      final result = await RemoteDataSource.listCategories(rawFormat);
       if (result != null) {
-        listCategoryPengeluaran.assignAll(result.map((category) => {
-              'value': category.id,
-              'nama': category.categoryName!,
-            }));
+        listCategoryPengeluaran.assign({
+          'value': result.data?.first.id ?? 0,
+          'nama': result.data?.first.categoryName!,
+        });
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),

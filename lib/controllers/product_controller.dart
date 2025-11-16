@@ -116,16 +116,42 @@ class ProductController extends ProductCategoryController {
     await RemoteDataSource.updateProductSorting(payload);
   }
 
-  void updateStatusProduct(int id, bool status) async {
-    var rawFormat = {'id': id, 'status': status};
-    var resultUpdate = await RemoteDataSource.updateStatusProduct(rawFormat);
-    if (resultUpdate) {
-      Get.snackbar('Notification', 'Data updated successfully',
-          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-      fetchDataListProduct();
-    } else {
-      Get.snackbar('Notification', 'Failed to update data',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+  void updateStatusProduct(int id, bool newStatus) async {
+    try {
+      final rawFormat = {'id': id, 'status': newStatus};
+      final success = await RemoteDataSource.updateStatusProduct(rawFormat);
+
+      if (success) {
+        // Update data lokal
+        final index =
+            resultDataProduct.indexWhere((item) => item.idProduct == id);
+        if (index != -1) {
+          resultDataProduct[index].status = newStatus;
+          resultDataProduct
+              .refresh(); // <--- update UI tanpa reload seluruh data
+        }
+
+        Get.snackbar(
+          'Notification',
+          'Status updated successfully',
+          icon: const Icon(Icons.check),
+          snackPosition: SnackPosition.TOP,
+        );
+      } else {
+        Get.snackbar(
+          'Notification',
+          'Failed to update data',
+          icon: const Icon(Icons.error),
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 

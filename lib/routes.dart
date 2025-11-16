@@ -8,6 +8,7 @@ import 'package:cashier_management/pages/monitoring_outlet/monitoring_page.dart'
 import 'package:cashier_management/pages/history/history_page.dart';
 import 'package:cashier_management/pages/setting/branch/add_branch_page.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
+import 'package:cashier_management/pages/setting/category_income_expenses/category_page.dart';
 import 'package:cashier_management/pages/setting/employee/add_employee_page.dart';
 import 'package:cashier_management/pages/setting/employee/list_employee_page.dart';
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
@@ -50,6 +51,8 @@ class RouterClass {
   // SETTING PRODUCT
   static String addproduct = "/addproduct";
   static String listproduct = "/listproduct";
+  // SETTING INCOME/EXPENSES CATEGORY
+  static String category = "/category";
 
   static List<GetPage> routes = [
     GetPage(page: () => const LoginPage(), name: login),
@@ -90,5 +93,7 @@ class RouterClass {
     // PRODUCT
     GetPage(page: () => const AddProductPage(), name: addproduct),
     GetPage(page: () => const ListProductPage(), name: listproduct),
+    // INCOME/EXPENSES CATEGORY
+    GetPage(page: () => const CategoryPage(), name: category),
   ];
 }

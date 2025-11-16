@@ -70,7 +70,6 @@ abstract class BaseController extends GetxController {
   }) async {
     try {
       var rawFormat = {'id_kios': idKios.value};
-      print(rawFormat);
       var result = await RemoteDataSource.getListCabangKios(rawFormat);
       if (result == null || result.isEmpty) {
         resultDataCabang.clear();
