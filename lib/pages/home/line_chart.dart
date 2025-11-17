@@ -3,6 +3,70 @@ import 'package:cashier_management/utils/sizes.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+class LineChartSample1 extends StatefulWidget {
+  const LineChartSample1({super.key});
+
+  @override
+  State<StatefulWidget> createState() => LineChartSample1State();
+}
+
+class LineChartSample1State extends State<LineChartSample1> {
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1.23,
+      child: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16, left: 6),
+              child: const _LineChart(),
+            ),
+          ),
+          _buildLegend(),
+        ],
+      ),
+    );
+  }
+
+  // 🔥 Legend
+  Widget _buildLegend() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _legendItem(Colors.green, "Income"),
+          _legendItem(Colors.red, "Expense"),
+          _legendItem(Colors.blue, "Balance"),
+        ],
+      ),
+    );
+  }
+
+  Widget _legendItem(Color color, String text) {
+    return Row(
+      children: [
+        Container(
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(text),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+//                               MAIN CHART
+// ============================================================================
 
 class _LineChart extends StatelessWidget {
   const _LineChart();
@@ -13,250 +77,208 @@ class _LineChart extends StatelessWidget {
 
     return Obx(
       () => LineChart(
-        sampleData1(chartController),
+        _data(chartController),
         duration: const Duration(milliseconds: 250),
       ),
     );
   }
 
-  LineChartData sampleData1(TotalPerTypeController chartController) =>
-      LineChartData(
-        lineTouchData: lineTouchData1,
-        gridData: gridData,
-        titlesData: titlesData1,
-        borderData: borderData,
-        lineBarsData: lineBarsData1(chartController),
-        minX: 0,
-        maxX: 12,
-        maxY: 7,
-        minY: 0,
-      );
-
-  LineTouchData get lineTouchData1 => LineTouchData(
-        handleBuiltInTouches: true,
-        touchTooltipData: LineTouchTooltipData(
-          getTooltipColor: (touchedSpot) =>
-              Colors.blueGrey.withValues(alpha: 0.8),
-        ),
-      );
-
-  FlTitlesData get titlesData1 => FlTitlesData(
-        bottomTitles: AxisTitles(
-          sideTitles: bottomTitles,
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: leftTitles(),
-        ),
-      );
-
-  List<LineChartBarData> lineBarsData1(
-          TotalPerTypeController chartController) =>
-      [
-        lineChartBarData1_1(chartController),
-        lineChartBarData1_2(chartController),
-      ];
-
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 14,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '1 Jt';
-        break;
-      case 2:
-        text = '2 Jt';
-        break;
-      case 3:
-        text = '3 Jt';
-        break;
-      case 4:
-        text = '4 Jt';
-        break;
-      case 5:
-        text = '5 Jt';
-        break;
-      case 6:
-        text = '6 Jt';
-        break;
-      case 7:
-        text = '7 Jt';
-        break;
-      // case 8:
-      //   text = '8 Jt';
-      //   break;
-      // case 9:
-      //   text = '9 Jt';
-      //   break;
-      // case 10:
-      //   text = '10 Jt';
-      //   break;
-      default:
-        return Container();
-    }
-
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: Text(
-        text,
-        style: style,
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  SideTitles leftTitles() => SideTitles(
-        getTitlesWidget: leftTitleWidgets,
-        showTitles: true,
-        interval: 1,
-        reservedSize: 32,
-      );
-
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    final style = TextStyle(
-      color: Colors.grey.shade500,
-      fontSize: MySizes.fontSizeXsm,
-    );
-    String text;
-    if (value.toInt() >= 0 && value.toInt() < 12) {
-      const months = [
-        'JAN',
-        'FEB',
-        'MAR',
-        'APR',
-        'MAY',
-        'JUN',
-        'JUL',
-        'AUG',
-        'SEP',
-        'OCT',
-        'NOV',
-        'DEC'
-      ];
-      text = months[value.toInt()];
-    } else {
-      text = '';
-    }
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 4,
-      child: Text(text, style: style),
-    );
-  }
-
-  SideTitles get bottomTitles => SideTitles(
-        showTitles: true,
-        reservedSize: 35,
-        interval: 1,
-        getTitlesWidget: bottomTitleWidgets,
-      );
-
-  FlGridData get gridData => const FlGridData(show: true);
-
-  FlBorderData get borderData => FlBorderData(
+  // 🔥 Main Config Chart
+  LineChartData _data(TotalPerTypeController c) {
+    return LineChartData(
+      minX: 0,
+      maxX: 12,
+      minY: 0,
+      maxY: 10, // juta
+      gridData: const FlGridData(show: true),
+      borderData: FlBorderData(
         show: true,
         border: Border(
-          bottom:
-              BorderSide(color: Colors.black.withValues(alpha: 0.2), width: 4),
+          bottom: BorderSide(color: Colors.black.withOpacity(0.2), width: 4),
           left: const BorderSide(color: Colors.transparent),
           right: const BorderSide(color: Colors.transparent),
           top: const BorderSide(color: Colors.transparent),
         ),
-      );
-
-  LineChartBarData lineChartBarData1_1(
-          TotalPerTypeController chartController) =>
-      LineChartBarData(
-        isCurved: true,
-        color: Colors.green,
-        barWidth: 4,
-        isStrokeCapRound: true,
-        dotData: const FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-        spots: [
-          ...List.generate(
-            chartController.resultChartItem.length,
-            (index) => FlSpot(
-              index.toDouble() + 1,
-              (chartController.resultChartItem[index].income ?? 0) /
-                  1000000.0, // 👉 convert to juta
-            ),
-          ),
-        ],
-      );
-
-  LineChartBarData lineChartBarData1_2(
-          TotalPerTypeController chartController) =>
-      LineChartBarData(
-        isCurved: true,
-        color: Colors.pink, // bisa ganti misalnya Colors.blue untuk balance
-        barWidth: 4,
-        isStrokeCapRound: true,
-        dotData: const FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-        spots: [
-          ...List.generate(
-            chartController.resultChartItem.length,
-            (index) {
-              final income = chartController.resultChartItem[index].income ?? 0;
-              final expense =
-                  chartController.resultChartItem[index].expense ?? 0;
-              final balance = income - expense; // 👉 balance
-              return FlSpot(
-                index.toDouble() + 1,
-                balance / 1000000.0, // convert ke juta
-              );
-            },
-          ),
-        ],
-      );
-}
-
-class LineChartSample1 extends StatefulWidget {
-  const LineChartSample1({super.key});
-
-  @override
-  State<StatefulWidget> createState() => LineChartSample1State();
-}
-
-class LineChartSample1State extends State<LineChartSample1> {
-  late bool isShowingMainData;
-
-  @override
-  void initState() {
-    super.initState();
-    isShowingMainData = true;
+      ),
+      titlesData: FlTitlesData(
+        bottomTitles: AxisTitles(sideTitles: _bottomTitles),
+        leftTitles: AxisTitles(sideTitles: _leftTitles),
+        rightTitles:
+            const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      ),
+      lineBarsData: [
+        _incomeLine(c),
+        _expenseLine(c),
+        _balanceLine(c),
+      ],
+      lineTouchData: _touchData(),
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return const AspectRatio(
-      aspectRatio: 1.23,
-      child: Stack(
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 16, left: 6),
-                  child: _LineChart(),
+  // ========================================================================
+  //                               TOOLTIP
+  // ========================================================================
+  LineTouchData _touchData() {
+    return LineTouchData(
+      handleBuiltInTouches: true,
+      touchTooltipData: LineTouchTooltipData(
+        getTooltipColor: (touched) => Colors.black.withOpacity(0.7),
+        getTooltipItems: (spots) {
+          return spots.map((spot) {
+            final jutaValue = spot.y;
+            final rupiah = jutaValue * 1_000_000;
+
+            final formatted = NumberFormat.currency(
+              locale: 'id_ID',
+              symbol: 'Rp ',
+              decimalDigits: 0,
+            ).format(rupiah);
+
+            return LineTooltipItem(
+              "${_monthName(spot.x.toInt())}\n$formatted",
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            );
+          }).toList();
+        },
+      ),
+    );
+  }
+
+  String _monthName(int index) {
+    const months = [
+      "JAN",
+      "FEB",
+      "MAR",
+      "APR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AUG",
+      "SEP",
+      "OCT",
+      "NOV",
+      "DEC",
+    ];
+    if (index < 1 || index > 12) return "";
+    return months[index - 1];
+  }
+
+  // ========================================================================
+  //                               TITLES
+  // ========================================================================
+
+  // Bottom months title
+  SideTitles get _bottomTitles => SideTitles(
+        showTitles: true,
+        interval: 1,
+        reservedSize: 32,
+        getTitlesWidget: (value, meta) {
+          const months = [
+            "JAN",
+            "FEB",
+            "MAR",
+            "APR",
+            "MAY",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEP",
+            "OCT",
+            "NOV",
+            "DEC"
+          ];
+
+          if (value.toInt() >= 1 && value.toInt() <= 12) {
+            return SideTitleWidget(
+              axisSide: meta.axisSide,
+              child: Text(
+                months[value.toInt() - 1],
+                style: TextStyle(
+                  fontSize: MySizes.fontSizeXsm,
+                  color: Colors.grey.shade600,
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
-            ],
-          ),
-        ],
+            );
+          }
+          return const SizedBox.shrink();
+        },
+      );
+
+  // Left titles
+  SideTitles get _leftTitles => SideTitles(
+        showTitles: true,
+        interval: 1,
+        reservedSize: 40,
+        getTitlesWidget: (value, meta) {
+          if (value % 1 != 0) return const SizedBox.shrink();
+
+          return Text(
+            "${value.toInt()} JT",
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+        },
+      );
+
+  // ========================================================================
+  //                               LINE DATA
+  // ========================================================================
+
+  LineChartBarData _incomeLine(TotalPerTypeController c) {
+    return LineChartBarData(
+      isCurved: false,
+      barWidth: 4,
+      color: Colors.green,
+      isStrokeCapRound: true,
+      dotData: const FlDotData(show: false),
+      spots: List.generate(
+        c.resultChartItem.length,
+        (i) => FlSpot(
+          (i + 1).toDouble(),
+          (c.resultChartItem[i].income ?? 0) / 1_000_000,
+        ),
+      ),
+    );
+  }
+
+  LineChartBarData _expenseLine(TotalPerTypeController c) {
+    return LineChartBarData(
+      isCurved: false,
+      barWidth: 4,
+      color: Colors.red,
+      isStrokeCapRound: true,
+      dotData: const FlDotData(show: false),
+      spots: List.generate(
+        c.resultChartItem.length,
+        (i) => FlSpot(
+          (i + 1).toDouble(),
+          (c.resultChartItem[i].expense ?? 0) / 1_000_000,
+        ),
+      ),
+    );
+  }
+
+  LineChartBarData _balanceLine(TotalPerTypeController c) {
+    return LineChartBarData(
+      isCurved: false,
+      barWidth: 4,
+      color: Colors.blue,
+      isStrokeCapRound: true,
+      dotData: const FlDotData(show: false),
+      spots: List.generate(
+        c.resultChartItem.length,
+        (i) {
+          final income = c.resultChartItem[i].income ?? 0;
+          final expense = c.resultChartItem[i].expense ?? 0;
+          return FlSpot(
+            (i + 1).toDouble(),
+            (income - expense) / 1_000_000,
+          );
+        },
       ),
     );
   }
