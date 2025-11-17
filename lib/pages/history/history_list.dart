@@ -107,6 +107,9 @@ class _HistoryListState extends State<HistoryList> {
             Color warna = kategori == "PENGELUARAN" ? Colors.red : Colors.green;
             String plusminus = kategori == "PENGELUARAN" ? "-" : "";
             int dataPrice = items.amount ?? 0;
+            IconData icon = kategori == "PENGELUARAN"
+                ? Icons.arrow_upward
+                : Icons.arrow_downward;
             return Container(
               color: Colors.white,
               child: kategori == "PEMASUKAN"
@@ -114,7 +117,8 @@ class _HistoryListState extends State<HistoryList> {
                       warna: warna,
                       items: items,
                       plusminus: plusminus,
-                      dataPrice: dataPrice)
+                      dataPrice: dataPrice,
+                      icon: icon)
                   : Slidable(
                       endActionPane: ActionPane(
                         motion: const ScrollMotion(),
@@ -122,23 +126,6 @@ class _HistoryListState extends State<HistoryList> {
                         children: [
                           SlidableAction(
                             onPressed: (context) {
-                              // showModalBottomSheet(
-                              //   context: context,
-                              //   builder: (context) => ConfirmDialog(
-                              //     title: 'Delete History',
-                              //     message:
-                              //         'Are you sure you want to delete this history?',
-                              //     onConfirm: () async {
-                              //       historyController.delete(items.id!);
-                              //     },
-                              //   ),
-                              //   isScrollControlled: true,
-                              //   backgroundColor: Colors.white,
-                              //   shape: const RoundedRectangleBorder(
-                              //     borderRadius: BorderRadius.vertical(
-                              //         top: Radius.circular(20)),
-                              //   ),
-                              // );
                               Get.bottomSheet(
                                 ConfirmDialog(
                                   title: 'Delete History',
@@ -174,7 +161,8 @@ class _HistoryListState extends State<HistoryList> {
                           warna: warna,
                           items: items,
                           plusminus: plusminus,
-                          dataPrice: dataPrice)),
+                          dataPrice: dataPrice,
+                          icon: icon)),
             );
           },
           groupHeaderBuilder: (BuildContext context, int section) {
@@ -296,12 +284,14 @@ class ListTileHistories extends StatelessWidget {
     required this.items,
     required this.plusminus,
     required this.dataPrice,
+    required this.icon,
   });
 
   final Color warna;
   final dynamic items;
   final String plusminus;
   final int dataPrice;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -316,18 +306,13 @@ class ListTileHistories extends StatelessWidget {
               Get.toNamed(RouterClass.monitoringoutlet);
             }
           : null,
-      leading: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: warna,
-        ),
-        padding: const EdgeInsets.all(3),
-        child: const Icon(
-          Icons.arrow_downward,
-          color: Colors.white,
-        ),
+      leading: Icon(
+        icon,
+        color: warna,
+        size: MySizes.iconMd,
       ),
-      title: Text('${items.cabang} - ${items.transactionName!}',
+      title: Text(
+          '${items.cabang ?? "Centralized"} - ${items.transactionName!}',
           style: const TextStyle(fontSize: MySizes.fontSizeMd)),
       subtitle: Text(
         items.note ?? "",

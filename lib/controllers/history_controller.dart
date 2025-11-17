@@ -82,10 +82,14 @@ class HistoryController extends GetxController {
       };
       final result = await RemoteDataSource.listCategories(rawFormat);
       if (result != null) {
-        listCategoryPengeluaran.assign({
-          'value': result.data?.first.id ?? 0,
-          'nama': result.data?.first.categoryName!,
-        });
+        listCategoryPengeluaran.assignAll(
+          result.data!
+              .map((e) => {
+                    'value': e.id,
+                    'nama': e.categoryName,
+                  })
+              .toList(),
+        );
       }
     } catch (error) {
       Get.snackbar('Error', error.toString(),

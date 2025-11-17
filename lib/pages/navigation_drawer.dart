@@ -42,6 +42,15 @@ class NavigationDrawer extends StatelessWidget {
                       fontSize: MySizes.fontSizeLg, letterSpacing: 1)),
             ),
             _buildDrawerItem(
+              icon: Icons.account_balance_wallet,
+              text: "Income/Expenditure",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.transactionhistory);
+              },
+              selected: Get.currentRoute == RouterClass.transactionhistory,
+            ),
+            _buildDrawerItem(
               icon: Icons.home_work,
               text: "History Per Outlet",
               onTap: () {
@@ -52,15 +61,6 @@ class NavigationDrawer extends StatelessWidget {
                 Get.toNamed(RouterClass.monitoringoutlet);
               },
               selected: Get.currentRoute == RouterClass.monitoringoutlet,
-            ),
-            _buildDrawerItem(
-              icon: Icons.account_balance_wallet,
-              text: "Income/Expenditure",
-              onTap: () {
-                Navigator.of(context).pop();
-                Get.toNamed(RouterClass.transactionhistory);
-              },
-              selected: Get.currentRoute == RouterClass.transactionhistory,
             ),
             Divider(color: Colors.grey.shade300),
             const Padding(

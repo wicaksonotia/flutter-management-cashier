@@ -57,6 +57,33 @@ class _FormTransactionState extends State<FormTransaction> {
       ),
       child: Column(
         children: [
+          Obx(() {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Centralized Kitchen?',
+                ),
+                Row(
+                  children: [
+                    Text(_transactionController.isCentralized.value
+                        ? "Yes"
+                        : "No"),
+                    const SizedBox(width: 8),
+                    Switch(
+                      activeColor: MyColors.primary,
+                      value: _transactionController.isCentralized.value,
+                      onChanged: (value) {
+                        _transactionController.idCabang.value = 0;
+                        _transactionController.selectedCabang.value = 'Outlet';
+                        _transactionController.isCentralized.value = value;
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            );
+          }),
           InkWell(
             onTap: () {
               Get.to(
@@ -109,56 +136,63 @@ class _FormTransactionState extends State<FormTransaction> {
             ),
           ),
           const Gap(10),
-          InkWell(
-            onTap: () {
-              Get.to(
-                () => SelectTableListPage(
-                  title: 'Outlet',
-                  isLoading: _transactionController.isLoadingCabang,
-                  items: _transactionController.resultDataCabang,
-                  titleBuilder: (data) => data.cabang!,
-                  subtitleBuilder: (data) => data.alamat ?? '',
-                  isSelected: (data) =>
-                      data.id == _transactionController.idCabang.value,
-                  onItemTap: (data) async {
-                    _transactionController.idCabang.value = data.id!;
-                    _transactionController.selectedCabang.value = data.cabang!;
-                    Get.back();
-                  },
-                  onRefresh: () async {
-                    await _transactionController
-                        .fetchDataListCabang(); // API fetch
-                  },
-                ),
-                transition: Transition.rightToLeft,
-                duration: const Duration(milliseconds: 300),
-              );
-            },
-            child: Container(
-              padding: const EdgeInsets.all(15.0),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(5.0),
-                color: Colors.white,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Obx(
-                    () => Text(
-                      _transactionController.selectedCabang.value.isNotEmpty
-                          ? _transactionController.selectedCabang.value
-                          : 'Outlet',
-                      style:
-                          const TextStyle(fontSize: 16, color: Colors.black54),
+          Obx(() {
+            if (!_transactionController.isCentralized.value) {
+              return InkWell(
+                onTap: () {
+                  Get.to(
+                    () => SelectTableListPage(
+                      title: 'Outlet',
+                      isLoading: _transactionController.isLoadingCabang,
+                      items: _transactionController.resultDataCabang,
+                      titleBuilder: (data) => data.cabang!,
+                      subtitleBuilder: (data) => data.alamat ?? '',
+                      isSelected: (data) =>
+                          data.id == _transactionController.idCabang.value,
+                      onItemTap: (data) async {
+                        _transactionController.idCabang.value = data.id!;
+                        _transactionController.selectedCabang.value =
+                            data.cabang!;
+                        Get.back();
+                      },
+                      onRefresh: () async {
+                        await _transactionController
+                            .fetchDataListCabang(); // API fetch
+                      },
                     ),
+                    transition: Transition.rightToLeft,
+                    duration: const Duration(milliseconds: 300),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(5.0),
+                    color: Colors.white,
                   ),
-                  const Icon(Icons.arrow_forward_ios,
-                      size: 16, color: MyColors.primary),
-                ],
-              ),
-            ),
-          ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Obx(
+                        () => Text(
+                          _transactionController.selectedCabang.value.isNotEmpty
+                              ? _transactionController.selectedCabang.value
+                              : 'Outlet',
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black54),
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: MyColors.primary),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return Container();
+            }
+          }),
           const Gap(10),
           Obx(() {
             return Row(

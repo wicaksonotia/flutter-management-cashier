@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cashier_management/controllers/category_controller.dart';
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
@@ -22,6 +24,7 @@ class TransactionController extends CategoryController {
   RxBool isLoadingSaveTransaction = true.obs;
   var kategori = [];
   var isIncome = false.obs;
+  var isCentralized = true.obs;
 
   @override
   void onInit() {
@@ -119,6 +122,9 @@ class TransactionController extends CategoryController {
             colorText: Colors.red[800]);
         return;
       }
+      if (isCentralized.value) {
+        idCabang.value = 0;
+      }
       var rawFormat = {
         'id_kios': idKios.value,
         'id_cabang': idCabang.value,
@@ -138,6 +144,7 @@ class TransactionController extends CategoryController {
           ),
         ),
       };
+      print(jsonEncode(rawFormat));
       var response = await RemoteDataSource.saveTransaction(rawFormat);
       if (response) {
         Get.snackbar('Success', 'Transaksi berhasil disimpan',

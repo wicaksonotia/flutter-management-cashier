@@ -97,7 +97,8 @@ class _TransactionListState extends State<TransactionList> {
             String transactionName =
                 historyController.resultDataSingleDate[index].transactionName!;
             String cabang =
-                historyController.resultDataSingleDate[index].cabang!;
+                historyController.resultDataSingleDate[index].cabang ??
+                    'Centralized';
             String note =
                 historyController.resultDataSingleDate[index].note ?? '';
             String plusminus = kategori == "PENGELUARAN" ? "-" : "";
@@ -112,18 +113,11 @@ class _TransactionListState extends State<TransactionList> {
                       Get.toNamed(RouterClass.monitoringoutlet);
                     }
                   : null,
-              leading: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: warna,
-                ),
-                padding: const EdgeInsets.all(3),
-                child: Icon(
-                  kategori == "PENGELUARAN"
-                      ? Icons.arrow_upward
-                      : Icons.arrow_downward,
-                  color: Colors.white,
-                ),
+              leading: Icon(
+                kategori == "PENGELUARAN"
+                    ? Icons.arrow_upward
+                    : Icons.arrow_downward,
+                color: warna,
               ),
               title: Text(
                 '$cabang - $transactionName',
