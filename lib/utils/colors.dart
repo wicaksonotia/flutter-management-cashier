@@ -89,4 +89,24 @@ class MyColors {
 
   static const Color disabled = Color(0xFFC9D5E2);
   static const Color disabledText = Color(0xFF94A3B8);
+
+  // ==========================================================
+  // DASHBOARD
+  // ==========================================================
+
+  static const Color dashboardGradientStart = Color(0xFF00529C);
+
+  static const Color dashboardGradientEnd = Color(0xFF003B73);
+
+  static const Color dashboardBlueSoft = Color(0xFFF0F6FC);
+
+  static const Color dashboardBlueBorder = Color(0xFFD9E7F3);
+
+  static const Color dashboardAccentSoft = Color(0xFFFFF3EB);
+
+  static const Color dashboardAccentBorder = Color(0xFFF8D7C2);
+
+  static const Color chartBlue = Color(0xFF00529C);
+
+  static const Color chartBlueSoft = Color(0xFFE7F1FB);
 }
