@@ -395,7 +395,7 @@ class QuotationCard extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
               ),
               padding: const EdgeInsets.all(2),
               child: Icon(

@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
 class KiosController extends BaseController {
+  @override
   var resultDataKios = <KiosModel>[].obs;
   var isLoading = true.obs;
   var isLoadingFinancialKios = true.obs;

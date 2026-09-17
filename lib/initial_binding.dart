@@ -3,11 +3,9 @@ import 'package:get/get.dart';
 
 class InitialBinding implements Bindings {
   @override
-  void dependencies() async {
-    Get.put<LoginController>(LoginController());
-    // Get.lazyPut(() => CategoryController());
-    // Get.lazyPut(() => HistoryController());
-    // Get.lazyPut(() => TotalPerTypeController());
-    // Get.lazyPut(() => MonitoringOutletController());
+  void dependencies() {
+    Get.put<LoginController>(
+      LoginController(),
+    );
   }
 }

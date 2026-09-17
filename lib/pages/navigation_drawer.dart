@@ -254,7 +254,7 @@ class NavigationDrawer extends StatelessWidget {
     bool selected = false,
   }) {
     return Container(
-      color: selected ? MyColors.notionBgPurple : Colors.transparent,
+      color: selected ? MyColors.background : Colors.transparent,
       child: ListTile(
         leading: Icon(icon, color: selected ? MyColors.primary : Colors.black),
         trailing: Icon(
@@ -277,7 +277,7 @@ class NavigationDrawer extends StatelessWidget {
     bool selected = false,
   }) {
     return Container(
-      color: selected ? MyColors.notionBgPurple : Colors.transparent,
+      color: selected ? MyColors.background : Colors.transparent,
       padding: const EdgeInsets.only(left: 50, right: 25),
       child: ListTile(
         dense: true,

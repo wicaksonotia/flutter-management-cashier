@@ -1,31 +1,92 @@
 import 'package:flutter/material.dart';
 
 class MyColors {
-  MyColors._();
-  // static const Color primary = Color(0xFF96af64);
-  static const Color primary = Color(0xFF7F00FF);
-  static const Color secondary = Color.fromARGB(255, 189, 128, 249);
-  // static const Color primary = Color(0xFFBF00FF);
-  static const Color red = Color(0xFFFC2847);
-  static const Color green = Color(0xFF11967b);
-  static const Color grey = Color.fromARGB(255, 175, 175, 175);
-  static const Color darkTextColor = Color(0xff171717);
-  static const Color lightTextColor = Colors.white;
+  // ==========================================================
+  // BRAND — BRIMO BLUE
+  // ==========================================================
 
-  // GRADIENTCOLOR
-  static const Color oddGradientPrimary = Color(0xFFFF8C00);
-  static const Color oddGradientSecondary = Color(0xFFff0080);
-  static const Color evenGradientPrimary = Color(0xFFfc00ff);
-  static const Color evenGradientSecondary = Color(0xFF00dbde);
+  static const Color primary = Color(0xFF00529C);
+  static const Color primaryDark = Color(0xFF003B73);
+  static const Color primaryLight = Color(0xFFE7F1FB);
 
-  // Notion Background Colors
-  static const Color notionBgGrey = Color(0xFFF1F1EF);
-  static const Color notionBgBrown = Color(0xFFF4EEEE);
-  static const Color notionBgOrange = Color(0xFFFAEBDD);
-  static const Color notionBgYellow = Color(0xFFFBF3DB);
-  static const Color notionBgGreen = Color(0xFFEDF3EC);
-  static const Color notionBgBlue = Color(0xFFE7F3F8);
-  static const Color notionBgPurple = Color(0xFFF6F3F9);
-  static const Color notionBgPink = Color(0xFFFAF1F5);
-  static const Color notionBgRed = Color(0xFFFDEBEC);
+  // ==========================================================
+  // TEXT
+  // ==========================================================
+
+  static const Color textPrimary = Color(0xFF1F2933);
+  static const Color textSecondary = Color(0xFF667085);
+  static const Color textMuted = Color(0xFF98A2B3);
+  static const Color textOnPrimary = Colors.white;
+
+  // ==========================================================
+  // SURFACE
+  // ==========================================================
+
+  static const Color background = Color(0xFFF5F8FC);
+  static const Color surface = Colors.white;
+  static const Color surfaceSoft = Color(0xFFF0F5FA);
+  static const Color surfaceHover = Color(0xFFE8F0F8);
+
+  static const Color border = Color(0xFFD6E2EE);
+  static const Color divider = Color(0xFFE7EEF5);
+
+  // ==========================================================
+  // STATUS
+  // ==========================================================
+
+  static const Color success = Color(0xFF16A34A);
+  static const Color successBg = Color(0xFFEAF7EF);
+
+  static const Color warning = Color(0xFFD97706);
+  static const Color warningBg = Color(0xFFFEF3E6);
+
+  static const Color error = Color(0xFFDC2626);
+  static const Color errorBg = Color(0xFFFDECEC);
+
+  static const Color info = Color(0xFF2563EB);
+  static const Color infoBg = Color(0xFFEAF2FF);
+
+  // ==========================================================
+  // ACCENT (ORANGE)
+  // ==========================================================
+
+  static const Color accent = Color(0xFFF37021);
+  static const Color accentDark = Color(0xFFD85E15);
+  static const Color accentLight = Color(0xFFFFF1E8);
+
+  // ==========================================================
+  // SELECTION
+  // ==========================================================
+
+  static const Color selectedBackground = primaryLight;
+  static const Color selectedBorder = Color(0xFFB7D3F0);
+  static const Color selectedForeground = primary;
+
+  // ==========================================================
+  // SHADOW
+  // ==========================================================
+
+  static const Color shadow = Color(0x14000000);
+  static const Color overlay = Color(0x33000000);
+
+  // ==========================================================
+  // TAG BACKGROUND
+  // ==========================================================
+
+  static const Color tagGrey = Color(0xFFF1F3F5);
+  static const Color tagBrown = Color(0xFFF4EFEB);
+  static const Color tagOrange = Color(0xFFFFF1E8);
+  static const Color tagYellow = Color(0xFFFBF3DD);
+  static const Color tagGreen = Color(0xFFEAF7EF);
+  static const Color tagBlue = Color(0xFFE7F1FB);
+  static const Color tagPurple = Color(0xFFF2EFF5);
+  static const Color tagPink = Color(0xFFFAF1F5);
+  static const Color tagRed = Color(0xFFFDECEC);
+
+  // ==========================================================
+  // DISABLED
+  // ==========================================================
+
+  static const Color disabled = Color(0xFFC9D5E2);
+  static const Color disabledText = Color(0xFF94A3B8);
 }

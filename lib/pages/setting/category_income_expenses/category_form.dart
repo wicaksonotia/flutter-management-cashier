@@ -55,7 +55,7 @@ class _CategoryFormState extends State<CategoryForm> {
                       : "Expense"),
                   const SizedBox(width: 8),
                   Switch(
-                    activeColor: MyColors.primary,
+                    activeThumbColor: MyColors.primary,
                     value: !categoryController
                         .isPemasukan.value, // false = expense, true = income
                     onChanged: (value) {

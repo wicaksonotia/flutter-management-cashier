@@ -33,7 +33,7 @@ class _CalendarWeeklyViewState extends State<CalendarWeeklyView> {
       activeColor: MyColors.primary,
       dayProps: const EasyDayProps(
         todayHighlightStyle: TodayHighlightStyle.withBackground,
-        todayHighlightColor: MyColors.notionBgPurple,
+        todayHighlightColor: MyColors.primary,
       ),
       headerProps: const EasyHeaderProps(
         monthPickerType: MonthPickerType.switcher,

@@ -19,10 +19,10 @@ class LineChartSample1State extends State<LineChartSample1> {
       aspectRatio: 1.23,
       child: Column(
         children: [
-          Expanded(
+          const Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(right: 16, left: 6),
-              child: const _LineChart(),
+              padding: EdgeInsets.only(right: 16, left: 6),
+              child: _LineChart(),
             ),
           ),
           _buildLegend(),
@@ -94,7 +94,8 @@ class _LineChart extends StatelessWidget {
       borderData: FlBorderData(
         show: true,
         border: Border(
-          bottom: BorderSide(color: Colors.black.withOpacity(0.2), width: 4),
+          bottom:
+              BorderSide(color: Colors.black.withValues(alpha: 0.2), width: 4),
           left: const BorderSide(color: Colors.transparent),
           right: const BorderSide(color: Colors.transparent),
           top: const BorderSide(color: Colors.transparent),
@@ -123,7 +124,7 @@ class _LineChart extends StatelessWidget {
     return LineTouchData(
       handleBuiltInTouches: true,
       touchTooltipData: LineTouchTooltipData(
-        getTooltipColor: (touched) => Colors.black.withOpacity(0.7),
+        getTooltipColor: (touched) => Colors.black.withValues(alpha: 0.7),
         getTooltipItems: (spots) {
           return spots.map((spot) {
             final jutaValue = spot.y;

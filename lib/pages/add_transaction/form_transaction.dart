@@ -71,7 +71,7 @@ class _FormTransactionState extends State<FormTransaction> {
                         : "No"),
                     const SizedBox(width: 8),
                     Switch(
-                      activeColor: MyColors.primary,
+                      activeThumbColor: MyColors.primary,
                       value: _transactionController.isCentralized.value,
                       onChanged: (value) {
                         _transactionController.idCabang.value = 0;
@@ -208,7 +208,7 @@ class _FormTransactionState extends State<FormTransaction> {
                         : "Expense"),
                     const SizedBox(width: 8),
                     Switch(
-                      activeColor: MyColors.primary,
+                      activeThumbColor: MyColors.primary,
                       value: !_transactionController
                           .isIncome.value, // false = expense, true = income
                       onChanged: (value) {

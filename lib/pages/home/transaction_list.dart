@@ -72,7 +72,7 @@ class _TransactionListState extends State<TransactionList> {
               'Tidak ada transaksi pada tanggal ini',
               style: TextStyle(
                 fontSize: MySizes.fontSizeLg,
-                color: MyColors.grey,
+                color: MyColors.textPrimary,
               ),
             ),
           );
@@ -88,7 +88,7 @@ class _TransactionListState extends State<TransactionList> {
           itemBuilder: (context, index) {
             String kategori =
                 historyController.resultDataSingleDate[index].transactionType!;
-            warna = kategori == "PENGELUARAN" ? MyColors.red : Colors.green;
+            warna = kategori == "PENGELUARAN" ? MyColors.error : Colors.green;
 
             int dataPrice =
                 historyController.resultDataSingleDate[index].amount ?? 0;
@@ -128,7 +128,7 @@ class _TransactionListState extends State<TransactionList> {
               subtitle: Text(
                 note,
                 style: const TextStyle(
-                  color: MyColors.grey,
+                  color: MyColors.textPrimary,
                 ),
               ),
               trailing: Padding(
@@ -148,7 +148,7 @@ class _TransactionListState extends State<TransactionList> {
                         DateTime.parse(transactionDate),
                       ),
                       style: const TextStyle(
-                        color: MyColors.grey,
+                        color: MyColors.textPrimary,
                         fontSize: MySizes.fontSizeSm,
                       ),
                     ),

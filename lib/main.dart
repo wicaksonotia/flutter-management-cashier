@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       initialBinding: InitialBinding(),
-      initialRoute: RouterClass.login,
+      initialRoute: RouterClass.splash,
       getPages: RouterClass.routes,
       defaultTransition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 500),

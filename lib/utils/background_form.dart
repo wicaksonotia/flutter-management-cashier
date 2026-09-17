@@ -26,7 +26,7 @@ class BackgroundForm extends StatelessWidget {
                   bottomRight: Radius.circular(20),
                 ),
                 gradient: LinearGradient(
-                  colors: [MyColors.primary, MyColors.secondary],
+                  colors: [MyColors.primary, MyColors.primaryDark],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomLeft,
                 ),

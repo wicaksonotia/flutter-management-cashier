@@ -1,5 +1,6 @@
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
+import 'package:cashier_management/controllers/splash_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
 import 'package:cashier_management/pages/add_transaction/form_transaction.dart';
@@ -20,6 +21,7 @@ import 'package:cashier_management/pages/setting/product/product_category/list_p
 import 'package:cashier_management/pages/setting/user/change_password_page.dart';
 import 'package:cashier_management/pages/setting/user/profile_page.dart';
 import 'package:cashier_management/pages/setting/user/user_setting.dart';
+import 'package:cashier_management/pages/splash_page.dart';
 import 'package:get/get.dart';
 
 import 'pages/home/home_page.dart';
@@ -53,8 +55,16 @@ class RouterClass {
   static String listproduct = "/listproduct";
   // SETTING INCOME/EXPENSES CATEGORY
   static String category = "/category";
+  static String splash = '/splash';
 
   static List<GetPage> routes = [
+    GetPage(
+      page: () => const SplashPage(),
+      name: splash,
+      binding: BindingsBuilder(() {
+        Get.put<SplashController>(SplashController(), permanent: true);
+      }),
+    ),
     GetPage(page: () => const LoginPage(), name: login),
     GetPage(
       page: () => const HomePage(),

@@ -49,8 +49,8 @@ class _ChipsState extends State<Chips> {
           return GestureDetector(
             onTap: categoryController.toggleSort,
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 200),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(25),

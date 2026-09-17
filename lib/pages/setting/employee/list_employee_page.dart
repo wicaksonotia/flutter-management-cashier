@@ -250,13 +250,13 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                         const Icon(
                           Icons.account_box_outlined,
                           size: 16,
-                          color: MyColors.grey,
+                          color: MyColors.textPrimary,
                         ),
                         const Gap(5),
                         Text(
                           username,
                           style: const TextStyle(
-                            color: MyColors.grey,
+                            color: MyColors.textPrimary,
                             fontSize: MySizes.fontSizeSm,
                           ),
                         ),
@@ -268,13 +268,13 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                         const Icon(
                           Icons.phone,
                           size: 16,
-                          color: MyColors.grey,
+                          color: MyColors.textPrimary,
                         ),
                         const Gap(5),
                         Text(
                           phone,
                           style: const TextStyle(
-                            color: MyColors.grey,
+                            color: MyColors.textPrimary,
                             fontSize: MySizes.fontSizeSm,
                           ),
                         ),
@@ -286,13 +286,13 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                         const Icon(
                           Icons.home,
                           size: 16,
-                          color: MyColors.grey,
+                          color: MyColors.textPrimary,
                         ),
                         const Gap(5),
                         Text(
                           defaultOutletName,
                           style: const TextStyle(
-                            color: MyColors.grey,
+                            color: MyColors.textPrimary,
                             fontSize: MySizes.fontSizeSm,
                           ),
                         ),
@@ -367,7 +367,7 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                                   horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? MyColors.secondary
+                                    ? MyColors.textPrimary
                                     : Colors.grey.shade100,
                                 borderRadius: BorderRadius.circular(25),
                               ),
@@ -539,7 +539,7 @@ class DropdownTabButton extends StatelessWidget {
                   )
                 : const Icon(
                     Icons.keyboard_arrow_down,
-                    color: MyColors.grey,
+                    color: MyColors.textPrimary,
                   ),
           ],
         ),

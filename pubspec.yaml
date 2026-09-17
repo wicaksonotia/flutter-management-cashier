@@ -47,7 +47,7 @@ dependencies:
   google_nav_bar: ^5.0.7
   group_list_view: ^1.1.1
   image_picker: ^1.2.0
-  intl: ^0.19.0
+  intl: ^0.20.3
   path: ^1.9.1
   shared_preferences: ^2.5.3
   shimmer: ^3.0.0

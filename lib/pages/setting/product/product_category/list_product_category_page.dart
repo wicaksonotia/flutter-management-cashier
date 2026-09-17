@@ -337,7 +337,7 @@ class DropdownTabButton extends StatelessWidget {
                   )
                 : const Icon(
                     Icons.keyboard_arrow_down,
-                    color: MyColors.grey,
+                    color: MyColors.textPrimary,
                   ),
           ],
         ),

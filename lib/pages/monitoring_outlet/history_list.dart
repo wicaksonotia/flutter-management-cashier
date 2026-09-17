@@ -75,13 +75,13 @@ class _HistoryListState extends State<HistoryList> {
                         const Icon(
                           Icons.shopping_cart,
                           size: 16,
-                          color: MyColors.grey,
+                          color: MyColors.textPrimary,
                         ),
                         const Gap(5),
                         Text(
                           'Total Item: ${items.totalItem}',
                           style: const TextStyle(
-                            color: MyColors.grey,
+                            color: MyColors.textPrimary,
                             fontSize: MySizes.fontSizeSm,
                           ),
                         ),
@@ -92,7 +92,7 @@ class _HistoryListState extends State<HistoryList> {
                         const Icon(
                           Icons.calendar_month,
                           size: 16,
-                          color: MyColors.grey,
+                          color: MyColors.textPrimary,
                         ),
                         const Gap(5),
                         Text(
@@ -103,7 +103,7 @@ class _HistoryListState extends State<HistoryList> {
                             DateTime.parse(items.transactionDate),
                           ),
                           style: const TextStyle(
-                            color: MyColors.grey,
+                            color: MyColors.textPrimary,
                             fontSize: MySizes.fontSizeSm,
                           ),
                         ),
@@ -114,13 +114,13 @@ class _HistoryListState extends State<HistoryList> {
                         const Icon(
                           Icons.person,
                           size: 16,
-                          color: MyColors.grey,
+                          color: MyColors.textPrimary,
                         ),
                         const Gap(5),
                         Text(
                           items.cashierName ?? 'Unknown Cashier',
                           style: const TextStyle(
-                            color: MyColors.grey,
+                            color: MyColors.textPrimary,
                             fontSize: MySizes.fontSizeSm,
                           ),
                         ),
@@ -140,7 +140,7 @@ class _HistoryListState extends State<HistoryList> {
                         fontWeight: FontWeight.bold,
                         fontSize: MySizes.fontSizeMd,
                         color: items.deleteStatus!
-                            ? MyColors.red
+                            ? MyColors.error
                             : MyColors.primary,
                       ),
                     ),
@@ -150,7 +150,7 @@ class _HistoryListState extends State<HistoryList> {
                         Text(
                           items.paymentMethod ?? 'Cash',
                           style: const TextStyle(
-                            color: MyColors.grey,
+                            color: MyColors.textPrimary,
                             fontSize: MySizes.fontSizeSm,
                           ),
                         ),
@@ -227,8 +227,8 @@ class _HistoryListState extends State<HistoryList> {
                               style: TextStyle(
                                 fontSize: MySizes.fontSizeSm,
                                 color: items.deleteStatus!
-                                    ? MyColors.red
-                                    : MyColors.grey,
+                                    ? MyColors.error
+                                    : MyColors.textPrimary,
                                 fontWeight: items.deleteStatus!
                                     ? FontWeight.bold
                                     : FontWeight.normal,
@@ -295,7 +295,7 @@ class _HistoryListState extends State<HistoryList> {
                             '[${_monitoringOutletController.resultData.where((element) => DateFormat('dd MMMM yyyy').format(DateTime.parse(element.transactionDate!)) == resultDataMap.keys.toList()[section] && !element.deleteStatus!).fold<int>(0, (sum, element) => sum + (element.details?.fold<int>(0, (dSum, d) => dSum + (d.quantity ?? 0)) ?? 0)).toString()} items]',
                             style: const TextStyle(
                               fontSize: MySizes.fontSizeSm,
-                              color: MyColors.grey,
+                              color: MyColors.textPrimary,
                             ),
                           ),
                         ],
@@ -308,7 +308,7 @@ class _HistoryListState extends State<HistoryList> {
                         ),
                         style: const TextStyle(
                           fontSize: MySizes.fontSizeSm,
-                          color: MyColors.grey,
+                          color: MyColors.textPrimary,
                         ),
                       ),
                     ],

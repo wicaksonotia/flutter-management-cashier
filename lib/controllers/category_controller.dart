@@ -165,10 +165,10 @@ class CategoryController extends BaseController {
 
         resultDataCategory.refresh();
         Get.back();
-        Get.snackbar("Notification", "Success", icon: Icon(Icons.check));
+        Get.snackbar("Notification", "Success", icon: const Icon(Icons.check));
       }
     } catch (e) {
-      Get.snackbar("Notification", "Failed: $e", icon: Icon(Icons.error));
+      Get.snackbar("Notification", "Failed: $e", icon: const Icon(Icons.error));
     } finally {
       isLoadingSaveCategory(false);
     }

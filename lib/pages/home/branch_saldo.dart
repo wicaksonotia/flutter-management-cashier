@@ -144,7 +144,7 @@ class BranchSaldo extends StatelessWidget {
         dotHeight: 8,
         dotWidth: 8,
         activeDotColor: MyColors.primary,
-        dotColor: MyColors.grey,
+        dotColor: MyColors.textPrimary,
       ),
     );
   }
@@ -157,8 +157,8 @@ class BranchSaldo extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: index.isOdd
-              ? [MyColors.oddGradientPrimary, MyColors.oddGradientSecondary]
-              : [MyColors.evenGradientPrimary, MyColors.evenGradientSecondary],
+              ? [MyColors.accent, MyColors.accentDark]
+              : [MyColors.primary, MyColors.primaryDark],
           begin: Alignment.topCenter,
           end: Alignment.bottomLeft,
         ),

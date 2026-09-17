@@ -210,7 +210,7 @@ class _HistoryListState extends State<HistoryList> {
                         ),
                         style: const TextStyle(
                           fontSize: MySizes.fontSizeSm,
-                          color: MyColors.grey,
+                          color: MyColors.textPrimary,
                         ),
                       ),
                     ],
@@ -316,8 +316,8 @@ class ListTileHistories extends StatelessWidget {
           style: const TextStyle(fontSize: MySizes.fontSizeMd)),
       subtitle: Text(
         items.note ?? "",
-        style:
-            const TextStyle(color: MyColors.grey, fontSize: MySizes.fontSizeSm),
+        style: const TextStyle(
+            color: MyColors.textPrimary, fontSize: MySizes.fontSizeSm),
       ),
       trailing: Padding(
         padding: const EdgeInsets.only(top: 8),
@@ -336,7 +336,7 @@ class ListTileHistories extends StatelessWidget {
                 DateTime.parse(items.transactionDate!),
               ),
               style: const TextStyle(
-                color: MyColors.grey,
+                color: MyColors.textPrimary,
                 fontSize: MySizes.fontSizeSm,
               ),
             ),

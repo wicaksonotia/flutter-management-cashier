@@ -16,7 +16,7 @@ class UserSetting extends StatelessWidget {
 
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
-      backgroundColor: MyColors.notionBgGrey,
+      backgroundColor: MyColors.background,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
