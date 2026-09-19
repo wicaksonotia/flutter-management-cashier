@@ -21,16 +21,12 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
   String _kios = '';
   String _phone = '';
-  bool _productExpanded = false;
 
   @override
   void initState() {
     super.initState();
 
     loginController = Get.find<LoginController>();
-
-    _productExpanded = Get.currentRoute == RouterClass.listproduct ||
-        Get.currentRoute == RouterClass.productcategory;
 
     _loadProfile();
   }
@@ -110,13 +106,13 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
                   _buildDrawerItem(
                     icon: Icons.account_balance_wallet_outlined,
-                    text: 'Income / Expenditure',
+                    text: 'Pemasukan & Pengeluaran',
                     route: RouterClass.transactionhistory,
                   ),
 
                   _buildDrawerItem(
                     icon: Icons.storefront_outlined,
-                    text: 'History Per Outlet',
+                    text: 'Riwayat per Outlet',
                     route: RouterClass.monitoringoutlet,
                     onTap: _openMonitoringOutlet,
                   ),
@@ -133,13 +129,13 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
                   _buildDrawerItem(
                     icon: Icons.store_outlined,
-                    text: 'Brand',
+                    text: 'Outlet',
                     route: RouterClass.outlet,
                   ),
 
                   _buildDrawerItem(
                     icon: Icons.groups_outlined,
-                    text: 'Employee',
+                    text: 'Karyawan',
                     route: RouterClass.listemployee,
                   ),
 
@@ -147,11 +143,16 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   // PRODUCT
                   // ==================================================
 
-                  _buildProductMenu(),
+                  // _buildProductMenu(),
+                  _buildDrawerItem(
+                    icon: Icons.groups_outlined,
+                    text: 'Produk',
+                    route: RouterClass.product,
+                  ),
 
                   _buildDrawerItem(
                     icon: Icons.category_outlined,
-                    text: 'Income / Expenditure Category',
+                    text: 'Kategori Pemasukan & Pengeluaran',
                     route: RouterClass.category,
                   ),
 
@@ -167,7 +168,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
                   _buildDrawerItem(
                     icon: Icons.manage_accounts_outlined,
-                    text: 'Account',
+                    text: 'Akun',
                     route: RouterClass.userSetting,
                   ),
                 ],
@@ -514,236 +515,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                     shape: BoxShape.circle,
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // PRODUCT MENU
-  // ============================================================
-
-  // ============================================================
-// PRODUCT MENU - ACCORDION
-// ============================================================
-
-  Widget _buildProductMenu() {
-    final bool productActive = Get.currentRoute == RouterClass.listproduct ||
-        Get.currentRoute == RouterClass.productcategory;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 2,
-      ),
-      child: Material(
-        color: productActive ? MyColors.primaryLight : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: productActive
-                  ? MyColors.primary.withValues(alpha: .12)
-                  : Colors.transparent,
-            ),
-          ),
-          child: Column(
-            children: [
-              // ==================================================
-              // PRODUCT HEADER
-              // ==================================================
-
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                splashColor: MyColors.primary.withValues(alpha: .06),
-                highlightColor: MyColors.primary.withValues(alpha: .03),
-                onTap: () {
-                  setState(() {
-                    _productExpanded = !_productExpanded;
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 11,
-                  ),
-                  child: Row(
-                    children: [
-                      // ICON
-                      AnimatedContainer(
-                        duration: const Duration(
-                          milliseconds: 180,
-                        ),
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: productActive
-                              ? MyColors.surface
-                              : MyColors.surfaceSoft,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          Icons.inventory_2_outlined,
-                          size: MySizes.iconSm,
-                          color: productActive
-                              ? MyColors.primaryDark
-                              : MyColors.textSecondary,
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      // TEXT
-                      Expanded(
-                        child: Text(
-                          'Product',
-                          style: TextStyle(
-                            fontSize: MySizes.fontSizeMd,
-                            fontWeight: productActive
-                                ? FontWeight.w700
-                                : FontWeight.w500,
-                            color: productActive
-                                ? MyColors.primaryDark
-                                : MyColors.textPrimary,
-                          ),
-                        ),
-                      ),
-
-                      // ARROW
-                      AnimatedRotation(
-                        duration: const Duration(
-                          milliseconds: 200,
-                        ),
-                        curve: Curves.easeOutCubic,
-                        turns: _productExpanded ? .5 : 0,
-                        child: const Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          size: 22,
-                          color: MyColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // ==================================================
-              // SUB MENU
-              // ==================================================
-
-              AnimatedSize(
-                duration: const Duration(
-                  milliseconds: 220,
-                ),
-                curve: Curves.easeOutCubic,
-                child: _productExpanded
-                    ? Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          14,
-                          0,
-                          14,
-                          10,
-                        ),
-                        child: Column(
-                          children: [
-                            _buildSubItem(
-                              icon: Icons.category_outlined,
-                              text: 'Category',
-                              route: RouterClass.productcategory,
-                            ),
-                            _buildSubItem(
-                              icon: Icons.inventory_2_outlined,
-                              text: 'List Product',
-                              route: RouterClass.listproduct,
-                            ),
-                          ],
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-// PRODUCT SUB ITEM
-// ============================================================
-
-  Widget _buildSubItem({
-    required IconData icon,
-    required String text,
-    required String route,
-  }) {
-    final bool isActive = Get.currentRoute == route;
-
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 48,
-        top: 2,
-        bottom: 2,
-      ),
-      child: Material(
-        color: isActive ? MyColors.surface : Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(10),
-          splashColor: MyColors.primary.withValues(alpha: .06),
-          highlightColor: MyColors.primary.withValues(alpha: .03),
-          onTap: () {
-            Get.back();
-            Get.toNamed(route);
-          },
-          child: AnimatedContainer(
-            duration: const Duration(
-              milliseconds: 180,
-            ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 9,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: isActive
-                    ? MyColors.primary.withValues(alpha: .10)
-                    : Colors.transparent,
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  icon,
-                  size: 17,
-                  color: isActive ? MyColors.primary : MyColors.textMuted,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    text,
-                    style: TextStyle(
-                      fontSize: MySizes.fontSizeSm,
-                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                      color: isActive
-                          ? MyColors.primaryDark
-                          : MyColors.textSecondary,
-                    ),
-                  ),
-                ),
-                if (isActive)
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: MyColors.primary,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
               ],
             ),
           ),

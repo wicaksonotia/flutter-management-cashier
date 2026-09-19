@@ -6,90 +6,219 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class BaseController extends GetxController {
-  var isLoadingCabang = true.obs;
-  var isLoadingKios = true.obs;
-  var resultDataKios = <KiosModel>[].obs;
-  var resultDataCabang = <DataListOutletBranch>[].obs;
-  RxList<Map<String, dynamic>> listKios = <Map<String, dynamic>>[].obs;
-  RxList<Map<String, dynamic>> listCabang = <Map<String, dynamic>>[].obs;
-  var idOwner = 0.obs;
-  var idKios = 0.obs;
-  var selectedKios = 'Brand'.obs;
-  var idCabang = 0.obs;
-  var selectedCabang = 'Outlet'.obs;
+  // ==========================================================
+  // LOADING
+  // ==========================================================
+
+  final isLoadingCabang = true.obs;
+  final isLoadingKios = true.obs;
+
+  // ==========================================================
+  // DATA
+  // ==========================================================
+
+  final resultDataKios = <KiosModel>[].obs;
+  final resultDataCabang = <DataListOutletBranch>[].obs;
+
+  final listKios = <Map<String, dynamic>>[].obs;
+
+  final listCabang = <Map<String, dynamic>>[].obs;
+
+  // ==========================================================
+  // ACTIVE CONTEXT
+  // ==========================================================
+
+  final idOwner = 0.obs;
+
+  final idKios = 0.obs;
+
+  final selectedKios = 'Brand'.obs;
+
+  final idCabang = 0.obs;
+
+  final selectedCabang = 'Outlet'.obs;
+
+  // ==========================================================
+  // INITIALIZATION
+  // ==========================================================
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
-    final prefs = await SharedPreferences.getInstance();
-    idKios.value = prefs.getInt('id_kios')!;
-    selectedKios.value = prefs.getString('kios')!;
+
+    initializeBaseController();
   }
+
+  /// Load active brand dari SharedPreferences.
+  ///
+  /// Method ini sengaja dibuat terpisah dari onInit()
+  /// karena SharedPreferences bersifat async.
+  Future<void> initializeBaseController() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      idOwner.value = prefs.getInt('id_owner') ?? 0;
+
+      idKios.value = prefs.getInt('id_kios') ?? 0;
+
+      selectedKios.value = prefs.getString('kios') ?? 'Brand';
+
+      debugPrint(
+        '[BASE] initialize '
+        'idOwner=${idOwner.value}, '
+        'idKios=${idKios.value}, '
+        'kios=${selectedKios.value}',
+      );
+    } catch (e, stack) {
+      debugPrint(
+        '[BASE] initialize error: $e\n$stack',
+      );
+    }
+  }
+
+  // ==========================================================
+  // FETCH BRAND / KIOS
+  // ==========================================================
 
   Future<void> fetchDataListKios({
     Future<void> Function()? onAfterSuccess,
   }) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      idOwner.value = prefs.getInt('id_owner')!;
+      isLoadingKios(true);
 
-      final rawFormat = {'id_owner': idOwner.value};
-      final result = await RemoteDataSource.getListKios(rawFormat);
+      final prefs = await SharedPreferences.getInstance();
+
+      idOwner.value = prefs.getInt('id_owner') ?? 0;
+
+      if (idOwner.value <= 0) {
+        resultDataKios.clear();
+        return;
+      }
+
+      final rawFormat = {
+        'id_owner': idOwner.value,
+      };
+
+      final result = await RemoteDataSource.getListKios(
+        rawFormat,
+      );
 
       if (result == null || result.isEmpty) {
         resultDataKios.clear();
         return;
       }
 
-      // ✅ Assign data utama
+      // ======================================================
+      // DATA BRAND
+      // ======================================================
+
       resultDataKios.assignAll(result);
+
+      // ======================================================
+      // ACTIVE BRAND
+      // ======================================================
+
       idKios.value = prefs.getInt('id_kios') ?? result.first.idKios!;
+
       selectedKios.value = prefs.getString('kios') ?? result.first.kios!;
-      // idKios.value = result.first.idKios!;
-      // selectedKios.value = result.first.kios!;
 
-      // ✅ Bentuk list dropdown
-      listKios.assignAll(result.map((e) => {
+      // ======================================================
+      // DROPDOWN BRAND
+      // ======================================================
+
+      listKios.assignAll(
+        result.map(
+          (e) => {
             'value': e.idKios,
-            'nama': e.kios!,
-          }));
+            'nama': e.kios ?? '-',
+          },
+        ),
+      );
 
-      // ✅ Jalankan callback opsional (jika dikirim)
+      // ======================================================
+      // CALLBACK
+      // ======================================================
+
       if (onAfterSuccess != null) {
         await onAfterSuccess();
       }
     } catch (e, stack) {
-      debugPrint("Error fetchDataListKios: $e\n$stack");
+      debugPrint(
+        '[BASE] fetchDataListKios error: '
+        '$e\n$stack',
+      );
     } finally {
       isLoadingKios(false);
     }
   }
 
+  // ==========================================================
+  // FETCH OUTLET / CABANG
+  // ==========================================================
+
   Future<void> fetchDataListCabang({
     Future<void> Function()? onAfterSuccess,
   }) async {
     try {
-      var rawFormat = {'id_kios': idKios.value};
-      var result = await RemoteDataSource.getListCabangKios(rawFormat);
+      isLoadingCabang(true);
+
+      if (idKios.value <= 0) {
+        resultDataCabang.clear();
+        return;
+      }
+
+      final rawFormat = {
+        'id_kios': idKios.value,
+      };
+
+      final result = await RemoteDataSource.getListCabangKios(
+        rawFormat,
+      );
+
       if (result == null || result.isEmpty) {
         resultDataCabang.clear();
         return;
       }
-      // ✅ Assign data utama
+
+      // ======================================================
+      // DATA CABANG
+      // ======================================================
+
       resultDataCabang.assignAll(result);
+
+      // ======================================================
+      // ACTIVE CABANG
+      // ======================================================
+
       idCabang.value = result.first.id!;
+
       selectedCabang.value = result.first.cabang!;
-      // ✅ Bentuk list dropdown
-      listCabang.assignAll(result.map((category) => {
+
+      // ======================================================
+      // DROPDOWN CABANG
+      // ======================================================
+
+      listCabang.assignAll(
+        result.map(
+          (category) => {
             'value': category.id,
-            'nama': category.cabang!,
-          }));
-      // ✅ Jalankan callback opsional (jika dikirim)
+            'nama': category.cabang ?? '-',
+          },
+        ),
+      );
+
+      // ======================================================
+      // CALLBACK
+      // ======================================================
+
       if (onAfterSuccess != null) {
         await onAfterSuccess();
       }
     } catch (e, stack) {
-      debugPrint("Error fetchDataListCabang: $e\n$stack");
+      debugPrint(
+        '[BASE] fetchDataListCabang error: '
+        '$e\n$stack',
+      );
     } finally {
       isLoadingCabang(false);
     }

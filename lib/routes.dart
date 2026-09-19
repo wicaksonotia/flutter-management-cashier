@@ -14,10 +14,10 @@ import 'package:cashier_management/pages/setting/employee/add_employee_page.dart
 import 'package:cashier_management/pages/setting/employee/list_employee_page.dart';
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
-import 'package:cashier_management/pages/setting/product/list_product/add_product_page.dart';
-import 'package:cashier_management/pages/setting/product/list_product/list_product_page.dart';
-import 'package:cashier_management/pages/setting/product/product_category/add_product_category_page.dart';
-import 'package:cashier_management/pages/setting/product/product_category/list_product_category_page.dart';
+import 'package:cashier_management/pages/setting/product_management/product_category_form_page.dart';
+import 'package:cashier_management/pages/setting/product_management/product_form_page.dart';
+import 'package:cashier_management/pages/setting/product_management/product_management_page.dart';
+import 'package:cashier_management/pages/setting/setting_page.dart';
 import 'package:cashier_management/pages/setting/user/change_password_page.dart';
 import 'package:cashier_management/pages/setting/user/profile_page.dart';
 import 'package:cashier_management/pages/setting/user/user_setting.dart';
@@ -47,15 +47,14 @@ class RouterClass {
   // SETTING EMPLOYEE
   static String listemployee = "/listemployee";
   static String addemployee = "/addemployee";
-  // SETTING PRODUCT CATEGORY
-  static String addproductcategory = "/addproductcategory";
-  static String productcategory = "/productcategory";
-  // SETTING PRODUCT
-  static String addproduct = "/addproduct";
-  static String listproduct = "/listproduct";
+  // PRODUCT MANAGEMENT
+  static String product = "/product";
+  static String addProductCategory = "/add-product-category";
+  static String addProduct = "/add-product";
   // SETTING INCOME/EXPENSES CATEGORY
   static String category = "/category";
   static String splash = '/splash';
+  static const String settings = '/settings';
 
   static List<GetPage> routes = [
     GetPage(
@@ -96,14 +95,15 @@ class RouterClass {
     // EMPLOYEE
     GetPage(page: () => const AddEmployeePage(), name: addemployee),
     GetPage(page: () => const ListEmployeePage(), name: listemployee),
-    // PRODUCT CATEGORY
-    GetPage(
-        page: () => const AddProductCategoryPage(), name: addproductcategory),
-    GetPage(page: () => const ListProductCategoryPage(), name: productcategory),
-    // PRODUCT
-    GetPage(page: () => const AddProductPage(), name: addproduct),
-    GetPage(page: () => const ListProductPage(), name: listproduct),
+    // PRODUCT MANAGEMENT
+    GetPage(page: () => const ProductManagementPage(), name: product),
+    GetPage(page: () => const AddProductCategoryPage(), name: product),
+    GetPage(page: () => const AddProductPage(), name: product),
     // INCOME/EXPENSES CATEGORY
     GetPage(page: () => const CategoryPage(), name: category),
+    GetPage(
+      name: RouterClass.settings,
+      page: () => const SettingsPage(),
+    ),
   ];
 }

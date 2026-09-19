@@ -10,7 +10,7 @@ class BackgroundForm extends StatelessWidget {
   });
 
   final String headerTitle;
-  final Container container;
+  final Widget container;
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +18,10 @@ class BackgroundForm extends StatelessWidget {
       children: [
         Stack(
           children: [
+            // ============================================================
+            // HEADER BACKGROUND
+            // ============================================================
+
             Container(
               height: 300,
               decoration: const BoxDecoration(
@@ -32,6 +36,10 @@ class BackgroundForm extends StatelessWidget {
                 ),
               ),
             ),
+
+            // ============================================================
+            // DECORATION
+            // ============================================================
             Positioned(
               top: -100,
               left: -50,
@@ -44,6 +52,7 @@ class BackgroundForm extends StatelessWidget {
                 ),
               ),
             ),
+
             Positioned(
               top: 50,
               right: -60,
@@ -56,28 +65,23 @@ class BackgroundForm extends StatelessWidget {
                 ),
               ),
             ),
+
             Positioned(
               top: 70,
               right: -40,
               child: Container(
                 height: 80,
                 width: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
                   color: MyColors.primary,
                 ),
               ),
             ),
-            Positioned(
-              top: 50,
-              left: 20,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () {
-                  Get.back();
-                },
-              ),
-            ),
+
+            // ============================================================
+            // TITLE
+            // ============================================================
             Positioned(
               top: 60,
               left: 80,
@@ -92,7 +96,37 @@ class BackgroundForm extends StatelessWidget {
                 ],
               ),
             ),
-            container
+
+            // ============================================================
+            // CONTENT
+            // ============================================================
+            container,
+
+            // ============================================================
+            // BACK BUTTON
+            // ============================================================
+            // DILETAKKAN PALING AKHIR AGAR SELALU DI ATAS container
+            // ============================================================
+            Positioned(
+              top: 50,
+              left: 20,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(24),
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: const SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(
+                      child: Icon(Icons.arrow_back, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ],

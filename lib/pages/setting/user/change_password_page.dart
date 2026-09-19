@@ -3,7 +3,6 @@ import 'package:cashier_management/utils/background_form.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class ChangePassword extends StatefulWidget {
@@ -14,136 +13,290 @@ class ChangePassword extends StatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
-  final LoginController _loginController = Get.put(LoginController());
+  final LoginController controller = Get.find<LoginController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => Scaffold(
-        body: Container(
-          color: Colors.grey.shade50, // Set your desired background color here
-          child: MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: BackgroundForm(
-                headerTitle: 'Change Password',
-                container: containerPage(),
-              )),
-        ),
+        backgroundColor: MyColors.background,
+        body: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child: BackgroundForm(
+              headerTitle: 'Ubah Password',
+              container: _buildBody(),
+            )),
       ),
     );
   }
 
-  Container containerPage() {
+  //============================================================
+  // BODY
+  //============================================================
+
+  Widget _buildBody() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 100, 20, 24),
+      child: Column(
+        children: [
+          _buildHeaderCard(),
+          const SizedBox(height: 16),
+          _buildFormCard(),
+        ],
+      ),
+    );
+  }
+
+  //============================================================
+  // HEADER
+  //============================================================
+
+  Widget _buildHeaderCard() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-      padding: const EdgeInsets.all(16),
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: MyColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: MyColors.border),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: MyColors.primaryLight,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.lock_reset_rounded,
+              color: MyColors.primary,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Ubah Password',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: MyColors.textPrimary,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Perbarui password akun untuk menjaga keamanan akses Kasira.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.5,
+                    color: MyColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //============================================================
+  // FORM CARD
+  //============================================================
+
+  Widget _buildFormCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: MyColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: MyColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.04),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Change Password",
+            'Informasi Password',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
+              color: MyColors.textPrimary,
             ),
           ),
-          const Gap(8),
+          const SizedBox(height: 4),
           const Text(
-            "Update your password below.",
-          ),
-          const Gap(25),
-          TextField(
-            controller: _loginController.currentController,
-            decoration: InputDecoration(
-              labelText: "Current Password *",
-              border: const OutlineInputBorder(),
-              suffixIcon: InkWell(
-                onTap: () {
-                  _loginController.showCurrentPassword();
-                },
-                child: Icon(
-                  _loginController.isPasswordCurrentVisible.value
-                      ? Icons.visibility
-                      : Icons.visibility_off,
-                  color: const Color(0xFF5C5F65),
-                ),
-              ),
+            'Masukkan password lama dan password baru.',
+            style: TextStyle(
+              color: MyColors.textSecondary,
+              height: 1.4,
             ),
-            obscureText: !_loginController.isPasswordCurrentVisible.value,
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _loginController.newController,
-            decoration: InputDecoration(
-              labelText: "New Password *",
-              border: const OutlineInputBorder(),
-              suffixIcon: InkWell(
-                onTap: () {
-                  _loginController.showNewPassword();
-                },
-                child: Icon(
-                  _loginController.isPasswordNewVisible.value
-                      ? Icons.visibility
-                      : Icons.visibility_off,
-                  color: const Color(0xFF5C5F65),
-                ),
-              ),
-            ),
-            obscureText: !_loginController.isPasswordNewVisible.value,
+          const SizedBox(height: 24),
+          _buildPasswordField(
+            title: 'Password Lama',
+            controllerText: controller.currentController,
+            visible: controller.isPasswordCurrentVisible.value,
+            onTap: controller.showCurrentPassword,
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _loginController.confirmController,
-            decoration: InputDecoration(
-              labelText: "Confirm Password *",
-              border: const OutlineInputBorder(),
-              suffixIcon: InkWell(
-                onTap: () {
-                  _loginController.showConfirmPassword();
-                },
-                child: Icon(
-                  _loginController.isPasswordConfirmVisible.value
-                      ? Icons.visibility
-                      : Icons.visibility_off,
-                  color: const Color(0xFF5C5F65),
-                ),
-              ),
-            ),
-            obscureText: !_loginController.isPasswordConfirmVisible.value,
+          const SizedBox(height: 18),
+          _buildPasswordField(
+            title: 'Password Baru',
+            controllerText: controller.newController,
+            visible: controller.isPasswordNewVisible.value,
+            onTap: controller.showNewPassword,
           ),
-          const Gap(20),
-          const Text(
-            "After changing your password, you will be logged out 👍",
-            textAlign: TextAlign.center,
+          const SizedBox(height: 18),
+          _buildPasswordField(
+            title: 'Konfirmasi Password',
+            controllerText: controller.confirmController,
+            visible: controller.isPasswordConfirmVisible.value,
+            onTap: controller.showConfirmPassword,
           ),
-          const Gap(50),
+          const SizedBox(height: 24),
+          _buildInfoBox(),
+          const SizedBox(height: 30),
           SizedBox(
             width: double.infinity,
+            height: 54,
             child: ElevatedButton(
-              onPressed: () {
-                _loginController.changePasswordProcess();
-              },
+              onPressed: controller.changePasswordProcess,
               style: ElevatedButton.styleFrom(
                 backgroundColor: MyColors.primary,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                ),
+                elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Text(
-                'Save',
-                style: TextStyle(
-                  fontSize: MySizes.fontSizeMd,
-                  color: Colors.white,
-                ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.save_rounded, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Simpan Password',
+                    style: TextStyle(
+                      fontSize: MySizes.fontSizeMd,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //============================================================
+  // PASSWORD FIELD
+  //============================================================
+
+  Widget _buildPasswordField({
+    required String title,
+    required TextEditingController controllerText,
+    required bool visible,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: MyColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: controllerText,
+          obscureText: !visible,
+          style: const TextStyle(
+            fontSize: 15,
+            color: MyColors.textPrimary,
+          ),
+          decoration: InputDecoration(
+            hintText: '••••••••••••',
+            filled: true,
+            fillColor: MyColors.surfaceSoft,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: MyColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(
+                color: MyColors.primary,
+                width: 1.4,
+              ),
+            ),
+            suffixIcon: IconButton(
+              onPressed: onTap,
+              splashRadius: 22,
+              icon: Icon(
+                visible
+                    ? Icons.visibility_rounded
+                    : Icons.visibility_off_rounded,
+                color: MyColors.textSecondary,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  //============================================================
+  // INFO BOX
+  //============================================================
+
+  Widget _buildInfoBox() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: MyColors.primaryLight.withOpacity(.45),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: MyColors.primary.withOpacity(.15),
+        ),
+      ),
+      child: const Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            color: MyColors.primary,
+            size: 20,
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Setelah password berhasil diubah, Anda akan otomatis keluar dan perlu login kembali.',
+              style: TextStyle(
+                color: MyColors.textSecondary,
+                fontSize: 13,
+                height: 1.5,
               ),
             ),
           ),

@@ -1,9 +1,10 @@
 import 'package:cashier_management/controllers/login_controller.dart';
+import 'package:cashier_management/pages/setting/user/widget/profile_header_card.dart';
+import 'package:cashier_management/pages/setting/user/widget/profile_section.dart';
+import 'package:cashier_management/pages/setting/user/widget/profile_text_field.dart';
 import 'package:cashier_management/utils/background_form.dart';
 import 'package:cashier_management/utils/colors.dart';
-import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -14,147 +15,155 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final LoginController _loginController = Get.put(LoginController());
+  late final LoginController _loginController;
 
   @override
   void initState() {
     super.initState();
-    _loginController.checkProfile();
+
+    _loginController = Get.find<LoginController>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loginController.checkProfile();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.grey.shade50, // Set your desired background color here
-        child: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: BackgroundForm(
-            headerTitle: 'Profile',
-            container: containerPage(),
-          ),
+      backgroundColor: MyColors.background,
+      body: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: BackgroundForm(
+          headerTitle: 'Profile',
+          container: _buildContent(),
         ),
       ),
     );
   }
 
-  Container containerPage() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-      padding: const EdgeInsets.all(16),
+  Widget _buildContent() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxWidth =
+            constraints.maxWidth > 800 ? 760 : double.infinity;
+
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            110,
+            20,
+            32,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: maxWidth,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ProfileHeaderCard(
+                    nameController: _loginController.namaController,
+                  ),
+                  const SizedBox(height: 18),
+                  ProfileSection(
+                    title: 'Personal Information',
+                    subtitle: 'Manage your personal information',
+                    icon: Icons.person_outline_rounded,
+                    child: Column(
+                      children: [
+                        ProfileTextField(
+                          controller: _loginController.namaController,
+                          label: 'Name',
+                          hint: 'Enter your name',
+                          icon: Icons.person_outline_rounded,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 16),
+                        ProfileTextField(
+                          controller: _loginController.noTelponController,
+                          label: 'Phone Number',
+                          hint: 'Enter your phone number',
+                          icon: Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                          textInputAction: TextInputAction.next,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  ProfileSection(
+                    title: 'Address',
+                    subtitle: 'Update your current address',
+                    icon: Icons.location_on_outlined,
+                    child: ProfileTextField(
+                      controller: _loginController.alamatController,
+                      label: 'Address',
+                      hint: 'Enter your address',
+                      icon: Icons.location_on_outlined,
+                      maxLines: 4,
+                      textInputAction: TextInputAction.newline,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSaveButton(),
+                  const SizedBox(height: 8),
+                  const Center(
+                    child: Text(
+                      'Make sure your information is correct',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.black45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return SizedBox(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Update Profile",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+      height: 54,
+      child: ElevatedButton(
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+          _loginController.updateProfileProcess();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: MyColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          const Gap(8),
-          const Text("Update your profile details below."),
-          const Gap(25),
-          TextField(
-            controller: _loginController.namaController,
-            decoration: InputDecoration(
-              labelText: "Name *",
-              border: const OutlineInputBorder(),
-              labelStyle: const TextStyle(color: Colors.black54),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.check_rounded,
+              size: 20,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Save Changes',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
               ),
             ),
-          ),
-          const Gap(16),
-          TextField(
-            controller: _loginController.noTelponController,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-              labelText: "Phone Number *",
-              border: const OutlineInputBorder(),
-              labelStyle: const TextStyle(color: Colors.black54),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-            ),
-          ),
-          const Gap(16),
-          TextFormField(
-            controller: _loginController.alamatController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              labelText: 'Address',
-              floatingLabelStyle: const TextStyle(
-                color: MyColors.primary,
-              ),
-              border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-              hintText: 'Address',
-              hintStyle: TextStyle(
-                color: Colors.grey.shade300,
-              ),
-            ),
-          ),
-          const Gap(50),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                _loginController.updateProfileProcess();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: MyColors.primary,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-              child: const Text(
-                'Simpan',
-                style: TextStyle(
-                  fontSize: MySizes.fontSizeMd,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
