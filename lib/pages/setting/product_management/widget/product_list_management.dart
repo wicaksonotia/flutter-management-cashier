@@ -50,33 +50,36 @@ class _ProductListManagementState extends State<ProductListManagement> {
     );
   }
 
-  void _status(DataProduct item) {
+  Future<void> _status(DataProduct item) async {
     final newStatus = !(item.status ?? false);
 
-    Get.bottomSheet(
-      ConfirmDialog(
-        title: newStatus ? 'Aktifkan Produk' : 'Nonaktifkan Produk',
-        message: newStatus
-            ? 'Produk "${item.name}" akan diaktifkan.'
-            : 'Produk "${item.name}" akan dinonaktifkan.',
-        onConfirm: () async {
-          await controller.updateStatusProduct(
-            item.idProduct!,
-            newStatus,
-          );
-        },
-      ),
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
-      ),
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: newStatus ? 'Aktifkan Produk?' : 'Nonaktifkan Produk?',
+      message: newStatus
+          ? 'Produk "${item.name}" akan diaktifkan dan dapat digunakan kembali.'
+          : 'Produk "${item.name}" akan dinonaktifkan dan tidak dapat digunakan.',
+      icon: newStatus
+          ? Icons.play_circle_outline_rounded
+          : Icons.pause_circle_outline_rounded,
+      type: newStatus ? AppConfirmType.success : AppConfirmType.warning,
+      confirmText: newStatus ? 'Aktifkan' : 'Nonaktifkan',
+      cancelText: 'Batal',
+    );
+
+    if (!confirmed) return;
+
+    await controller.updateStatusProduct(
+      item.idProduct!,
+      newStatus,
     );
   }
 
-  void _delete(DataProduct item) {
+  Future<void> _delete(DataProduct item) async {
+    // ==========================================================
+    // VALIDASI
+    // ==========================================================
+
     if ((item.statusTransaksi ?? 0) == 1) {
       Get.snackbar(
         'Tidak dapat dihapus',
@@ -88,27 +91,37 @@ class _ProductListManagementState extends State<ProductListManagement> {
           Icons.info_outline_rounded,
           color: MyColors.error,
         ),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        duration: const Duration(seconds: 3),
       );
+
       return;
     }
 
-    Get.bottomSheet(
-      ConfirmDialog(
-        title: 'Hapus Produk',
-        message: 'Produk "${item.name}" akan dihapus.',
-        onConfirm: () async {
-          await controller.deleteProduct(
-            item.idProduct!,
-          );
-        },
-      ),
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
-      ),
+    // ==========================================================
+    // CONFIRMATION
+    // ==========================================================
+
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: 'Hapus Produk?',
+      message: 'Produk "${item.name}" akan dihapus secara permanen. '
+          'Tindakan ini tidak dapat dibatalkan.',
+      icon: Icons.delete_outline_rounded,
+      type: AppConfirmType.danger,
+      confirmText: 'Hapus',
+      cancelText: 'Batal',
+    );
+
+    if (!confirmed) return;
+
+    // ==========================================================
+    // DELETE
+    // ==========================================================
+
+    await controller.deleteProduct(
+      item.idProduct!,
     );
   }
 
