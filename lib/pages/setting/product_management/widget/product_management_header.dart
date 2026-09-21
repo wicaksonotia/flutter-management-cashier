@@ -2,11 +2,18 @@ import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class ProductManagementHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String addLabel;
+
   final VoidCallback onAddTap;
   final VoidCallback? onMenuTap;
 
   const ProductManagementHeader({
     super.key,
+    required this.title,
+    required this.subtitle,
+    required this.addLabel,
     required this.onAddTap,
     this.onMenuTap,
   });
@@ -17,44 +24,31 @@ class ProductManagementHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
       child: Row(
         children: [
-          // ======================================================
-          // MENU
-          // ======================================================
-
           Builder(
             builder: (context) {
               return _HeaderIconButton(
                 icon: Icons.menu_rounded,
-                onTap: onMenuTap ??
-                    () {
-                      Scaffold.of(context).openDrawer();
-                    },
+                onTap: onMenuTap ?? () => Scaffold.of(context).openDrawer(),
               );
             },
           ),
-
           const SizedBox(width: 12),
-
-          // ======================================================
-          // TITLE
-          // ======================================================
-
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Produk',
-                  style: TextStyle(
+                  title,
+                  style: const TextStyle(
                     color: MyColors.textPrimary,
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
-                  'Kelola katalog produk',
-                  style: TextStyle(
+                  subtitle,
+                  style: const TextStyle(
                     color: MyColors.textSecondary,
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -63,34 +57,29 @@ class ProductManagementHeader extends StatelessWidget {
               ],
             ),
           ),
-
-          // ======================================================
-          // ADD
-          // ======================================================
-
           Material(
             color: MyColors.primary,
             borderRadius: BorderRadius.circular(12),
             child: InkWell(
               onTap: onAddTap,
               borderRadius: BorderRadius.circular(12),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 13,
                   vertical: 10,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.add_rounded,
                       size: 19,
                       color: Colors.white,
                     ),
-                    SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     Text(
-                      'Tambah',
-                      style: TextStyle(
+                      addLabel,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -129,9 +118,7 @@ class _HeaderIconButton extends StatelessWidget {
           height: 42,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: MyColors.border,
-            ),
+            border: Border.all(color: MyColors.border),
           ),
           child: Icon(
             icon,

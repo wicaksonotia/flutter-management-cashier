@@ -1,5 +1,6 @@
 import 'package:cashier_management/controllers/product_controller.dart';
 import 'package:cashier_management/pages/select_table_list_page.dart';
+import 'package:cashier_management/utils/app_back_header.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,9 @@ class AddProductPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: MyColors.background,
-      appBar: _buildAppBar(),
+      appBar: const AppBackHeader(
+        title: 'Produk',
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -28,19 +31,11 @@ class AddProductPage extends StatelessWidget {
                     _PageIntro(
                       isEdit: controller.idProduct.value != 0,
                     ),
-
                     const SizedBox(height: 26),
-
                     const _SectionHeader(
                       title: 'Penempatan',
                     ),
-
                     const SizedBox(height: 10),
-
-                    // ==================================================
-                    // OUTLET
-                    // Readonly - id_kios sudah ditentukan
-                    // ==================================================
                     Obx(
                       () => _InfoField(
                         label: 'Outlet',
@@ -48,42 +43,25 @@ class AddProductPage extends StatelessWidget {
                         icon: Icons.storefront_outlined,
                       ),
                     ),
-
                     const SizedBox(height: 10),
-
-                    // ==================================================
-                    // KATEGORI
-                    // ==================================================
                     _SelectionField(
                       label: 'Kategori',
                       value: controller.nameProductCategory,
                       icon: Icons.category_outlined,
                       onTap: () => _showCategorySelector(controller),
                     ),
-
                     const SizedBox(height: 26),
-
                     const _SectionHeader(
                       title: 'Informasi Produk',
                     ),
-
                     const SizedBox(height: 10),
-
-                    // ==================================================
-                    // NAMA
-                    // ==================================================
                     _InputField(
                       controller: controller.productNameController,
                       label: 'Nama produk',
                       hint: 'Contoh: Kopi Susu',
                       icon: Icons.local_cafe_outlined,
                     ),
-
                     const SizedBox(height: 10),
-
-                    // ==================================================
-                    // DESKRIPSI
-                    // ==================================================
                     _InputField(
                       controller: controller.productDescriptionController,
                       label: 'Deskripsi',
@@ -91,12 +69,7 @@ class AddProductPage extends StatelessWidget {
                       icon: Icons.notes_outlined,
                       maxLines: 3,
                     ),
-
                     const SizedBox(height: 10),
-
-                    // ==================================================
-                    // HARGA
-                    // ==================================================
                     _InputField(
                       controller: controller.productPriceController,
                       label: 'Harga',
@@ -115,42 +88,10 @@ class AddProductPage extends StatelessWidget {
                 ),
               ),
             ),
-
-            // ==========================================================
-            // SAVE
-            // ==========================================================
             _SaveButton(
               controller: controller,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // ================================================================
-  // APP BAR
-  // ================================================================
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: MyColors.background,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      leading: IconButton(
-        onPressed: Get.back,
-        icon: const Icon(
-          Icons.arrow_back_ios_new_rounded,
-          size: 19,
-          color: MyColors.textPrimary,
-        ),
-      ),
-      title: const Text(
-        'Produk',
-        style: TextStyle(
-          color: MyColors.textPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -172,10 +113,11 @@ class AddProductPage extends StatelessWidget {
         isSelected: (data) =>
             data.idCategories == controller.idProductCategory.value,
         onItemTap: (data) async {
-          controller.idProductCategory.value = data.idCategories!;
+          controller.idProductCategory.value = data.idCategories ?? 0;
+
           controller.nameProductCategory.value = data.name ?? '';
 
-          Get.back();
+          controller.update();
         },
         onRefresh: () async {
           await controller.fetchDataListProductCategory();
@@ -556,47 +498,52 @@ class _SaveButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: 50,
-        child: Obx(
-          () => ElevatedButton(
-            onPressed: controller.isLoadingSaveProduct.value
-                ? null
-                : controller.saveProduct,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MyColors.primary,
-              disabledBackgroundColor: MyColors.primary.withValues(alpha: 0.5),
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(13),
+        child: GetBuilder<ProductController>(
+          builder: (controller) {
+            final canSave = controller.canSaveProduct &&
+                !controller.isLoadingSaveProduct.value;
+
+            return ElevatedButton(
+              onPressed: canSave ? controller.saveProduct : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MyColors.primary,
+                disabledBackgroundColor:
+                    MyColors.primary.withValues(alpha: 0.25),
+                foregroundColor: Colors.white,
+                disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13),
+                ),
               ),
-            ),
-            child: controller.isLoadingSaveProduct.value
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.check_rounded,
-                        size: 19,
+              child: controller.isLoadingSaveProduct.value
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
                       ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Simpan Produk',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    )
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.check_rounded,
+                          size: 19,
                         ),
-                      ),
-                    ],
-                  ),
-          ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Simpan Produk',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+            );
+          },
         ),
       ),
     );

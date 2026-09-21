@@ -6,6 +6,7 @@ import 'package:cashier_management/pages/setting/category_income_expenses/catego
 import 'package:cashier_management/pages/setting/category_income_expenses/category_header.dart';
 import 'package:cashier_management/pages/setting/category_income_expenses/category_list.dart';
 import 'package:cashier_management/pages/setting/category_income_expenses/category_summary.dart';
+import 'package:cashier_management/utils/app_back_header.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -37,12 +38,9 @@ class _CategoryPageState extends State<CategoryPage> {
       drawer: const custom_drawer.NavigationDrawer(),
       backgroundColor: MyColors.background,
       resizeToAvoidBottomInset: false,
-
-      // =========================================================
-      // APP BAR
-      // =========================================================
-
-      appBar: _buildAppBar(),
+      appBar: const AppBackHeader(
+        title: 'Kategori',
+      ),
 
       // =========================================================
       // BODY
@@ -110,43 +108,6 @@ class _CategoryPageState extends State<CategoryPage> {
       // ===========================================================
 
       floatingActionButton: _buildFloatingActionButton(),
-    );
-  }
-
-  // ===============================================================
-  // APP BAR
-  // ===============================================================
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      backgroundColor: MyColors.background,
-      surfaceTintColor: Colors.transparent,
-      leading: Builder(
-        builder: (context) {
-          return IconButton(
-            tooltip: 'Menu',
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            icon: const Icon(
-              Icons.menu_rounded,
-              color: MyColors.textPrimary,
-            ),
-          );
-        },
-      ),
-      titleSpacing: 0,
-      title: const Text(
-        'Kategori',
-        style: TextStyle(
-          fontSize: 21,
-          fontWeight: FontWeight.w700,
-          color: MyColors.textPrimary,
-          letterSpacing: -.3,
-        ),
-      ),
     );
   }
 

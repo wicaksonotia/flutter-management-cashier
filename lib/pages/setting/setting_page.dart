@@ -1,4 +1,5 @@
 import 'package:cashier_management/routes.dart';
+import 'package:cashier_management/utils/app_back_header.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,9 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.background,
-      appBar: _buildAppBar(),
+      appBar: const AppBackHeader(
+        title: 'Pengaturan',
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -22,8 +25,7 @@ class SettingsPage extends StatelessWidget {
             32,
           ),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
 
@@ -39,8 +41,7 @@ class SettingsPage extends StatelessWidget {
                   _buildSettingItem(
                     icon: Icons.person_outline_rounded,
                     title: 'Profile',
-                    subtitle:
-                        'Informasi akun dan identitas pengguna',
+                    subtitle: 'Informasi akun dan identitas pengguna',
                     onTap: () {
                       Get.toNamed(
                         RouterClass.profile,
@@ -50,8 +51,7 @@ class SettingsPage extends StatelessWidget {
                   _buildSettingItem(
                     icon: Icons.lock_outline_rounded,
                     title: 'Keamanan',
-                    subtitle:
-                        'Kelola password dan keamanan akun',
+                    subtitle: 'Kelola password dan keamanan akun',
                     onTap: () {
                       Get.toNamed(
                         RouterClass.changePassword,
@@ -73,30 +73,25 @@ class SettingsPage extends StatelessWidget {
                   _buildSettingItem(
                     icon: Icons.palette_outlined,
                     title: 'Tampilan',
-                    subtitle:
-                        'Preferensi tampilan aplikasi',
+                    subtitle: 'Preferensi tampilan aplikasi',
                     onTap: () {
                       // TODO:
                       // Tambahkan halaman tampilan
                     },
                   ),
                   _buildSettingItem(
-                    icon:
-                        Icons.notifications_none_rounded,
+                    icon: Icons.notifications_none_rounded,
                     title: 'Notifikasi',
-                    subtitle:
-                        'Atur preferensi pemberitahuan',
+                    subtitle: 'Atur preferensi pemberitahuan',
                     onTap: () {
                       // TODO:
                       // Tambahkan halaman notifikasi
                     },
                   ),
                   _buildSettingItem(
-                    icon:
-                        Icons.info_outline_rounded,
+                    icon: Icons.info_outline_rounded,
                     title: 'Tentang Aplikasi',
-                    subtitle:
-                        'Informasi versi dan aplikasi',
+                    subtitle: 'Informasi versi dan aplikasi',
                     onTap: () {
                       _showAboutDialog(context);
                     },
@@ -115,43 +110,12 @@ class SettingsPage extends StatelessWidget {
   }
 
   // ============================================================
-  // APP BAR
-  // ============================================================
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: MyColors.background,
-      elevation: 0,
-      surfaceTintColor:
-          Colors.transparent,
-      leading: IconButton(
-        onPressed: () => Get.back(),
-        icon: const Icon(
-          Icons.arrow_back_ios_new_rounded,
-          size: 19,
-          color: MyColors.textPrimary,
-        ),
-      ),
-      title: const Text(
-        'Pengaturan',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: MyColors.textPrimary,
-        ),
-      ),
-      centerTitle: false,
-    );
-  }
-
-  // ============================================================
   // HEADER
   // ============================================================
 
   Widget _buildHeader() {
     return const Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Kelola aplikasi',
@@ -184,8 +148,7 @@ class SettingsPage extends StatelessWidget {
     required List<Widget> children,
   }) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(
@@ -202,12 +165,10 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
         ),
-
         Container(
           decoration: BoxDecoration(
             color: MyColors.surface,
-            borderRadius:
-                BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: MyColors.border,
             ),
@@ -234,13 +195,10 @@ class SettingsPage extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        splashColor:
-            MyColors.primary.withValues(alpha: .04),
-        highlightColor:
-            MyColors.primary.withValues(alpha: .025),
+        splashColor: MyColors.primary.withValues(alpha: .04),
+        highlightColor: MyColors.primary.withValues(alpha: .025),
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 14,
           ),
@@ -249,63 +207,48 @@ class SettingsPage extends StatelessWidget {
               Container(
                 width: 42,
                 height: 42,
-                decoration:
-                    BoxDecoration(
+                decoration: BoxDecoration(
                   color: MyColors.surfaceSoft,
-                  borderRadius:
-                      BorderRadius.circular(
+                  borderRadius: BorderRadius.circular(
                     12,
                   ),
                 ),
                 child: Icon(
                   icon,
                   size: 21,
-                  color:
-                      MyColors.textSecondary,
+                  color: MyColors.textSecondary,
                 ),
               ),
-
               const SizedBox(width: 14),
-
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       maxLines: 1,
-                      overflow:
-                          TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize:
-                            MySizes.fontSizeMd,
-                        fontWeight:
-                            FontWeight.w600,
-                        color:
-                            MyColors.textPrimary,
+                        fontSize: MySizes.fontSizeMd,
+                        fontWeight: FontWeight.w600,
+                        color: MyColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       maxLines: 2,
-                      overflow:
-                          TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize:
-                            MySizes.fontSizeSm,
+                        fontSize: MySizes.fontSizeSm,
                         height: 1.3,
-                        color:
-                            MyColors.textSecondary,
+                        color: MyColors.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(width: 10),
-
               const Icon(
                 Icons.chevron_right_rounded,
                 size: 22,
@@ -327,9 +270,7 @@ class SettingsPage extends StatelessWidget {
   ) {
     final List<Widget> result = [];
 
-    for (int i = 0;
-        i < children.length;
-        i++) {
+    for (int i = 0; i < children.length; i++) {
       result.add(children[i]);
 
       if (i < children.length - 1) {
@@ -358,58 +299,45 @@ class SettingsPage extends StatelessWidget {
       context: context,
       builder: (_) {
         return AlertDialog(
-          backgroundColor:
-              MyColors.surface,
-          shape:
-              RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(20),
+          backgroundColor: MyColors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
           title: const Text(
             'KASIRA CMS',
             style: TextStyle(
-              fontWeight:
-                  FontWeight.w700,
-              color:
-                  MyColors.textPrimary,
+              fontWeight: FontWeight.w700,
+              color: MyColors.textPrimary,
             ),
           ),
           content: const Column(
-            mainAxisSize:
-                MainAxisSize.min,
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Cashier Management System',
                 style: TextStyle(
-                  color:
-                      MyColors.textSecondary,
+                  color: MyColors.textSecondary,
                 ),
               ),
               SizedBox(height: 16),
               Text(
                 'Version 1.0.0',
                 style: TextStyle(
-                  fontSize:
-                      MySizes.fontSizeSm,
-                  color:
-                      MyColors.textMuted,
+                  fontSize: MySizes.fontSizeSm,
+                  color: MyColors.textMuted,
                 ),
               ),
             ],
           ),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Get.back(),
+              onPressed: () => Get.back(),
               child: const Text(
                 'Tutup',
                 style: TextStyle(
-                  color:
-                      MyColors.primaryDark,
-                  fontWeight:
-                      FontWeight.w600,
+                  color: MyColors.primaryDark,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -430,29 +358,23 @@ class SettingsPage extends StatelessWidget {
           Container(
             width: 42,
             height: 42,
-            decoration:
-                const BoxDecoration(
-              color:
-                  MyColors.primaryLight,
+            decoration: const BoxDecoration(
+              color: MyColors.primaryLight,
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.storefront_outlined,
               size: 21,
-              color:
-                  MyColors.primaryDark,
+              color: MyColors.primaryDark,
             ),
           ),
           const SizedBox(height: 10),
           const Text(
             'KASIRA CMS',
             style: TextStyle(
-              fontSize:
-                  MySizes.fontSizeSm,
-              fontWeight:
-                  FontWeight.w700,
-              color:
-                  MyColors.textSecondary,
+              fontSize: MySizes.fontSizeSm,
+              fontWeight: FontWeight.w700,
+              color: MyColors.textSecondary,
             ),
           ),
           const SizedBox(height: 3),
@@ -460,8 +382,7 @@ class SettingsPage extends StatelessWidget {
             'Cashier Management System',
             style: TextStyle(
               fontSize: 11,
-              color:
-                  MyColors.textMuted,
+              color: MyColors.textMuted,
             ),
           ),
         ],

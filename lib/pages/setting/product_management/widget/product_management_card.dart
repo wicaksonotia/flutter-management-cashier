@@ -9,7 +9,7 @@ class ProductManagementCard extends StatelessWidget {
 
   final VoidCallback onEdit;
   final VoidCallback onStatus;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
   final VoidCallback onFavorite;
 
   const ProductManagementCard({
@@ -453,7 +453,7 @@ class _ActionButton extends StatelessWidget {
 // ==========================================================
 
 class _DeleteButton extends StatelessWidget {
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _DeleteButton({
     required this.onTap,
@@ -461,19 +461,25 @@ class _DeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: MyColors.errorBg,
-      borderRadius: BorderRadius.circular(9),
-      child: InkWell(
-        onTap: onTap,
+    final enabled = onTap != null;
+
+    return Tooltip(
+      message:
+          enabled ? 'Hapus produk' : 'Produk sudah digunakan dalam transaksi',
+      child: Material(
+        color: enabled ? MyColors.errorBg : MyColors.surfaceSoft,
         borderRadius: BorderRadius.circular(9),
-        child: const SizedBox(
-          width: 35,
-          height: 31,
-          child: Icon(
-            Icons.delete_outline_rounded,
-            size: 16,
-            color: MyColors.error,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(9),
+          child: SizedBox(
+            width: 35,
+            height: 31,
+            child: Icon(
+              Icons.delete_outline_rounded,
+              size: 16,
+              color: enabled ? MyColors.error : MyColors.textMuted,
+            ),
           ),
         ),
       ),
@@ -490,7 +496,7 @@ class _SmallActionButton extends StatelessWidget {
   final IconData icon;
   final Color foreground;
   final Color background;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _SmallActionButton({
     required this.label,
@@ -502,35 +508,40 @@ class _SmallActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: background,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onTap,
+    final enabled = onTap != null;
+
+    return Tooltip(
+      message: enabled ? label : 'Produk sudah digunakan dalam transaksi',
+      child: Material(
+        color: enabled ? background : MyColors.surfaceSoft,
         borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-            vertical: 6,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 13,
-                color: foreground,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  color: foreground,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w800,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 6,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 13,
+                  color: enabled ? foreground : MyColors.textMuted,
                 ),
-              ),
-            ],
+                const SizedBox(width: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: enabled ? foreground : MyColors.textMuted,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -37,6 +37,12 @@ class _ProductManagementPageState extends State<ProductManagementPage>
       vsync: this,
     );
 
+    tabController.addListener(() {
+      if (!tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
+
     _loadData();
   }
 
@@ -90,6 +96,11 @@ class _ProductManagementPageState extends State<ProductManagementPage>
         child: Column(
           children: [
             ProductManagementHeader(
+              title: tabController.index == 0 ? 'Produk' : 'Kategori',
+              subtitle: tabController.index == 0
+                  ? 'Kelola katalog produk'
+                  : 'Kelola kategori produk',
+              addLabel: tabController.index == 0 ? 'Produk' : 'Kategori',
               onMenuTap: () {
                 scaffoldKey.currentState?.openDrawer();
               },

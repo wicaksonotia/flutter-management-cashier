@@ -26,6 +26,15 @@ class ProductController extends ProductCategoryController {
 
   final idProduct = 0.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+
+    productNameController.addListener(update);
+    productDescriptionController.addListener(update);
+    productPriceController.addListener(update);
+  }
+
   // ==========================================================
   // PRODUCT FILTER / VIEW
   // ==========================================================
@@ -456,6 +465,28 @@ class ProductController extends ProductCategoryController {
     } finally {
       isLoadingSaveProduct(false);
     }
+  }
+
+  bool get canSaveProduct {
+    final outletValid = selectedKios.value.trim().isNotEmpty;
+
+    final categoryValid = idProductCategory.value > 0;
+
+    final nameValid = productNameController.text.trim().isNotEmpty;
+
+    final descriptionValid =
+        productDescriptionController.text.trim().isNotEmpty;
+
+    final priceValid = productPriceController.text
+        .replaceAll(RegExp(r'[^0-9]'), '')
+        .trim()
+        .isNotEmpty;
+
+    return outletValid &&
+        categoryValid &&
+        nameValid &&
+        descriptionValid &&
+        priceValid;
   }
 
   // ==========================================================
