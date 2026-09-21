@@ -41,12 +41,16 @@ class CategoryController extends BaseController {
   // LOAD PAGE 1
   Future<void> getData() async {
     try {
+      await initializeBaseController();
+
       page = 1;
       hasMore = true;
       isLoadingCategory.value = true;
       resultDataCategory.clear();
 
       var rawFormat = {
+        'status': 'all',
+        'id_kios': idKios.value,
         'kategori': tags.toList(),
         'textSearch': searchBarController.text,
         'page': page,
@@ -76,6 +80,8 @@ class CategoryController extends BaseController {
     try {
       isLoadingMore.value = true;
       var rawFormat = {
+        'status': 'all',
+        'id_kios': idKios.value,
         'kategori': tags.toList(),
         'textSearch': searchBarController.text,
         'page': page,
@@ -117,8 +123,12 @@ class CategoryController extends BaseController {
 
   Future<void> fetchAllCategory(Object kategori) async {
     try {
+      await initializeBaseController();
+
       isLoadingWithoutPagination(true);
       var rawFormat = {
+        'status': 'all',
+        'id_kios': idKios.value,
         'kategori': kategori,
         'textSearch': '',
         'page': 1,
@@ -143,6 +153,7 @@ class CategoryController extends BaseController {
       isLoadingSaveCategory(true);
 
       var rawFormat = {
+        'id_kios': idKios.value,
         'id_category': idCategoryTransaction.value,
         'category_name': nameController.text,
         'is_pemasukan': isPemasukan.value,

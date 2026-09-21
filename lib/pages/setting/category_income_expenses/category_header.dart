@@ -8,8 +8,8 @@ class CategoryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(
         20,
         10,
         20,
@@ -18,7 +18,7 @@ class CategoryHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Kelola kategori transaksi',
             style: TextStyle(
               fontSize: 27,
@@ -27,7 +27,7 @@ class CategoryHeader extends StatelessWidget {
               letterSpacing: -.7,
             ),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Text(
             'Atur kategori pemasukan dan pengeluaran '
             'agar pencatatan keuangan lebih rapi.',

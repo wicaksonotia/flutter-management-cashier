@@ -43,16 +43,6 @@ class LoginController extends GetxController {
   // ============================================================
 
   @override
-  void onInit() {
-    super.onInit();
-
-    // Jangan cek login di sini.
-    //
-    // Session/login sekarang menjadi tanggung jawab
-    // SplashController.
-  }
-
-  @override
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
