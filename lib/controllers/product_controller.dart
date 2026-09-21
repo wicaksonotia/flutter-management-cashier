@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/product_category_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/product_model.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -36,7 +37,7 @@ class ProductController extends ProductCategoryController {
   /// Tidak ada category 0 / "Semua".
   final selectedProductCategoryId = 0.obs;
 
-  final isGridView = true.obs;
+  final isGridView = false.obs;
 
   final isProductManagementInitialized = false.obs;
 
@@ -186,6 +187,9 @@ class ProductController extends ProductCategoryController {
   void clearProductController() {
     idProduct.value = 0;
 
+    idProductCategory.value = 0;
+    nameProductCategory.value = '';
+
     productNameController.clear();
     productDescriptionController.clear();
     productPriceController.clear();
@@ -204,17 +208,32 @@ class ProductController extends ProductCategoryController {
       decimalDigits: 0,
     );
 
+    // ==========================================================
+    // PRODUCT
+    // ==========================================================
+
     idProduct.value = model.idProduct ?? 0;
 
-    idProductCategory.value = model.idProductCategories ?? 0;
-
     productNameController.text = model.name ?? '';
-
     productDescriptionController.text = model.description ?? '';
 
     productPriceController.text = formatCurrency.format(
       model.price ?? 0,
     );
+
+    // ==========================================================
+    // CATEGORY
+    // ==========================================================
+
+    final categoryId = model.idProductCategories ?? 0;
+
+    idProductCategory.value = categoryId;
+
+    final category = resultDataProductCategory.firstWhereOrNull(
+      (item) => item.idCategories == categoryId,
+    );
+
+    nameProductCategory.value = category?.name ?? '';
 
     update();
   }
@@ -416,12 +435,12 @@ class ProductController extends ProductCategoryController {
         ),
       );
 
-      clearProductController();
+      // clearProductController();
 
-      // Refresh produk dari category yang sedang aktif.
+      // // Refresh produk dari category yang sedang aktif.
       await fetchDataListProduct();
 
-      Get.back();
+      // Get.back();
     } catch (e) {
       Get.snackbar(
         'Tidak dapat menyimpan',
@@ -535,34 +554,14 @@ class ProductController extends ProductCategoryController {
   // DELETE PRODUCT
   // ==========================================================
 
-  Future<void> deleteProduct(int id) async {
-    try {
-      final result = await RemoteDataSource.deleteProduct(id);
+  Future<String> deleteProduct(int id) async {
+    final status = await RemoteDataSource.deleteProduct(id);
 
-      if (!result) {
-        throw 'Gagal menghapus produk.';
-      }
-
-      resultDataProduct.removeWhere(
-        (item) => item.idProduct == id,
-      );
-
-      Get.snackbar(
-        'Produk dihapus',
-        'Produk berhasil dihapus.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.green.shade50,
-        colorText: Colors.green.shade700,
-      );
-    } catch (e) {
-      Get.snackbar(
-        'Gagal menghapus',
-        e.toString(),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.shade50,
-        colorText: Colors.red.shade700,
-      );
+    if (status == 'ok') {
+      await fetchDataListProduct();
     }
+
+    return status;
   }
 
   // ==========================================================

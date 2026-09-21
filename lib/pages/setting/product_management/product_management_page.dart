@@ -1,7 +1,6 @@
 import 'package:cashier_management/controllers/product_controller.dart';
 import 'package:cashier_management/pages/navigation_drawer.dart'
     as custom_drawer;
-import 'package:cashier_management/pages/select_table_list_page.dart';
 import 'package:cashier_management/pages/setting/product_management/widget/product_category_management.dart';
 import 'package:cashier_management/pages/setting/product_management/widget/product_list_management.dart';
 import 'package:cashier_management/pages/setting/product_management/widget/product_management_header.dart';
@@ -20,6 +19,8 @@ class ProductManagementPage extends StatefulWidget {
 
 class _ProductManagementPageState extends State<ProductManagementPage>
     with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   late final ProductController controller;
   late final TabController tabController;
 
@@ -73,36 +74,6 @@ class _ProductManagementPageState extends State<ProductManagementPage>
     }
   }
 
-  void _selectOutlet() {
-    Get.to(
-      () => SelectTableListPage(
-        title: 'Pilih Outlet',
-        isLoading: controller.isLoadingKios,
-        items: controller.resultDataKios,
-        titleBuilder: (data) => data.kios!,
-        subtitleBuilder: (data) => data.keterangan ?? '',
-        isSelected: (data) => data.idKios == controller.idKios.value,
-        onItemTap: (data) async {
-          controller.idKios.value = data.idKios!;
-          controller.selectedKios.value = data.kios!;
-
-          await controller.fetchDataListProductCategory(
-            onAfterSuccess: () async {
-              await controller.fetchDataListProduct();
-            },
-          );
-
-          Get.back();
-        },
-        onRefresh: () async {
-          await controller.fetchDataListKios();
-        },
-      ),
-      transition: Transition.rightToLeft,
-      duration: const Duration(milliseconds: 280),
-    );
-  }
-
   @override
   void dispose() {
     tabController.dispose();
@@ -112,6 +83,7 @@ class _ProductManagementPageState extends State<ProductManagementPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       drawer: const custom_drawer.NavigationDrawer(),
       backgroundColor: MyColors.background,
       body: SafeArea(
@@ -119,7 +91,7 @@ class _ProductManagementPageState extends State<ProductManagementPage>
           children: [
             ProductManagementHeader(
               onMenuTap: () {
-                Scaffold.of(context).openDrawer();
+                scaffoldKey.currentState?.openDrawer();
               },
               onAddTap: _addData,
             ),

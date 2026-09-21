@@ -75,11 +75,14 @@ class AppConfirmDialog extends StatelessWidget {
           icon: icon,
           type: type,
           onConfirm: () {
+            debugPrint('[CONFIRM DIALOG] CONFIRM CLICK');
             Navigator.of(dialogContext).pop(true);
           },
         );
       },
     );
+
+    debugPrint('[CONFIRM DIALOG] RESULT: $result');
 
     return result ?? false;
   }
@@ -222,7 +225,12 @@ class _DialogButton extends StatelessWidget {
     return SizedBox(
       height: 44,
       child: ElevatedButton(
-        onPressed: onTap,
+        onPressed: () {
+          debugPrint(
+            '[CONFIRM DIALOG] BUTTON TAP: $text',
+          );
+          onTap();
+        },
         style: ElevatedButton.styleFrom(
           elevation: 0,
           backgroundColor: backgroundColor,

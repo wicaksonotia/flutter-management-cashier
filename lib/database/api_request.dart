@@ -12,6 +12,7 @@ import 'package:cashier_management/models/history_model.dart';
 import 'package:cashier_management/models/kios_model.dart';
 import 'package:cashier_management/models/monitoring_outlet_model.dart';
 import 'package:cashier_management/models/total_model.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RemoteDataSource {
@@ -806,21 +807,19 @@ class RemoteDataSource {
     }
   }
 
-  static Future<bool> deleteProduct(int id) async {
+  static Future<String> deleteProduct(int id) async {
     try {
-      var rawFormat = jsonEncode({'id': id});
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteProduct;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
+      final raw = jsonEncode({'id': id});
+
+      final response = await Dio().post(
+        ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteProduct,
+        data: raw,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      return response.data['status']; // ok / used / error
+    } catch (_) {
+      return 'error';
     }
   }
 

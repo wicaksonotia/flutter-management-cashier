@@ -43,6 +43,28 @@ class _ProductListManagementState extends State<ProductListManagement> {
   }
 
   void _edit(DataProduct item) {
+    debugPrint(
+      '==================================================',
+    );
+    debugPrint(
+      '[EDIT PRODUCT]',
+    );
+    debugPrint(
+      'idProduct      : ${item.idProduct}',
+    );
+    debugPrint(
+      'name           : ${item.name}',
+    );
+    debugPrint(
+      'category       : ${item.idProductCategories}',
+    );
+    debugPrint(
+      'price          : ${item.price}',
+    );
+    debugPrint(
+      '==================================================',
+    );
+
     controller.editProduct(item);
 
     Get.toNamed(
@@ -76,33 +98,6 @@ class _ProductListManagementState extends State<ProductListManagement> {
   }
 
   Future<void> _delete(DataProduct item) async {
-    // ==========================================================
-    // VALIDASI
-    // ==========================================================
-
-    if ((item.statusTransaksi ?? 0) == 1) {
-      Get.snackbar(
-        'Tidak dapat dihapus',
-        'Produk ini sudah pernah digunakan dalam transaksi.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: MyColors.errorBg,
-        colorText: MyColors.error,
-        icon: const Icon(
-          Icons.info_outline_rounded,
-          color: MyColors.error,
-        ),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        duration: const Duration(seconds: 3),
-      );
-
-      return;
-    }
-
-    // ==========================================================
-    // CONFIRMATION
-    // ==========================================================
-
     final confirmed = await AppConfirmDialog.show(
       context,
       title: 'Hapus Produk?',
@@ -116,12 +111,41 @@ class _ProductListManagementState extends State<ProductListManagement> {
 
     if (!confirmed) return;
 
-    // ==========================================================
-    // DELETE
-    // ==========================================================
+    final status = await controller.deleteProduct(item.idProduct!);
 
-    await controller.deleteProduct(
-      item.idProduct!,
+    if (!mounted) return;
+
+    if (status == 'used') {
+      await AppConfirmDialog.show(
+        context,
+        title: 'Produk Tidak Dapat Dihapus',
+        message:
+            'Produk "${item.name}" sudah pernah digunakan dalam transaksi penjualan.',
+        icon: Icons.info_outline_rounded,
+        type: AppConfirmType.warning,
+        confirmText: 'Mengerti',
+        cancelText: '',
+      );
+      return;
+    }
+
+    if (status == 'ok') {
+      Get.snackbar(
+        'Berhasil',
+        'Produk berhasil dihapus.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: MyColors.successBg,
+        colorText: MyColors.success,
+      );
+      return;
+    }
+
+    Get.snackbar(
+      'Gagal',
+      'Terjadi kesalahan saat menghapus produk.',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: MyColors.errorBg,
+      colorText: MyColors.error,
     );
   }
 
@@ -188,7 +212,9 @@ class _ProductListManagementState extends State<ProductListManagement> {
                         isGrid: true,
                         onEdit: () => _edit(item),
                         onStatus: () => _status(item),
-                        onDelete: () => _delete(item),
+                        onDelete: (item.statusTransaksi == 1)
+                            ? null
+                            : () => _delete(item),
                         onFavorite: () => _favorite(item),
                       );
                     },
@@ -220,7 +246,9 @@ class _ProductListManagementState extends State<ProductListManagement> {
                         isGrid: false,
                         onEdit: () => _edit(item),
                         onStatus: () => _status(item),
-                        onDelete: () => _delete(item),
+                        onDelete: (item.statusTransaksi == 1)
+                            ? null
+                            : () => _delete(item),
                         onFavorite: () => _favorite(item),
                       );
                     },
