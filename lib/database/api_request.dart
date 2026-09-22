@@ -651,22 +651,50 @@ class RemoteDataSource {
   }
 
   static Future<bool> saveProductCategory(
-      Map<String, dynamic> rawFormat) async {
+    Map<String, dynamic> rawFormat,
+  ) async {
     try {
-      var url =
+      final url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveProductCategory;
-      Response response = await Dio().post(
+
+      debugPrint('========== API SAVE CATEGORY ==========');
+      debugPrint('URL  : $url');
+      debugPrint('DATA : $rawFormat');
+
+      final Response response = await Dio().post(
         url,
         data: rawFormat,
-        options: Options(contentType: Headers.jsonContentType),
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
       );
+
+      debugPrint('STATUS : ${response.statusCode}');
+      debugPrint('DATA   : ${response.data}');
+
       if (response.statusCode == 200) {
-        if (response.data['status'] == 'ok') {
+        if (response.data is Map && response.data['status'] == 'ok') {
           return true;
         }
+
+        debugPrint(
+          'API MESSAGE : ${response.data['message'] ?? 'Unknown error'}',
+        );
       }
+
+      return false;
+    } on DioException catch (e) {
+      debugPrint('========== DIO ERROR ==========');
+      debugPrint('TYPE   : ${e.type}');
+      debugPrint('MESSAGE: ${e.message}');
+      debugPrint('STATUS : ${e.response?.statusCode}');
+      debugPrint('DATA   : ${e.response?.data}');
+
       return false;
     } catch (e) {
+      debugPrint('========== SAVE CATEGORY ERROR ==========');
+      debugPrint('ERROR : $e');
+
       return false;
     }
   }

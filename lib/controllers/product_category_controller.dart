@@ -26,6 +26,13 @@ class ProductCategoryController extends BaseController {
 
   final nameProductCategory = 'Category'.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+
+    productCategoryNameController.addListener(update);
+  }
+
   // ==========================================================
   // BRAND
   // ==========================================================
@@ -54,13 +61,15 @@ class ProductCategoryController extends BaseController {
   }
 
   void editProductCategory(
-    DataProductCategory productCategoryModel,
+    DataProductCategory model,
   ) {
-    idProductCategory.value = productCategoryModel.idCategories ?? 0;
+    // ==========================================================
+    // CATEGORY
+    // ==========================================================
 
-    idKios.value = productCategoryModel.idKios ?? idKios.value;
+    idProductCategory.value = model.idCategories ?? 0;
 
-    productCategoryNameController.text = productCategoryModel.name ?? '';
+    productCategoryNameController.text = model.name ?? '';
 
     update();
   }
@@ -119,18 +128,14 @@ class ProductCategoryController extends BaseController {
   // SAVE CATEGORY
   // ==========================================================
 
-  Future<void> saveProductCategory() async {
-    if (isLoadingSave.value) return;
+  Future<bool> saveProductCategory() async {
+    if (isLoadingSave.value) return false;
 
     try {
       final name = productCategoryNameController.text.trim();
 
       if (name.isEmpty) {
-        throw '* All fields are required';
-      }
-
-      if (idKios.value <= 0) {
-        throw 'Brand belum dipilih.';
+        throw 'Nama kategori wajib diisi.';
       }
 
       isLoadingSave.value = true;
@@ -140,39 +145,28 @@ class ProductCategoryController extends BaseController {
         'id_kios': idKios.value,
         'name': name,
       };
-
-      final result = await RemoteDataSource.saveProductCategory(
-        rawFormat,
-      );
+      debugPrint('========== SAVE CATEGORY ==========');
+      debugPrint(rawFormat.toString());
+      final result = await RemoteDataSource.saveProductCategory(rawFormat);
+      debugPrint('RESULT : $result');
 
       if (!result) {
-        throw 'Failed to save data';
+        throw 'Gagal menyimpan kategori.';
       }
 
-      Get.snackbar(
-        'Notification',
-        'Saved successfully',
-        icon: const Icon(Icons.check),
-        snackPosition: SnackPosition.TOP,
-      );
-
-      clearProductCategoryController();
-
-      // Refresh category.
-      //
-      // Karena resultDataProductCategory adalah RxList,
-      // Category Chips otomatis ikut berubah.
-      await fetchDataListProductCategory();
-    } catch (error) {
-      Get.snackbar(
-        'Notification',
-        error.toString(),
-        icon: const Icon(Icons.error),
-        snackPosition: SnackPosition.TOP,
-      );
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
     } finally {
       isLoadingSave.value = false;
     }
+  }
+
+  bool get canSaveProductCategory {
+    final nameValid = productCategoryNameController.text.trim().isNotEmpty;
+
+    return nameValid;
   }
 
   // ==========================================================
