@@ -42,7 +42,7 @@ class _ProductListManagementState extends State<ProductListManagement> {
     controller.setProductSearch(value);
   }
 
-  void _edit(DataProduct item) {
+  Future<void> _edit(DataProduct item) async {
     debugPrint(
       '==================================================',
     );
@@ -67,9 +67,13 @@ class _ProductListManagementState extends State<ProductListManagement> {
 
     controller.editProduct(item);
 
-    Get.toNamed(
+    final result = await Get.toNamed(
       RouterClass.addProduct,
     );
+
+    if (result == true) {
+      await controller.refreshCurrentProductList();
+    }
   }
 
   Future<void> _status(DataProduct item) async {

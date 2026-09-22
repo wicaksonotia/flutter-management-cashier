@@ -1,7 +1,6 @@
 import 'package:cashier_management/controllers/product_category_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/product_model.dart';
-import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -385,19 +384,26 @@ class ProductController extends ProductCategoryController {
   // SAVE PRODUCT
   // ==========================================================
 
-  Future<void> saveProduct() async {
-    if (isLoadingSaveProduct.value) return;
+  Future<bool> saveProduct() async {
+    if (isLoadingSaveProduct.value) return false;
 
     try {
       final name = productNameController.text.trim();
-
       final description = productDescriptionController.text.trim();
 
       final cleanPrice =
           productPriceController.text.replaceAll(RegExp(r'[^0-9]'), '').trim();
 
+      // ==========================================================
+      // VALIDATION
+      // ==========================================================
+
       if (name.isEmpty) {
         throw 'Nama produk wajib diisi.';
+      }
+
+      if (description.isEmpty) {
+        throw 'Deskripsi produk wajib diisi.';
       }
 
       if (cleanPrice.isEmpty) {
@@ -406,15 +412,21 @@ class ProductController extends ProductCategoryController {
 
       final price = int.tryParse(cleanPrice);
 
-      if (price == null) {
-        throw 'Harga produk tidak valid.';
+      if (price == null || price <= 0) {
+        throw 'Harga produk harus lebih dari 0.';
       }
 
-      if (idProductCategory.value == 0) {
+      if (idProductCategory.value <= 0) {
         throw 'Kategori produk wajib dipilih.';
       }
 
+      // ==========================================================
+      // SAVE
+      // ==========================================================
+
       isLoadingSaveProduct(true);
+
+      final isEdit = idProduct.value != 0;
 
       final rawFormat = {
         'id_product': idProduct.value,
@@ -430,11 +442,13 @@ class ProductController extends ProductCategoryController {
         throw 'Gagal menyimpan produk.';
       }
 
+      // ==========================================================
+      // SUCCESS
+      // ==========================================================
+
       Get.snackbar(
         'Berhasil',
-        idProduct.value == 0
-            ? 'Produk berhasil ditambahkan.'
-            : 'Produk berhasil diperbarui.',
+        isEdit ? 'Produk berhasil diperbarui.' : 'Produk berhasil ditambahkan.',
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.green.shade50,
         colorText: Colors.green.shade700,
@@ -442,14 +456,10 @@ class ProductController extends ProductCategoryController {
           Icons.check_circle_outline_rounded,
           color: Colors.green,
         ),
+        duration: const Duration(seconds: 2),
       );
 
-      // clearProductController();
-
-      // // Refresh produk dari category yang sedang aktif.
-      await fetchDataListProduct();
-
-      // Get.back();
+      return true;
     } catch (e) {
       Get.snackbar(
         'Tidak dapat menyimpan',
@@ -462,6 +472,8 @@ class ProductController extends ProductCategoryController {
           color: Colors.red,
         ),
       );
+
+      return false;
     } finally {
       isLoadingSaveProduct(false);
     }
@@ -648,5 +660,16 @@ class ProductController extends ProductCategoryController {
     productPriceController.dispose();
 
     super.onClose();
+  }
+
+  Future<void> refreshCurrentProductList() async {
+    final categoryId = selectedProductCategoryId.value;
+
+    if (categoryId <= 0) {
+      await selectFirstProductCategory();
+      return;
+    }
+
+    await fetchDataListProduct();
   }
 }

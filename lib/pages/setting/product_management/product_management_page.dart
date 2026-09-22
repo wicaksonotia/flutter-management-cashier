@@ -64,19 +64,29 @@ class _ProductManagementPageState extends State<ProductManagementPage>
     await controller.fetchDataListProductCategory();
   }
 
-  void _addData() {
+  Future<void> _addData() async {
     if (tabController.index == 0) {
       controller.clearProductController();
 
-      Get.toNamed(
+      final result = await Get.toNamed(
         RouterClass.addProduct,
       );
-    } else {
-      controller.clearProductCategoryController();
 
-      Get.toNamed(
-        RouterClass.addProductCategory,
-      );
+      if (result == true) {
+        await controller.refreshCurrentProductList();
+      }
+
+      return;
+    }
+
+    controller.clearProductCategoryController();
+
+    final result = await Get.toNamed(
+      RouterClass.addProductCategory,
+    );
+
+    if (result == true) {
+      await controller.fetchDataListProductCategory();
     }
   }
 
@@ -104,7 +114,7 @@ class _ProductManagementPageState extends State<ProductManagementPage>
               onMenuTap: () {
                 scaffoldKey.currentState?.openDrawer();
               },
-              onAddTap: _addData,
+              onAddTap: () => _addData(),
             ),
             const SizedBox(height: 8),
             ProductManagementTabs(

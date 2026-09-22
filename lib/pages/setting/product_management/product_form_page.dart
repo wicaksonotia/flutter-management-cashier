@@ -504,7 +504,17 @@ class _SaveButton extends StatelessWidget {
                 !controller.isLoadingSaveProduct.value;
 
             return ElevatedButton(
-              onPressed: canSave ? controller.saveProduct : null,
+              onPressed: canSave
+                  ? () async {
+                      final success = await controller.saveProduct();
+
+                      if (!success || !context.mounted) {
+                        return;
+                      }
+
+                      Navigator.of(context).pop(true);
+                    }
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: MyColors.primary,
                 disabledBackgroundColor:
