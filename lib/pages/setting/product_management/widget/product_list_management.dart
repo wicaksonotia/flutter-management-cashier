@@ -115,7 +115,9 @@ class _ProductListManagementState extends State<ProductListManagement> {
 
     if (!confirmed) return;
 
-    final status = await controller.deleteProduct(item.idProduct!);
+    final status = await controller.deleteProduct(
+      item.idProduct!,
+    );
 
     if (!mounted) return;
 
@@ -210,15 +212,14 @@ class _ProductListManagementState extends State<ProductListManagement> {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final item = products[index];
+                      final canDelete = item.statusTransaksi != 1;
 
                       return ProductManagementCard(
                         item: item,
                         isGrid: true,
                         onEdit: () => _edit(item),
                         onStatus: () => _status(item),
-                        onDelete: (item.statusTransaksi == 1)
-                            ? null
-                            : () => _delete(item),
+                        onDelete: canDelete ? () => _delete(item) : null,
                         onFavorite: () => _favorite(item),
                       );
                     },
@@ -244,15 +245,14 @@ class _ProductListManagementState extends State<ProductListManagement> {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final item = products[index];
+                      final canDelete = item.statusTransaksi != 1;
 
                       return ProductManagementCard(
                         item: item,
                         isGrid: false,
                         onEdit: () => _edit(item),
                         onStatus: () => _status(item),
-                        onDelete: (item.statusTransaksi == 1)
-                            ? null
-                            : () => _delete(item),
+                        onDelete: canDelete ? () => _delete(item) : null,
                         onFavorite: () => _favorite(item),
                       );
                     },

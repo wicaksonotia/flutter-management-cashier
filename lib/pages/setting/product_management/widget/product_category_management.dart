@@ -72,23 +72,29 @@ class ProductCategoryManagement extends StatelessWidget {
   // DELETE
   // ==========================================================
 
-  void _delete(DataProductCategory item) {
-    if (item.statusProduk == 1) {
-      Get.snackbar(
-        'Tidak dapat dihapus',
-        'Kategori ini masih digunakan oleh produk.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: MyColors.errorBg,
-        colorText: MyColors.error,
-        icon: const Icon(
-          Icons.info_outline_rounded,
-          color: MyColors.error,
-        ),
-      );
+  Future<void> _delete(DataProductCategory item) async {
+    final id = item.idCategories;
+
+    if (id == null || id <= 0) {
       return;
     }
 
-    // Sementara belum diaktifkan.
+    final confirmed = await AppConfirmDialog.show(
+      Get.context!,
+      title: 'Hapus Kategori',
+      message:
+          'Kategori "${item.name}" akan dihapus. Data yang sudah dihapus tidak dapat dikembalikan.',
+      confirmText: 'Hapus',
+      cancelText: 'Batal',
+      icon: Icons.delete_outline_rounded,
+      type: AppConfirmType.danger,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    await controller.deleteProductCategory(id);
   }
 
   // ==========================================================
@@ -167,6 +173,7 @@ class ProductCategoryManagement extends StatelessWidget {
                       onEdit: () => _edit(item),
                       onDelete: () => _delete(item),
                       onStatus: () => _status(context, item),
+                      canDelete: item.statusProduk != 1,
                     );
                   },
                   onReorder: controller.reorderCategory,
@@ -253,18 +260,19 @@ class _CategoryToolbar extends StatelessWidget {
 // ==========================================================
 
 class _CategoryCard extends StatelessWidget {
+  final bool canDelete;
   final DataProductCategory item;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onStatus;
 
-  const _CategoryCard({
-    super.key,
-    required this.item,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onStatus,
-  });
+  const _CategoryCard(
+      {super.key,
+      required this.item,
+      required this.onEdit,
+      required this.onDelete,
+      required this.onStatus,
+      required this.canDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -389,9 +397,9 @@ class _CategoryCard extends StatelessWidget {
 
           ManagementActionButton(
             icon: Icons.delete_outline_rounded,
-            background: MyColors.errorBg,
-            foreground: MyColors.error,
-            onTap: onDelete,
+            background: canDelete ? MyColors.errorBg : MyColors.surfaceSoft,
+            foreground: canDelete ? MyColors.error : MyColors.textMuted,
+            onTap: canDelete ? onDelete : null,
           ),
         ],
       ),
