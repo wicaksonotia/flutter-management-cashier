@@ -228,7 +228,7 @@ class _ProductListManagementState extends State<ProductListManagement> {
                     maxCrossAxisExtent: 330,
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
-                    mainAxisExtent: 282,
+                    mainAxisExtent: 250,
                   ),
                 ),
               )

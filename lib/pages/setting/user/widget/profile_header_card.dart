@@ -27,11 +27,11 @@ class ProfileHeaderCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.black.withOpacity(0.04),
+          color: Colors.black.withValues(alpha: 0.04),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -86,13 +86,13 @@ class ProfileHeaderCard extends StatelessWidget {
       width: 64,
       height: 64,
       decoration: BoxDecoration(
-        color: MyColors.primary.withOpacity(0.10),
+        color: MyColors.primary.withValues(alpha: 0.10),
         shape: BoxShape.circle,
       ),
       child: Center(
         child: Text(
           _getInitial(),
-          style: TextStyle(
+          style: const TextStyle(
             color: MyColors.primary,
             fontSize: 25,
             fontWeight: FontWeight.w800,

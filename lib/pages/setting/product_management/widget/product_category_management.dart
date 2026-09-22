@@ -1,5 +1,6 @@
 import 'package:cashier_management/controllers/product_controller.dart';
 import 'package:cashier_management/models/product_category_model.dart';
+import 'package:cashier_management/pages/setting/product_management/widget/management_action_button.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
@@ -11,39 +12,65 @@ class ProductCategoryManagement extends StatelessWidget {
 
   ProductController get controller => Get.find<ProductController>();
 
-  void _edit(DataProductCategory item) {
+  // ==========================================================
+  // EDIT
+  // ==========================================================
+
+  Future<void> _edit(DataProductCategory item) async {
     controller.editProductCategory(item);
 
-    Get.toNamed(
+    final result = await Get.toNamed(
       RouterClass.addProductCategory,
     );
+
+    if (result == true) {
+      await controller.fetchDataListProductCategory();
+    }
   }
 
-  void _status(DataProductCategory item) {
-    final newStatus = !(item.status ?? false);
+  // ==========================================================
+  // STATUS
+  // ==========================================================
 
-    Get.bottomSheet(
-      ConfirmDialog(
-        title: newStatus ? 'Aktifkan Kategori' : 'Nonaktifkan Kategori',
-        message: newStatus
-            ? 'Kategori "${item.name}" akan diaktifkan.'
-            : 'Kategori "${item.name}" akan dinonaktifkan.',
-        onConfirm: () async {
-          controller.updateStatusProductCategory(
-            item.idCategories!,
-            newStatus,
-          );
-        },
-      ),
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
-      ),
+  Future<void> _status(
+    BuildContext context,
+    DataProductCategory item,
+  ) async {
+    final currentStatus = item.status ?? false;
+    final newStatus = !currentStatus;
+
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: newStatus ? 'Aktifkan Kategori' : 'Nonaktifkan Kategori',
+      message: newStatus
+          ? 'Kategori "${item.name}" akan diaktifkan.'
+          : 'Kategori "${item.name}" akan dinonaktifkan.',
+      confirmText: newStatus ? 'Aktifkan' : 'Nonaktifkan',
+      cancelText: 'Batal',
+      icon:
+          newStatus ? Icons.check_circle_outline_rounded : Icons.block_outlined,
+      type: newStatus ? AppConfirmType.success : AppConfirmType.danger,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    final id = item.idCategories;
+
+    if (id == null || id <= 0) {
+      return;
+    }
+
+    await controller.updateStatusProductCategory(
+      id,
+      newStatus,
     );
   }
+
+  // ==========================================================
+  // DELETE
+  // ==========================================================
 
   void _delete(DataProductCategory item) {
     if (item.statusProduk == 1) {
@@ -61,29 +88,20 @@ class ProductCategoryManagement extends StatelessWidget {
       return;
     }
 
-    Get.bottomSheet(
-      ConfirmDialog(
-        title: 'Hapus Kategori',
-        message: 'Kategori "${item.name}" akan dihapus.',
-        onConfirm: () async {
-          controller.deleteProductCategory(
-            item.idCategories!,
-          );
-        },
-      ),
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
-      ),
-    );
+    // Sementara belum diaktifkan.
   }
+
+  // ==========================================================
+  // REFRESH
+  // ==========================================================
 
   Future<void> _refresh() async {
     await controller.fetchDataListProductCategory();
   }
+
+  // ==========================================================
+  // BUILD
+  // ==========================================================
 
   @override
   Widget build(BuildContext context) {
@@ -102,18 +120,34 @@ class ProductCategoryManagement extends StatelessWidget {
         }
 
         return CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
           slivers: [
+            // ==================================================
+            // TOOLBAR
+            // ==================================================
+
             SliverToBoxAdapter(
               child: _CategoryToolbar(
                 total: items.length,
               ),
             ),
+
+            // ==================================================
+            // EMPTY
+            // ==================================================
+
             if (items.isEmpty)
               const SliverFillRemaining(
                 hasScrollBody: false,
                 child: _EmptyCategoryState(),
               )
+
+            // ==================================================
+            // LIST
+            // ==================================================
+
             else
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
@@ -132,7 +166,7 @@ class ProductCategoryManagement extends StatelessWidget {
                       item: item,
                       onEdit: () => _edit(item),
                       onDelete: () => _delete(item),
-                      onStatus: () => _status(item),
+                      onStatus: () => _status(context, item),
                     );
                   },
                   onReorder: controller.reorderCategory,
@@ -165,73 +199,50 @@ class _CategoryToolbar extends StatelessWidget {
         16,
         12,
       ),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: MyColors.surface,
-          borderRadius: BorderRadius.circular(17),
-          border: Border.all(
-            color: MyColors.border,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: MyColors.primaryLight,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(
-                Icons.category_outlined,
-                color: MyColors.primary,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Kategori Produk',
-                    style: TextStyle(
-                      color: MyColors.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                    ),
+      child: Row(
+        children: [
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Kategori Produk',
+                  style: TextStyle(
+                    color: MyColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
                   ),
-                  SizedBox(height: 3),
-                  Text(
-                    'Atur kelompok dan urutan produk',
-                    style: TextStyle(
-                      color: MyColors.textSecondary,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 11,
-                vertical: 7,
-              ),
-              decoration: BoxDecoration(
-                color: MyColors.primaryLight,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                '$total',
-                style: const TextStyle(
-                  color: MyColors.primaryDark,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
                 ),
+                SizedBox(height: 3),
+                Text(
+                  'Kelola kategori dan urutan produk',
+                  style: TextStyle(
+                    color: MyColors.textSecondary,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 11,
+              vertical: 7,
+            ),
+            decoration: BoxDecoration(
+              color: MyColors.primaryLight,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '$total kategori',
+              style: const TextStyle(
+                color: MyColors.primaryDark,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -261,10 +272,10 @@ class _CategoryCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: MyColors.surface,
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: MyColors.border,
         ),
@@ -278,30 +289,30 @@ class _CategoryCard extends StatelessWidget {
           const Icon(
             Icons.drag_indicator_rounded,
             color: MyColors.textMuted,
-            size: 20,
+            size: 18,
           ),
 
-          const SizedBox(width: 8),
+          const SizedBox(width: 7),
 
           // ==================================================
-          // ICON
+          // CATEGORY ICON
           // ==================================================
 
           Container(
-            width: 46,
-            height: 46,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: MyColors.surfaceSoft,
-              borderRadius: BorderRadius.circular(13),
+              color: MyColors.primaryLight,
+              borderRadius: BorderRadius.circular(11),
             ),
             child: const Icon(
               Icons.category_outlined,
               color: MyColors.primary,
-              size: 21,
+              size: 18,
             ),
           ),
 
-          const SizedBox(width: 11),
+          const SizedBox(width: 10),
 
           // ==================================================
           // CONTENT
@@ -317,57 +328,57 @@ class _CategoryCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: MyColors.textPrimary,
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  item.statusProduk == 1
-                      ? 'Digunakan oleh produk'
-                      : 'Belum digunakan',
-                  style: const TextStyle(
-                    color: MyColors.textSecondary,
-                    fontSize: 10,
-                  ),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.inventory_2_outlined,
+                      size: 12,
+                      color: MyColors.textMuted,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        item.statusProduk == 1
+                            ? 'Digunakan oleh produk'
+                            : 'Belum digunakan',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: MyColors.textSecondary,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ),
-
-          // ==================================================
-          // STATUS
-          // ==================================================
-
-          GestureDetector(
-            onTap: onStatus,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 5,
-              ),
-              decoration: BoxDecoration(
-                color: active ? Colors.green.shade50 : MyColors.errorBg,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                active ? 'Aktif' : 'Nonaktif',
-                style: TextStyle(
-                  color: active ? Colors.green.shade700 : MyColors.error,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
             ),
           ),
 
           const SizedBox(width: 8),
 
           // ==================================================
-          // EDIT
+          // ACTIONS
           // ==================================================
 
-          _CategoryActionButton(
+          ManagementActionButton(
+            icon: active
+                ? Icons.check_circle_outline_rounded
+                : Icons.block_outlined,
+            label: active ? 'Aktif' : 'Nonaktif',
+            background: active ? MyColors.successBg : MyColors.errorBg,
+            foreground: active ? MyColors.success : MyColors.error,
+            onTap: onStatus,
+          ),
+
+          const SizedBox(width: 5),
+
+          ManagementActionButton(
             icon: Icons.edit_outlined,
             background: MyColors.primaryLight,
             foreground: MyColors.primaryDark,
@@ -376,52 +387,13 @@ class _CategoryCard extends StatelessWidget {
 
           const SizedBox(width: 5),
 
-          // ==================================================
-          // DELETE
-          // ==================================================
-
-          _CategoryActionButton(
+          ManagementActionButton(
             icon: Icons.delete_outline_rounded,
             background: MyColors.errorBg,
             foreground: MyColors.error,
             onTap: onDelete,
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CategoryActionButton extends StatelessWidget {
-  final IconData icon;
-  final Color background;
-  final Color foreground;
-  final VoidCallback onTap;
-
-  const _CategoryActionButton({
-    required this.icon,
-    required this.background,
-    required this.foreground,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: background,
-      borderRadius: BorderRadius.circular(9),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(9),
-        child: SizedBox(
-          width: 34,
-          height: 34,
-          child: Icon(
-            icon,
-            size: 16,
-            color: foreground,
-          ),
-        ),
       ),
     );
   }

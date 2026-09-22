@@ -1,19 +1,11 @@
 import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/product_category_model.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ProductCategoryController extends BaseController {
-  // ==========================================================
-  // BRAND / KIOS AKTIF
-  // ==========================================================
-
-  /// Brand yang sedang aktif.
-  ///
-  /// Semua category dan product management mengikuti idKios ini.
-  final idKios = 0.obs;
-
   // ==========================================================
   // CATEGORY DATA
   // ==========================================================
@@ -247,7 +239,7 @@ class ProductCategoryController extends BaseController {
       );
 
       if (!success) {
-        throw 'Failed to update data';
+        throw 'Gagal mengubah status kategori.';
       }
 
       final index = resultDataProductCategory.indexWhere(
@@ -256,22 +248,33 @@ class ProductCategoryController extends BaseController {
 
       if (index != -1) {
         resultDataProductCategory[index].status = newStatus;
-
         resultDataProductCategory.refresh();
       }
 
       Get.snackbar(
-        'Notification',
-        'Status updated successfully',
-        icon: const Icon(Icons.check),
+        'Berhasil',
+        newStatus
+            ? 'Kategori berhasil diaktifkan.'
+            : 'Kategori berhasil dinonaktifkan.',
+        icon: const Icon(
+          Icons.check_circle_outline_rounded,
+          color: MyColors.success,
+        ),
         snackPosition: SnackPosition.TOP,
+        backgroundColor: MyColors.successBg,
+        colorText: MyColors.success,
       );
     } catch (e) {
       Get.snackbar(
-        'Error',
+        'Gagal',
         e.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error_outline_rounded,
+          color: MyColors.error,
+        ),
         snackPosition: SnackPosition.TOP,
+        backgroundColor: MyColors.errorBg,
+        colorText: MyColors.error,
       );
     }
   }

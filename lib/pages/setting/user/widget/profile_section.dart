@@ -23,11 +23,11 @@ class ProfileSection extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.black.withOpacity(0.04),
+          color: Colors.black.withValues(alpha: 0.04),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.035),
+            color: Colors.black.withValues(alpha: 0.035),
             blurRadius: 18,
             offset: const Offset(0, 7),
           ),
@@ -51,7 +51,7 @@ class ProfileSection extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: MyColors.primary.withOpacity(0.09),
+            color: MyColors.primary.withValues(alpha: 0.09),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(

@@ -42,7 +42,7 @@ class ProfileTextField extends StatelessWidget {
           fontSize: 13,
           color: Colors.black45,
         ),
-        floatingLabelStyle: TextStyle(
+        floatingLabelStyle: const TextStyle(
           fontSize: 13,
           color: MyColors.primary,
           fontWeight: FontWeight.w600,
@@ -78,13 +78,13 @@ class ProfileTextField extends StatelessWidget {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: MyColors.primary.withOpacity(0.65),
+            color: MyColors.primary.withValues(alpha: 0.65),
             width: 1.3,
           ),
         ),

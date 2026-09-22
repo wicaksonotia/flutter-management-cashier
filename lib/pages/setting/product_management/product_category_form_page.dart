@@ -37,7 +37,7 @@ class AddProductCategoryPage extends StatelessWidget {
             children: [
               const _FormIntro(),
               const SizedBox(height: 22),
-              _SectionLabel(
+              const _SectionLabel(
                 icon: Icons.storefront_outlined,
                 title: 'Outlet',
               ),
@@ -49,6 +49,7 @@ class AddProductCategoryPage extends StatelessWidget {
                 onTap: () {
                   Get.to(
                     () => SelectTableListPage(
+                      enableSearch: false,
                       title: 'Pilih Outlet',
                       isLoading: controller.isLoadingKios,
                       items: controller.resultDataKios,
@@ -73,7 +74,7 @@ class AddProductCategoryPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 24),
-              _SectionLabel(
+              const _SectionLabel(
                 icon: Icons.category_outlined,
                 title: 'Informasi Kategori',
               ),

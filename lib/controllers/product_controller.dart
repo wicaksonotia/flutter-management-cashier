@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/product_category_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/product_model.dart';
+import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -578,17 +579,16 @@ class ProductController extends ProductCategoryController {
         'Status diperbarui',
         newStatus ? 'Produk sekarang aktif.' : 'Produk sekarang nonaktif.',
         snackPosition: SnackPosition.TOP,
-        backgroundColor:
-            newStatus ? Colors.green.shade50 : Colors.orange.shade50,
-        colorText: newStatus ? Colors.green.shade700 : Colors.orange.shade800,
+        backgroundColor: MyColors.successBg,
+        colorText: MyColors.success,
       );
     } catch (e) {
       Get.snackbar(
         'Gagal',
         e.toString(),
         snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.shade50,
-        colorText: Colors.red.shade700,
+        backgroundColor: MyColors.errorBg,
+        colorText: MyColors.error,
       );
     }
   }

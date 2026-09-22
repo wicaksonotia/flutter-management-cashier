@@ -121,7 +121,7 @@ class _ChangePasswordState extends State<ChangePassword> {
         border: Border.all(color: MyColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.04),
+            color: Colors.black.withValues(alpha: .04),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -275,10 +275,10 @@ class _ChangePasswordState extends State<ChangePassword> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MyColors.primaryLight.withOpacity(.45),
+        color: MyColors.primaryLight.withValues(alpha: .45),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: MyColors.primary.withOpacity(.15),
+          color: MyColors.primary.withValues(alpha: .15),
         ),
       ),
       child: const Row(

@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 class ProductModel {
   String? status;
   String? message;
@@ -38,6 +41,7 @@ class DataProduct {
   bool? favorite;
   int? sorting;
   int? statusTransaksi;
+  Uint8List? photo1;
 
   DataProduct(
       {this.idProduct,
@@ -49,7 +53,8 @@ class DataProduct {
       this.promo,
       this.favorite,
       this.sorting,
-      this.statusTransaksi});
+      this.statusTransaksi,
+      this.photo1});
 
   DataProduct.fromJson(Map<String, dynamic> json) {
     idProduct = json['id_product'];
@@ -62,6 +67,9 @@ class DataProduct {
     favorite = json['favorite'];
     sorting = json['sorting'];
     statusTransaksi = json['status_transaksi'];
+    Uint8List decodePhoto;
+    decodePhoto = const Base64Decoder().convert('${json['photo_1']}');
+    photo1 = decodePhoto;
   }
 
   Map<String, dynamic> toJson() {
@@ -76,6 +84,7 @@ class DataProduct {
     data['favorite'] = favorite;
     data['sorting'] = sorting;
     data['status_transaksi'] = statusTransaksi;
+    data['photo_1'] = photo1;
     return data;
   }
 }

@@ -20,7 +20,7 @@ class HomeHeroCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: MyColors.primary.withOpacity(.18),
+            color: MyColors.primary.withValues(alpha: .18),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),
@@ -37,7 +37,7 @@ class HomeHeroCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.14),
+                  color: Colors.white.withValues(alpha: .14),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Row(
