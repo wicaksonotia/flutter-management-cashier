@@ -1,6 +1,6 @@
 import 'package:cashier_management/models/product_model.dart';
-import 'package:cashier_management/pages/setting/product_management/widget/management_action_button.dart';
-import 'package:cashier_management/pages/setting/product_management/widget/management_status_badge.dart';
+import 'package:cashier_management/utils/management_action_button.dart';
+import 'package:cashier_management/utils/management_status_badge.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/product_image.dart';
 import 'package:flutter/material.dart';
@@ -201,8 +201,9 @@ class ProductManagementCard extends StatelessWidget {
             icon: active
                 ? Icons.pause_circle_outline_rounded
                 : Icons.play_circle_outline_rounded,
-            background: active ? Colors.orange.shade50 : Colors.green.shade50,
-            foreground: active ? Colors.orange.shade800 : Colors.green.shade700,
+            background:
+                active ? MyColors.dashboardAccentBorder : MyColors.successBg,
+            foreground: active ? MyColors.accent : MyColors.success,
             onTap: onStatus,
             height: 32,
             iconSize: 14,

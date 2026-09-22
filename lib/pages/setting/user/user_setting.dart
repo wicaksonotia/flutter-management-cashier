@@ -133,22 +133,22 @@ class UserSetting extends StatelessWidget {
   void _showLogoutConfirmation(
     LoginController loginController,
   ) {
-    Get.bottomSheet(
-      ConfirmDialog(
-        title: 'Logout',
-        message: 'Are you sure, you want to logout?',
-        onConfirm: () async {
-          loginController.logout();
-        },
-      ),
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
-      ),
-    );
+    // Get.bottomSheet(
+    //   ConfirmDialog(
+    //     title: 'Logout',
+    //     message: 'Are you sure, you want to logout?',
+    //     onConfirm: () async {
+    //       loginController.logout();
+    //     },
+    //   ),
+    //   isScrollControlled: true,
+    //   backgroundColor: Colors.white,
+    //   shape: const RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.vertical(
+    //       top: Radius.circular(24),
+    //     ),
+    //   ),
+    // );
   }
 }
 

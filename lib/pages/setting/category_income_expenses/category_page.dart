@@ -5,14 +5,14 @@ import 'package:cashier_management/pages/setting/category_income_expenses/catego
 import 'package:cashier_management/pages/setting/category_income_expenses/category_form.dart';
 import 'package:cashier_management/pages/setting/category_income_expenses/category_header.dart';
 import 'package:cashier_management/pages/setting/category_income_expenses/category_list.dart';
-import 'package:cashier_management/pages/setting/category_income_expenses/category_summary.dart';
-import 'package:cashier_management/utils/app_back_header.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CategoryPage extends StatefulWidget {
-  const CategoryPage({super.key});
+  const CategoryPage({
+    super.key,
+  });
 
   @override
   State<CategoryPage> createState() => _CategoryPageState();
@@ -38,114 +38,69 @@ class _CategoryPageState extends State<CategoryPage> {
       drawer: const custom_drawer.NavigationDrawer(),
       backgroundColor: MyColors.background,
       resizeToAvoidBottomInset: false,
-      appBar: const AppBackHeader(
-        title: 'Kategori',
-      ),
-
-      // =========================================================
-      // BODY
-      // =========================================================
-
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: RefreshIndicator(
-                color: MyColors.primary,
-                backgroundColor: MyColors.surface,
-                onRefresh: categoryController.refreshData,
-                child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
-                    // ===================================================
-                    // HEADER
-                    // ===================================================
+        child: RefreshIndicator(
+          color: MyColors.primary,
+          backgroundColor: MyColors.surface,
+          onRefresh: categoryController.refreshData,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              // =====================================================
+              // HEADER / NAVBAR
+              // =====================================================
 
-                    const SliverToBoxAdapter(
-                      child: CategoryHeader(),
-                    ),
-
-                    // ===================================================
-                    // SUMMARY
-                    // ===================================================
-
-                    SliverToBoxAdapter(
-                      child: CategorySummary(
-                        controller: categoryController,
-                      ),
-                    ),
-
-                    // ===================================================
-                    // FILTER
-                    // ===================================================
-
-                    SliverToBoxAdapter(
-                      child: CategoryFilter(
-                        controller: categoryController,
-                      ),
-                    ),
-
-                    // ===================================================
-                    // LIST
-                    // ===================================================
-
-                    SliverFillRemaining(
-                      hasScrollBody: true,
-                      child: CategoryList(
-                        controller: categoryController,
-                      ),
-                    ),
-                  ],
+              SliverToBoxAdapter(
+                child: CategoryHeader(
+                  title: 'Kategori',
+                  subtitle: 'Kelola pemasukan dan pengeluaran',
+                  addLabel: 'Kategori',
+                  onAddTap: _onAddCategory,
                 ),
               ),
-            ),
-          ],
+
+              // =====================================================
+              // FILTER
+              // =====================================================
+
+              SliverToBoxAdapter(
+                child: CategoryFilter(
+                  controller: categoryController,
+                ),
+              ),
+
+              // =====================================================
+              // LIST
+              // =====================================================
+
+              SliverFillRemaining(
+                hasScrollBody: true,
+                child: CategoryList(
+                  controller: categoryController,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-
-      // ===========================================================
-      // FLOATING ACTION BUTTON
-      // ===========================================================
-
-      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
   // ===============================================================
-  // FLOATING ACTION BUTTON
+  // ADD CATEGORY
   // ===============================================================
 
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton.extended(
-      elevation: 2,
-      backgroundColor: MyColors.primary,
-      foregroundColor: MyColors.textOnPrimary,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      onPressed: () {
-        categoryController.clearCategoryController();
+  void _onAddCategory() {
+    categoryController.clearCategoryController();
 
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          useSafeArea: true,
-          builder: (_) {
-            return const _CategoryFormSheet();
-          },
-        );
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      builder: (_) {
+        return const _CategoryFormSheet();
       },
-      icon: const Icon(
-        Icons.add_rounded,
-        size: 21,
-      ),
-      label: const Text(
-        'Kategori',
-        style: TextStyle(
-          fontWeight: FontWeight.w700,
-        ),
-      ),
     );
   }
 }

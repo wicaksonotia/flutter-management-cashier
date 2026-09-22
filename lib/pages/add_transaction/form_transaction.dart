@@ -88,6 +88,7 @@ class _FormTransactionState extends State<FormTransaction> {
             onTap: () {
               Get.to(
                 () => SelectTableListPage(
+                  enableSearch: false,
                   title: 'Brand',
                   isLoading: _transactionController.isLoadingKios,
                   items: _transactionController.resultDataKios,
@@ -142,6 +143,7 @@ class _FormTransactionState extends State<FormTransaction> {
                 onTap: () {
                   Get.to(
                     () => SelectTableListPage(
+                      enableSearch: false,
                       title: 'Outlet',
                       isLoading: _transactionController.isLoadingCabang,
                       items: _transactionController.resultDataCabang,
@@ -231,7 +233,8 @@ class _FormTransactionState extends State<FormTransaction> {
             onTap: () {
               Get.to(
                 () => SelectTableListPage(
-                  title: 'Category',
+                  enableSearch: true,
+                  title: 'Pilih kategori pengeluaran',
                   isLoading: _transactionController.isLoadingCategory,
                   items: _transactionController
                       .resultDataCategoryWithoutPagination,

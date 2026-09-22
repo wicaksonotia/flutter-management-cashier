@@ -1,6 +1,6 @@
 import 'package:cashier_management/controllers/product_controller.dart';
 import 'package:cashier_management/models/product_category_model.dart';
-import 'package:cashier_management/pages/setting/product_management/widget/management_action_button.dart';
+import 'package:cashier_management/utils/management_action_button.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';

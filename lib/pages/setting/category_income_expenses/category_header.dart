@@ -2,42 +2,159 @@ import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class CategoryHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String addLabel;
+  final VoidCallback onAddTap;
+  final VoidCallback? onMenuTap;
+
   const CategoryHeader({
     super.key,
+    required this.title,
+    required this.subtitle,
+    required this.addLabel,
+    required this.onAddTap,
+    this.onMenuTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(
-        20,
-        10,
-        20,
-        18,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        16,
+        14,
+        16,
+        4,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            'Kelola kategori transaksi',
-            style: TextStyle(
-              fontSize: 27,
-              fontWeight: FontWeight.w800,
-              color: MyColors.textPrimary,
-              letterSpacing: -.7,
+          // =========================================================
+          // MENU
+          // =========================================================
+
+          Builder(
+            builder: (context) {
+              return _HeaderIconButton(
+                icon: Icons.menu_rounded,
+                onTap: onMenuTap ?? () => Scaffold.of(context).openDrawer(),
+              );
+            },
+          ),
+
+          const SizedBox(width: 12),
+
+          // =========================================================
+          // TITLE
+          // =========================================================
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: MyColors.textPrimary,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: MyColors.textSecondary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 6),
-          Text(
-            'Atur kategori pemasukan dan pengeluaran '
-            'agar pencatatan keuangan lebih rapi.',
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.45,
-              color: MyColors.textSecondary,
+
+          const SizedBox(width: 10),
+
+          // =========================================================
+          // ADD
+          // =========================================================
+
+          Material(
+            color: MyColors.primary,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              onTap: onAddTap,
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 13,
+                  vertical: 10,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.add_rounded,
+                      size: 19,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      addLabel,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ===================================================================
+// HEADER ICON BUTTON
+// ===================================================================
+
+class _HeaderIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HeaderIconButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: MyColors.surface,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: MyColors.border,
+            ),
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: MyColors.textPrimary,
+          ),
+        ),
       ),
     );
   }

@@ -126,22 +126,22 @@ class _HistoryListState extends State<HistoryList> {
                         children: [
                           SlidableAction(
                             onPressed: (context) {
-                              Get.bottomSheet(
-                                ConfirmDialog(
-                                  title: 'Delete History',
-                                  message:
-                                      'Are you sure, you want to delete this history?',
-                                  onConfirm: () async {
-                                    historyController.delete(items.id!);
-                                  },
-                                ),
-                                isScrollControlled: true,
-                                backgroundColor: Colors.white,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20)),
-                                ),
-                              );
+                              // Get.bottomSheet(
+                              //   ConfirmDialog(
+                              //     title: 'Delete History',
+                              //     message:
+                              //         'Are you sure, you want to delete this history?',
+                              //     onConfirm: () async {
+                              //       historyController.delete(items.id!);
+                              //     },
+                              //   ),
+                              //   isScrollControlled: true,
+                              //   backgroundColor: Colors.white,
+                              //   shape: const RoundedRectangleBorder(
+                              //     borderRadius: BorderRadius.vertical(
+                              //         top: Radius.circular(20)),
+                              //   ),
+                              // );
                             },
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,

@@ -9,62 +9,87 @@ import 'package:get/get.dart';
 class CategoryController extends BaseController {
   var resultDataCategory = <DataCategory>[].obs;
   var resultDataCategoryWithoutPagination = <DataCategory>[].obs;
+
   var isPemasukan = false.obs;
 
   var isLoadingWithoutPagination = false.obs;
   var isLoadingCategory = false.obs;
   var isLoadingSaveCategory = false.obs;
   var isLoadingMore = false.obs;
+
   var dataStatus = true.obs;
   var isEmptyValueSearchBar = true.obs;
+
   TextEditingController nameController = TextEditingController();
+
   var idCategoryTransaction = 0.obs;
   var selectedCategoryTransaction = 'Category'.obs;
   var sortOrder = "ASC".obs;
 
+  // ============================================================
   // PAGINATION
+  // ============================================================
+
   int page = 1;
   final int limit = 10;
   bool hasMore = true;
 
+  // ============================================================
   // FILTER
+  // ============================================================
+
   var tags = ["PENGELUARAN", "PEMASUKAN"].obs;
+
   TextEditingController searchBarController = TextEditingController();
+
+  // ============================================================
+  // CLEAR FORM
+  // ============================================================
 
   void clearCategoryController() {
     idCategoryTransaction.value = 0;
     nameController.clear();
     isPemasukan.value = false;
+
     update();
   }
 
+  // ============================================================
   // LOAD PAGE 1
+  // ============================================================
+
   Future<void> getData() async {
     try {
       await initializeBaseController();
 
       page = 1;
       hasMore = true;
+
       isLoadingCategory.value = true;
       resultDataCategory.clear();
 
-      var rawFormat = {
+      final rawFormat = {
         'status': 'all',
         'id_kios': idKios.value,
         'kategori': tags.toList(),
         'textSearch': searchBarController.text,
         'page': page,
         'limit': limit,
-        'sort': sortOrder.value
+        'sort': sortOrder.value,
       };
 
       final result = await RemoteDataSource.listCategories(rawFormat);
-      if (result != null) {
-        resultDataCategory.assignAll(result.data ?? []);
-        // jika jumlah data yg diterima < limit → berarti tidak ada page berikutnya
-        hasMore = (result.data?.length ?? 0) == limit;
 
-        page++; // next page
+      if (result != null) {
+        final data = result.data ?? [];
+
+        resultDataCategory.assignAll(data);
+
+        // Jika data yang diterima kurang dari limit,
+        // berarti sudah tidak ada halaman berikutnya.
+        hasMore = data.length == limit;
+
+        page++;
       }
     } catch (e) {
       print("getData error: $e");
@@ -73,34 +98,41 @@ class CategoryController extends BaseController {
     }
   }
 
+  // ============================================================
   // LOAD MORE
+  // ============================================================
+
   Future<void> loadMore() async {
     if (!hasMore || isLoadingMore.value) return;
 
     try {
       isLoadingMore.value = true;
-      var rawFormat = {
+
+      final rawFormat = {
         'status': 'all',
         'id_kios': idKios.value,
         'kategori': tags.toList(),
         'textSearch': searchBarController.text,
         'page': page,
         'limit': limit,
-        'sort': sortOrder.value
+        'sort': sortOrder.value,
       };
+
       final result = await RemoteDataSource.listCategories(rawFormat);
 
       if (result != null) {
         final newData = result.data ?? [];
 
         if (newData.isEmpty) {
-          hasMore = false; // <---- FIX DI SINI
+          hasMore = false;
           return;
         }
 
         resultDataCategory.addAll(newData);
-        // jika jumlah data yg diterima < limit → berarti tidak ada page berikutnya
-        hasMore = (newData.length == limit);
+
+        // Jika data kurang dari limit,
+        // berarti tidak ada page berikutnya.
+        hasMore = newData.length == limit;
 
         page++;
       }
@@ -111,112 +143,203 @@ class CategoryController extends BaseController {
     }
   }
 
+  // ============================================================
   // PULL TO REFRESH
+  // ============================================================
+
   Future<void> refreshData() async {
     return getData();
   }
 
+  // ============================================================
+  // SORT
+  // ============================================================
+
   void toggleSort() {
     sortOrder.value = sortOrder.value == "ASC" ? "DESC" : "ASC";
-    getData(); // reload page 1 dengan urutan baru
+
+    getData();
   }
+
+  // ============================================================
+  // FETCH ALL CATEGORY
+  // ============================================================
 
   Future<void> fetchAllCategory(Object kategori) async {
     try {
       await initializeBaseController();
 
       isLoadingWithoutPagination(true);
-      var rawFormat = {
+
+      final rawFormat = {
         'status': 'all',
         'id_kios': idKios.value,
         'kategori': kategori,
         'textSearch': '',
         'page': 1,
         'limit': 999999,
-        'sort': sortOrder.value
+        'sort': sortOrder.value,
       };
+
       final result = await RemoteDataSource.listCategories(rawFormat);
 
       if (result != null) {
-        idCategoryTransaction.value = result.data?.first.id ?? 0;
-        selectedCategoryTransaction.value =
-            result.data?.first.categoryName ?? '';
-        resultDataCategoryWithoutPagination.assignAll(result.data ?? []);
+        final data = result.data ?? [];
+
+        if (data.isNotEmpty) {
+          idCategoryTransaction.value = data.first.id ?? 0;
+          selectedCategoryTransaction.value = data.first.categoryName ?? '';
+        }
+
+        resultDataCategoryWithoutPagination.assignAll(data);
       }
+    } catch (e) {
+      print("fetchAllCategory error: $e");
     } finally {
       isLoadingWithoutPagination(false);
     }
   }
 
-  void saveCategory() async {
+  // ============================================================
+  // SAVE CATEGORY
+  // ============================================================
+  //
+  // IMPORTANT:
+  // Controller tidak melakukan Get.back().
+  // Modal ditutup oleh CategoryForm menggunakan Navigator.pop(context).
+  //
+  // Return:
+  // true  = berhasil
+  // false = gagal
+  //
+  // ============================================================
+
+  Future<bool> saveCategory() async {
     try {
       isLoadingSaveCategory(true);
 
-      var rawFormat = {
+      final rawFormat = {
         'id_kios': idKios.value,
         'id_category': idCategoryTransaction.value,
-        'category_name': nameController.text,
+        'category_name': nameController.text.trim(),
         'is_pemasukan': isPemasukan.value,
       };
+
       print(jsonEncode(rawFormat));
+
       final result = await RemoteDataSource.saveCategory(rawFormat);
 
-      if (result!["status"] == "ok" && result["data"] != null) {
-        final newItem = DataCategory.fromJson(result["data"]);
+      if (result != null &&
+          result["status"] == "ok" &&
+          result["data"] != null) {
+        final newItem = DataCategory.fromJson(
+          result["data"],
+        );
 
         if (idCategoryTransaction.value == 0) {
+          // ======================================================
           // INSERT
-          resultDataCategory.insert(0, newItem);
+          // ======================================================
+
+          resultDataCategory.insert(
+            0,
+            newItem,
+          );
         } else {
+          // ======================================================
           // UPDATE
-          final index =
-              resultDataCategory.indexWhere((e) => e.id == newItem.id);
-          if (index != -1) resultDataCategory[index] = newItem;
+          // ======================================================
+
+          final index = resultDataCategory.indexWhere(
+            (e) => e.id == newItem.id,
+          );
+
+          if (index != -1) {
+            resultDataCategory[index] = newItem;
+          }
         }
 
         resultDataCategory.refresh();
-        Get.back();
-        Get.snackbar("Notification", "Success", icon: const Icon(Icons.check));
+
+        return true;
       }
+
+      return false;
     } catch (e) {
-      Get.snackbar("Notification", "Failed: $e", icon: const Icon(Icons.error));
+      Get.snackbar(
+        "Notification",
+        "Failed: $e",
+        icon: const Icon(
+          Icons.error,
+        ),
+      );
+
+      return false;
     } finally {
       isLoadingSaveCategory(false);
     }
   }
 
+  // ============================================================
+  // EDIT CATEGORY
+  // ============================================================
+
   void editCategory(DataCategory model) {
-    idCategoryTransaction.value = model.id!;
-    nameController.text = model.categoryName!;
-    isPemasukan.value = model.categoryType == 'PEMASUKAN' ? true : false;
+    idCategoryTransaction.value = model.id ?? 0;
+
+    nameController.text = model.categoryName ?? '';
+
+    isPemasukan.value = model.categoryType == 'PEMASUKAN';
+
     update();
   }
 
-  void updateStatusCategory(int id, bool newStatus) async {
+  // ============================================================
+  // UPDATE STATUS
+  // ============================================================
+
+  Future<void> updateStatusCategory(
+    int id,
+    bool newStatus,
+  ) async {
     try {
-      final rawFormat = {'id': id, 'status': newStatus};
+      final rawFormat = {
+        'id': id,
+        'status': newStatus,
+      };
+
       final success = await RemoteDataSource.updateStatusCategory(rawFormat);
 
       if (success) {
-        // Update data lokal
-        final index = resultDataCategory.indexWhere((item) => item.id == id);
+        // ========================================================
+        // UPDATE DATA LOKAL
+        // ========================================================
+
+        final index = resultDataCategory.indexWhere(
+          (item) => item.id == id,
+        );
+
         if (index != -1) {
           resultDataCategory[index].status = newStatus;
-          resultDataCategory
-              .refresh(); // <--- update UI tanpa reload seluruh data
+
+          resultDataCategory.refresh();
         }
 
         Get.snackbar(
           'Notification',
           'Status updated successfully',
-          icon: const Icon(Icons.check),
+          icon: const Icon(
+            Icons.check,
+          ),
           snackPosition: SnackPosition.TOP,
         );
       } else {
         Get.snackbar(
           'Notification',
           'Failed to update data',
-          icon: const Icon(Icons.error),
+          icon: const Icon(
+            Icons.error,
+          ),
           snackPosition: SnackPosition.TOP,
         );
       }
@@ -224,36 +347,60 @@ class CategoryController extends BaseController {
       Get.snackbar(
         'Error',
         e.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error,
+        ),
         snackPosition: SnackPosition.TOP,
       );
     }
   }
 
-  void deleteCategory(int id) async {
+  // ============================================================
+  // DELETE CATEGORY
+  // ============================================================
+
+  Future<void> deleteCategory(int id) async {
     try {
       isLoadingSaveCategory(true);
 
       final deletedId = await RemoteDataSource.deleteCategory(id);
 
       if (deletedId != null) {
-        // Hapus langsung dari list tanpa getData();
-        resultDataCategory.removeWhere((item) => item.id == deletedId);
+        // ========================================================
+        // REMOVE DARI LIST LOKAL
+        // ========================================================
+
+        resultDataCategory.removeWhere(
+          (item) => item.id == deletedId,
+        );
 
         Get.snackbar(
           'Notification',
           'Category deleted successfully',
-          icon: const Icon(Icons.check),
+          icon: const Icon(
+            Icons.check,
+          ),
           snackPosition: SnackPosition.TOP,
         );
       } else {
         Get.snackbar(
           'Notification',
           'Failed to delete category',
-          icon: const Icon(Icons.error),
+          icon: const Icon(
+            Icons.error,
+          ),
           snackPosition: SnackPosition.TOP,
         );
       }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        icon: const Icon(
+          Icons.error,
+        ),
+        snackPosition: SnackPosition.TOP,
+      );
     } finally {
       isLoadingSaveCategory(false);
     }

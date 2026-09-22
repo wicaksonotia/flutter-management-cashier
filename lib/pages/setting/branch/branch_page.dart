@@ -147,26 +147,26 @@ class QuotationCard extends StatelessWidget {
                               InkWell(
                                 onTap: () {
                                   // DIALOG CONFIRMATION ACTIVE OR INACTIVE
-                                  Get.bottomSheet(
-                                    ConfirmDialog(
-                                        title: quotation.status == true
-                                            ? 'Non-Activate Outlet'
-                                            : 'Activate Outlet',
-                                        message: quotation.status == true
-                                            ? 'This outlet will be deactivated.\nAre you sure you want to continue?'
-                                            : 'This outlet will be activated.\nAre you sure you want to continue?',
-                                        onConfirm: () async {
-                                          controller.updateStatusBranch(
-                                              quotation.id!,
-                                              !quotation.status!);
-                                        }),
-                                    isScrollControlled: true,
-                                    backgroundColor: Colors.white,
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(20)),
-                                    ),
-                                  );
+                                  // Get.bottomSheet(
+                                  //   ConfirmDialog(
+                                  //       title: quotation.status == true
+                                  //           ? 'Non-Activate Outlet'
+                                  //           : 'Activate Outlet',
+                                  //       message: quotation.status == true
+                                  //           ? 'This outlet will be deactivated.\nAre you sure you want to continue?'
+                                  //           : 'This outlet will be activated.\nAre you sure you want to continue?',
+                                  //       onConfirm: () async {
+                                  //         controller.updateStatusBranch(
+                                  //             quotation.id!,
+                                  //             !quotation.status!);
+                                  //       }),
+                                  //   isScrollControlled: true,
+                                  //   backgroundColor: Colors.white,
+                                  //   shape: const RoundedRectangleBorder(
+                                  //     borderRadius: BorderRadius.vertical(
+                                  //         top: Radius.circular(20)),
+                                  //   ),
+                                  // );
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
@@ -223,22 +223,22 @@ class QuotationCard extends StatelessWidget {
                         }
 
                         // Show confirmation dialog
-                        Get.bottomSheet(
-                          ConfirmDialog(
-                            title: 'Delete History',
-                            message:
-                                'Are you sure, you want to delete this history?',
-                            onConfirm: () async {
-                              controller.deleteBranch(quotation.id!);
-                            },
-                          ),
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20)),
-                          ),
-                        );
+                        // Get.bottomSheet(
+                        //   ConfirmDialog(
+                        //     title: 'Delete History',
+                        //     message:
+                        //         'Are you sure, you want to delete this history?',
+                        //     onConfirm: () async {
+                        //       controller.deleteBranch(quotation.id!);
+                        //     },
+                        //   ),
+                        //   isScrollControlled: true,
+                        //   backgroundColor: Colors.white,
+                        //   shape: const RoundedRectangleBorder(
+                        //     borderRadius:
+                        //         BorderRadius.vertical(top: Radius.circular(20)),
+                        //   ),
+                        // );
                         return;
                       }
                     },

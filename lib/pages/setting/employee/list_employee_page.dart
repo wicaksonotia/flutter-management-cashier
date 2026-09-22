@@ -88,6 +88,7 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                       onTap: () {
                         Get.to(
                           () => SelectTableListPage(
+                            enableSearch: false,
                             title: 'Brand',
                             isLoading: employeeController.isLoadingKios,
                             items: employeeController.resultDataKios,
@@ -189,27 +190,27 @@ class _ListEmployeePageState extends State<ListEmployeePage>
               InkWell(
                 onTap: () {
                   // DIALOG CONFIRMATION ACTIVE OR INACTIVE
-                  Get.bottomSheet(
-                    ConfirmDialog(
-                        title: isActive
-                            ? 'Non-Activate Cashier'
-                            : 'Activate Cashier',
-                        message: isActive
-                            ? 'This cashier will be deactivated.\nAre you sure you want to continue?'
-                            : 'This cashier will be activated.\nAre you sure you want to continue?',
-                        onConfirm: () async {
-                          employeeController.updateEmployeeStatus(
-                            id,
-                            !isActive,
-                          );
-                        }),
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                  );
+                  // Get.bottomSheet(
+                  //   ConfirmDialog(
+                  //       title: isActive
+                  //           ? 'Non-Activate Cashier'
+                  //           : 'Activate Cashier',
+                  //       message: isActive
+                  //           ? 'This cashier will be deactivated.\nAre you sure you want to continue?'
+                  //           : 'This cashier will be activated.\nAre you sure you want to continue?',
+                  //       onConfirm: () async {
+                  //         employeeController.updateEmployeeStatus(
+                  //           id,
+                  //           !isActive,
+                  //         );
+                  //       }),
+                  //   isScrollControlled: true,
+                  //   backgroundColor: Colors.white,
+                  //   shape: const RoundedRectangleBorder(
+                  //     borderRadius:
+                  //         BorderRadius.vertical(top: Radius.circular(20)),
+                  //   ),
+                  // );
                 },
                 child: Stack(
                   children: [
@@ -325,41 +326,41 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                                   );
                                   return;
                                 }
-                                Get.bottomSheet(
-                                  ConfirmDialog(
-                                    title: 'Remove Employee from Outlet',
-                                    message:
-                                        'This employee will be removed from $cabangNama.\nAre you sure you want to continue?',
-                                    onConfirm: () async {
-                                      employeeController.processKasirCabang(
-                                          id, cabangValue, 'remove');
-                                    },
-                                  ),
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.white,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(20)),
-                                  ),
-                                );
+                                // Get.bottomSheet(
+                                //   ConfirmDialog(
+                                //     title: 'Remove Employee from Outlet',
+                                //     message:
+                                //         'This employee will be removed from $cabangNama.\nAre you sure you want to continue?',
+                                //     onConfirm: () async {
+                                //       employeeController.processKasirCabang(
+                                //           id, cabangValue, 'remove');
+                                //     },
+                                //   ),
+                                //   isScrollControlled: true,
+                                //   backgroundColor: Colors.white,
+                                //   shape: const RoundedRectangleBorder(
+                                //     borderRadius: BorderRadius.vertical(
+                                //         top: Radius.circular(20)),
+                                //   ),
+                                // );
                               } else {
-                                Get.bottomSheet(
-                                  ConfirmDialog(
-                                    title: 'Add Employee to Outlet',
-                                    message:
-                                        'This employee will be added to $cabangNama.\nAre you sure you want to continue?',
-                                    onConfirm: () async {
-                                      employeeController.processKasirCabang(
-                                          id, cabangValue, 'add');
-                                    },
-                                  ),
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.white,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(20)),
-                                  ),
-                                );
+                                // Get.bottomSheet(
+                                //   ConfirmDialog(
+                                //     title: 'Add Employee to Outlet',
+                                //     message:
+                                //         'This employee will be added to $cabangNama.\nAre you sure you want to continue?',
+                                //     onConfirm: () async {
+                                //       employeeController.processKasirCabang(
+                                //           id, cabangValue, 'add');
+                                //     },
+                                //   ),
+                                //   isScrollControlled: true,
+                                //   backgroundColor: Colors.white,
+                                //   shape: const RoundedRectangleBorder(
+                                //     borderRadius: BorderRadius.vertical(
+                                //         top: Radius.circular(20)),
+                                //   ),
+                                // );
                               }
                             },
                             child: Container(
@@ -415,42 +416,42 @@ class _ListEmployeePageState extends State<ListEmployeePage>
                     return;
                   }
                   // Show confirmation dialog
-                  Get.bottomSheet(
-                    ConfirmDialog(
-                      title: 'Delete Employee',
-                      message:
-                          'Are you sure, you want to delete this employee?',
-                      onConfirm: () async {
-                        employeeController.deleteEmployee(id);
-                      },
-                    ),
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                  );
+                  // Get.bottomSheet(
+                  //   ConfirmDialog(
+                  //     title: 'Delete Employee',
+                  //     message:
+                  //         'Are you sure, you want to delete this employee?',
+                  //     onConfirm: () async {
+                  //       employeeController.deleteEmployee(id);
+                  //     },
+                  //   ),
+                  //   isScrollControlled: true,
+                  //   backgroundColor: Colors.white,
+                  //   shape: const RoundedRectangleBorder(
+                  //     borderRadius:
+                  //         BorderRadius.vertical(top: Radius.circular(20)),
+                  //   ),
+                  // );
                   return;
                 }
                 if (value == "reset_password") {
                   // Show confirmation dialog
-                  Get.bottomSheet(
-                    ConfirmDialog(
-                      title: 'Reset Password',
-                      message:
-                          'Are you sure, you want to reset password this employee?',
-                      onConfirm: () async {
-                        employeeController.resetPassword(id);
-                      },
-                    ),
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                  );
+                  // Get.bottomSheet(
+                  //   ConfirmDialog(
+                  //     title: 'Reset Password',
+                  //     message:
+                  //         'Are you sure, you want to reset password this employee?',
+                  //     onConfirm: () async {
+                  //       employeeController.resetPassword(id);
+                  //     },
+                  //   ),
+                  //   isScrollControlled: true,
+                  //   backgroundColor: Colors.white,
+                  //   shape: const RoundedRectangleBorder(
+                  //     borderRadius:
+                  //         BorderRadius.vertical(top: Radius.circular(20)),
+                  //   ),
+                  // );
                   return;
                 }
               },
