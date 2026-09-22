@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/product_controller.dart';
 import 'package:cashier_management/models/product_model.dart';
 import 'package:cashier_management/pages/setting/product_management/widget/product_management_card.dart';
+import 'package:cashier_management/pages/setting/product_management/widget/product_management_shimmer.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
@@ -34,13 +35,25 @@ class _ProductListManagementState extends State<ProductListManagement> {
     super.dispose();
   }
 
+  // ============================================================
+  // REFRESH
+  // ============================================================
+
   Future<void> _refresh() async {
     await controller.fetchDataListProduct();
   }
 
+  // ============================================================
+  // SEARCH
+  // ============================================================
+
   void _search(String value) {
     controller.setProductSearch(value);
   }
+
+  // ============================================================
+  // EDIT
+  // ============================================================
 
   Future<void> _edit(DataProduct item) async {
     debugPrint(
@@ -76,6 +89,10 @@ class _ProductListManagementState extends State<ProductListManagement> {
     }
   }
 
+  // ============================================================
+  // STATUS
+  // ============================================================
+
   Future<void> _status(DataProduct item) async {
     final newStatus = !(item.status ?? false);
 
@@ -100,6 +117,10 @@ class _ProductListManagementState extends State<ProductListManagement> {
       newStatus,
     );
   }
+
+  // ============================================================
+  // DELETE
+  // ============================================================
 
   Future<void> _delete(DataProduct item) async {
     final confirmed = await AppConfirmDialog.show(
@@ -155,12 +176,20 @@ class _ProductListManagementState extends State<ProductListManagement> {
     );
   }
 
+  // ============================================================
+  // FAVORITE
+  // ============================================================
+
   void _favorite(DataProduct item) {
     controller.toggleFavorite(
       item.idProduct!,
       !(item.favorite ?? false),
     );
   }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -169,19 +198,16 @@ class _ProductListManagementState extends State<ProductListManagement> {
       onRefresh: _refresh,
       child: Obx(() {
         final products = controller.filteredProducts;
-
-        if (controller.isLoadingListProduct.value &&
-            controller.resultDataProduct.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: MyColors.primary,
-            ),
-          );
-        }
+        final isLoading = controller.isLoadingListProduct.value;
+        final isGrid = controller.isGridView.value;
 
         return CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
+            // ======================================================
+            // TOOLBAR
+            // ======================================================
+
             SliverToBoxAdapter(
               child: _ProductToolbar(
                 controller: controller,
@@ -189,77 +215,111 @@ class _ProductListManagementState extends State<ProductListManagement> {
                 onSearch: _search,
               ),
             ),
-            SliverToBoxAdapter(
-              child: _ProductResultHeader(
-                total: products.length,
-                allTotal: controller.resultDataProduct.length,
-              ),
-            ),
-            if (products.isEmpty)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: _EmptyProductState(),
-              )
-            else if (controller.isGridView.value)
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(
-                  16,
-                  0,
-                  16,
-                  28,
-                ),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final item = products[index];
-                      final canDelete = item.statusTransaksi != 1;
 
-                      return ProductManagementCard(
-                        item: item,
-                        isGrid: true,
-                        onEdit: () => _edit(item),
-                        onStatus: () => _status(item),
-                        onDelete: canDelete ? () => _delete(item) : null,
-                        onFavorite: () => _favorite(item),
-                      );
-                    },
-                    childCount: products.length,
-                  ),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 330,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    mainAxisExtent: 250,
-                  ),
-                ),
-              )
-            else
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(
-                  16,
-                  0,
-                  16,
-                  28,
-                ),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final item = products[index];
-                      final canDelete = item.statusTransaksi != 1;
+            // ======================================================
+            // LOADING
+            // ======================================================
 
-                      return ProductManagementCard(
-                        item: item,
-                        isGrid: false,
-                        onEdit: () => _edit(item),
-                        onStatus: () => _status(item),
-                        onDelete: canDelete ? () => _delete(item) : null,
-                        onFavorite: () => _favorite(item),
-                      );
-                    },
-                    childCount: products.length,
-                  ),
+            if (isLoading)
+              ProductManagementShimmer(
+                isGrid: isGrid,
+              )
+
+            // ======================================================
+            // DATA
+            // ======================================================
+
+            else ...[
+              SliverToBoxAdapter(
+                child: _ProductResultHeader(
+                  total: products.length,
+                  allTotal: controller.resultDataProduct.length,
                 ),
               ),
+
+              // ====================================================
+              // EMPTY
+              // ====================================================
+
+              if (products.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _EmptyProductState(),
+                )
+
+              // ====================================================
+              // GRID
+              // ====================================================
+
+              else if (isGrid)
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    16,
+                    0,
+                    16,
+                    28,
+                  ),
+                  sliver: SliverGrid(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final item = products[index];
+
+                        final canDelete = item.statusTransaksi != 1;
+
+                        return ProductManagementCard(
+                          item: item,
+                          isGrid: true,
+                          onEdit: () => _edit(item),
+                          onStatus: () => _status(item),
+                          onDelete: canDelete ? () => _delete(item) : null,
+                          onFavorite: () => _favorite(item),
+                        );
+                      },
+                      childCount: products.length,
+                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 330,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      mainAxisExtent: 250,
+                    ),
+                  ),
+                )
+
+              // ====================================================
+              // LIST
+              // ====================================================
+
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    16,
+                    0,
+                    16,
+                    28,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final item = products[index];
+
+                        final canDelete = item.statusTransaksi != 1;
+
+                        return ProductManagementCard(
+                          item: item,
+                          isGrid: false,
+                          onEdit: () => _edit(item),
+                          onStatus: () => _status(item),
+                          onDelete: canDelete ? () => _delete(item) : null,
+                          onFavorite: () => _favorite(item),
+                        );
+                      },
+                      childCount: products.length,
+                    ),
+                  ),
+                ),
+            ],
           ],
         );
       }),
@@ -384,9 +444,13 @@ class _CategoryChips extends StatelessWidget {
         return ListView.separated(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(right: 4),
+          padding: const EdgeInsets.only(
+            right: 4,
+          ),
           itemCount: categories.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 7),
+          separatorBuilder: (_, __) => const SizedBox(
+            width: 7,
+          ),
           itemBuilder: (context, index) {
             final category = categories[index];
 
@@ -408,6 +472,10 @@ class _CategoryChips extends StatelessWidget {
     );
   }
 }
+
+// ==========================================================
+// CATEGORY CHIP
+// ==========================================================
 
 class _CategoryChip extends StatelessWidget {
   final String label;
@@ -495,6 +563,10 @@ class _ViewToggle extends StatelessWidget {
     );
   }
 }
+
+// ==========================================================
+// TOGGLE BUTTON
+// ==========================================================
 
 class _ToggleButton extends StatelessWidget {
   final bool selected;

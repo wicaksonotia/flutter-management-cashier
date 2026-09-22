@@ -343,18 +343,11 @@ class ProductController extends ProductCategoryController {
   // ==========================================================
 
   Future<void> fetchDataListProduct() async {
-    final categoryId = selectedProductCategoryId.value;
-
-    if (categoryId <= 0) {
-      resultDataProduct.clear();
-      return;
-    }
-
-    isLoadingListProduct(true);
-
     try {
+      isLoadingListProduct.value = true;
+
       final rawFormat = {
-        'id_product_categories': categoryId,
+        'id_product_categories': selectedProductCategoryId.value,
       };
 
       final result = await RemoteDataSource.getListProduct(
@@ -367,17 +360,13 @@ class ProductController extends ProductCategoryController {
         resultDataProduct.clear();
       }
     } catch (e) {
-      resultDataProduct.clear();
-
-      Get.snackbar(
-        'Gagal memuat produk',
-        e.toString(),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.shade50,
-        colorText: Colors.red.shade700,
+      debugPrint(
+        'fetchDataListProduct error: $e',
       );
+
+      resultDataProduct.clear();
     } finally {
-      isLoadingListProduct(false);
+      isLoadingListProduct.value = false;
     }
   }
 
