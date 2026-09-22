@@ -347,6 +347,7 @@ class ProductController extends ProductCategoryController {
       isLoadingListProduct.value = true;
 
       final rawFormat = {
+        'id_kios': idKios.value,
         'id_product_categories': selectedProductCategoryId.value,
       };
 
@@ -642,14 +643,9 @@ class ProductController extends ProductCategoryController {
   // DISPOSE
   // ==========================================================
 
-  @override
-  void onClose() {
-    productNameController.dispose();
-    productDescriptionController.dispose();
-    productPriceController.dispose();
-
-    super.onClose();
-  }
+// ==========================================================
+// REFRESH AFTER BRAND CHANGED
+// ==========================================================
 
   Future<void> refreshCurrentProductList() async {
     final categoryId = selectedProductCategoryId.value;
@@ -660,5 +656,52 @@ class ProductController extends ProductCategoryController {
     }
 
     await fetchDataListProduct();
+  }
+
+  Future<void> refreshAfterBrandChanged() async {
+    debugPrint(
+      '[PRODUCT] ==========================================',
+    );
+
+    debugPrint(
+      '[PRODUCT] Refresh setelah brand berubah',
+    );
+
+    // Ambil ulang id_kios dan nama brand
+    // dari SharedPreferences.
+    await initializeBaseController();
+
+    debugPrint(
+      '[PRODUCT] ACTIVE BRAND: '
+      'idKios=${idKios.value}, '
+      'kios=${selectedKios.value}',
+    );
+
+    // Reset data lama.
+    resultDataProductCategory.clear();
+    resultDataProduct.clear();
+
+    selectedProductCategoryId.value = 0;
+    searchProduct.value = '';
+
+    // Ambil category brand baru.
+    await fetchDataListProductCategory();
+
+    debugPrint(
+      '[PRODUCT] Refresh selesai',
+    );
+
+    debugPrint(
+      '[PRODUCT] ==========================================',
+    );
+  }
+
+  @override
+  void onClose() {
+    productNameController.dispose();
+    productDescriptionController.dispose();
+    productPriceController.dispose();
+
+    super.onClose();
   }
 }

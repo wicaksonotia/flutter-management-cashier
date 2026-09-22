@@ -21,7 +21,7 @@ class TotalPerTypeController extends GetxController {
     getTotalPerMonth();
   }
 
-  void getTotalBranchSaldo() async {
+  Future<void> getTotalBranchSaldo() async {
     try {
       isLoading(true);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -55,7 +55,7 @@ class TotalPerTypeController extends GetxController {
     }
   }
 
-  void getTotalPerMonth() async {
+  Future<void> getTotalPerMonth() async {
     try {
       isLoadingChart(true);
       final result = await RemoteDataSource.homeTotalPerMonth();

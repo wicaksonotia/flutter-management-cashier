@@ -57,7 +57,7 @@ class KiosController extends BaseController {
     }
   }
 
-  void changeOutlet() {
+  Future<void> changeOutlet() async {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setInt('id_kios', idKios.value);
       prefs.setString('kios', selectedKios.value);

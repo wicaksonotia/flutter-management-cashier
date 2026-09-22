@@ -40,7 +40,7 @@ class HistoryController extends GetxController {
     getHistoriesBySingleDate();
   }
 
-  void changeOutlet() async {
+  Future<void> changeOutlet() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     idKios.value = prefs.getInt('id_kios')!;
     namaKios.value = prefs.getString('kios')!;
