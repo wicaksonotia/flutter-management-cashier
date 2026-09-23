@@ -3,7 +3,6 @@ import 'package:cashier_management/models/employee_model.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
-import 'package:cashier_management/utils/management_action_button.dart';
 import 'package:cashier_management/utils/management_status_badge.dart';
 import 'package:flutter/material.dart';
 
@@ -17,14 +16,8 @@ class EmployeeItem extends StatelessWidget {
     required this.controller,
   });
 
-  // ==============================================================
-  // GETTER
-  // ==============================================================
-
   bool get isActive => model.statusKasir ?? false;
-
   bool get hasTransaction => model.statusTransaksi ?? false;
-
   bool get canDelete => !hasTransaction;
 
   int get employeeId => model.idKasir ?? 0;
@@ -32,16 +25,9 @@ class EmployeeItem extends StatelessWidget {
   List<int> get branchIds => model.idCabang ?? [];
 
   String get employeeName => model.namaKasir ?? '-';
-
   String get username => model.usernameKasir ?? '-';
-
   String get phone => model.phoneKasir ?? '-';
-
   String get defaultOutlet => model.defaultOutletName ?? '-';
-
-  // ==============================================================
-  // BUILD
-  // ==============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +57,6 @@ class EmployeeItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ==================================================
-                // HEADER
-                // ==================================================
-
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -84,41 +66,25 @@ class EmployeeItem extends StatelessWidget {
                       child: _buildIdentity(),
                     ),
                     const SizedBox(width: 8),
-                    _buildTopActions(context),
+                    _buildMenu(context),
                   ],
                 ),
-
                 const SizedBox(height: 13),
-
-                // ==================================================
-                // DETAILS
-                // ==================================================
-
                 _buildDetailRow(
                   icon: Icons.person_outline_rounded,
                   label: username,
                 ),
-
                 const SizedBox(height: 7),
-
                 _buildDetailRow(
                   icon: Icons.phone_outlined,
                   label: phone,
                 ),
-
                 const SizedBox(height: 7),
-
                 _buildDetailRow(
                   icon: Icons.storefront_outlined,
                   label: defaultOutlet,
                 ),
-
                 const SizedBox(height: 12),
-
-                // ==================================================
-                // BRANCHES
-                // ==================================================
-
                 _buildBranchSection(context),
               ],
             ),
@@ -127,10 +93,6 @@ class EmployeeItem extends StatelessWidget {
       ),
     );
   }
-
-  // ==============================================================
-  // AVATAR
-  // ==============================================================
 
   Widget _buildAvatar() {
     return Stack(
@@ -174,10 +136,6 @@ class EmployeeItem extends StatelessWidget {
     );
   }
 
-  // ==============================================================
-  // IDENTITY
-  // ==============================================================
-
   Widget _buildIdentity() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,59 +160,83 @@ class EmployeeItem extends StatelessWidget {
     );
   }
 
-  // ==============================================================
-  // TOP ACTIONS
-  // ==============================================================
+  Widget _buildMenu(BuildContext context) {
+    return PopupMenuButton<String>(
+      tooltip: 'Menu',
+      padding: EdgeInsets.zero,
+      icon: const Icon(
+        Icons.more_horiz_rounded,
+        color: MyColors.textSecondary,
+        size: 22,
+      ),
+      constraints: const BoxConstraints(
+        minWidth: 180,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      color: MyColors.surface,
+      elevation: 6,
+      onSelected: (value) {
+        switch (value) {
+          case 'edit':
+            _editEmployee(context);
+            break;
 
-  Widget _buildTopActions(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ManagementActionButton(
-          icon: Icons.edit_outlined,
-          background: MyColors.primaryLight,
-          foreground: MyColors.primaryDark,
-          onTap: () => _editEmployee(context),
-          height: 30,
-          iconSize: 14,
-        ),
-        const SizedBox(width: 5),
-        ManagementActionButton(
-          icon: isActive
-              ? Icons.pause_circle_outline_rounded
-              : Icons.play_circle_outline_rounded,
-          background:
-              isActive ? MyColors.dashboardAccentBorder : MyColors.successBg,
-          foreground: isActive ? MyColors.accent : MyColors.success,
-          onTap: () => _changeStatus(context),
-          height: 30,
-          iconSize: 14,
-        ),
-        const SizedBox(width: 5),
-        ManagementActionButton(
-          icon: Icons.lock_reset_outlined,
-          background: MyColors.primaryLight,
-          foreground: MyColors.primaryDark,
-          onTap: () => _resetPassword(context),
-          height: 30,
-          iconSize: 14,
-        ),
-        const SizedBox(width: 5),
-        ManagementActionButton(
-          icon: Icons.delete_outline_rounded,
-          background: canDelete ? MyColors.errorBg : MyColors.surfaceSoft,
-          foreground: canDelete ? MyColors.error : MyColors.textMuted,
-          onTap: canDelete ? () => _deleteEmployee(context) : null,
-          height: 30,
-          iconSize: 14,
-        ),
-      ],
+          case 'status':
+            _changeStatus(context);
+            break;
+
+          case 'reset':
+            _resetPassword(context);
+            break;
+
+          case 'delete':
+            _deleteEmployee(context);
+            break;
+        }
+      },
+      itemBuilder: (context) {
+        return [
+          const PopupMenuItem<String>(
+            value: 'edit',
+            child: _PopupMenuItemContent(
+              icon: Icons.edit_outlined,
+              label: 'Edit Karyawan',
+              color: MyColors.textPrimary,
+            ),
+          ),
+          PopupMenuItem<String>(
+            value: 'status',
+            child: _PopupMenuItemContent(
+              icon: isActive
+                  ? Icons.pause_circle_outline_rounded
+                  : Icons.play_circle_outline_rounded,
+              label: isActive ? 'Nonaktifkan' : 'Aktifkan',
+              color: isActive ? MyColors.warning : MyColors.success,
+            ),
+          ),
+          const PopupMenuItem<String>(
+            value: 'reset',
+            child: _PopupMenuItemContent(
+              icon: Icons.lock_reset_outlined,
+              label: 'Reset Password',
+              color: MyColors.textPrimary,
+            ),
+          ),
+          PopupMenuItem<String>(
+            value: 'delete',
+            enabled: canDelete,
+            child: _PopupMenuItemContent(
+              icon: Icons.delete_outline_rounded,
+              label: 'Hapus Karyawan',
+              color: canDelete ? MyColors.error : MyColors.disabledText,
+            ),
+          ),
+        ];
+      },
     );
   }
-
-  // ==============================================================
-  // DETAIL ROW
-  // ==============================================================
 
   Widget _buildDetailRow({
     required IconData icon,
@@ -283,10 +265,6 @@ class EmployeeItem extends StatelessWidget {
       ],
     );
   }
-
-  // ==============================================================
-  // BRANCH SECTION
-  // ==============================================================
 
   Widget _buildBranchSection(BuildContext context) {
     final branches = controller.listCabang;
@@ -332,10 +310,6 @@ class EmployeeItem extends StatelessWidget {
     );
   }
 
-  // ==============================================================
-  // EDIT
-  // ==============================================================
-
   void _editEmployee(BuildContext context) {
     controller.editEmployee(model);
 
@@ -343,10 +317,6 @@ class EmployeeItem extends StatelessWidget {
       RouterClass.addemployee,
     );
   }
-
-  // ==============================================================
-  // STATUS
-  // ==============================================================
 
   Future<void> _changeStatus(BuildContext context) async {
     final newStatus = !isActive;
@@ -364,13 +334,8 @@ class EmployeeItem extends StatelessWidget {
       type: newStatus ? AppConfirmType.success : AppConfirmType.warning,
     );
 
-    if (!confirmed) {
-      return;
-    }
-
-    if (employeeId <= 0) {
-      return;
-    }
+    if (!confirmed) return;
+    if (employeeId <= 0) return;
 
     await controller.updateEmployeeStatus(
       employeeId,
@@ -378,18 +343,9 @@ class EmployeeItem extends StatelessWidget {
     );
   }
 
-  // ==============================================================
-  // DELETE
-  // ==============================================================
-
   Future<void> _deleteEmployee(BuildContext context) async {
-    if (!canDelete) {
-      return;
-    }
-
-    if (employeeId <= 0) {
-      return;
-    }
+    if (!canDelete) return;
+    if (employeeId <= 0) return;
 
     final confirmed = await AppConfirmDialog.show(
       context,
@@ -402,17 +358,13 @@ class EmployeeItem extends StatelessWidget {
       type: AppConfirmType.danger,
     );
 
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     final success = await controller.deleteEmployee(
       employeeId,
     );
 
-    if (!context.mounted) {
-      return;
-    }
+    if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -424,38 +376,26 @@ class EmployeeItem extends StatelessWidget {
     );
   }
 
-  // ==============================================================
-  // RESET PASSWORD
-  // ==============================================================
-
   Future<void> _resetPassword(BuildContext context) async {
-    if (employeeId <= 0) {
-      return;
-    }
+    if (employeeId <= 0) return;
 
     final confirmed = await AppConfirmDialog.show(
       context,
       title: 'Reset Password',
-      message: 'Password karyawan "$employeeName" akan direset. '
-          'Lanjutkan?',
+      message: 'Password karyawan "$employeeName" '
+          'akan direset. Lanjutkan?',
       confirmText: 'Reset',
       cancelText: 'Batal',
       icon: Icons.lock_reset_outlined,
       type: AppConfirmType.warning,
     );
 
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     await controller.resetPassword(
       employeeId,
     );
   }
-
-  // ==============================================================
-  // PROCESS BRANCH
-  // ==============================================================
 
   Future<void> _processBranch(
     BuildContext context,
@@ -463,19 +403,11 @@ class EmployeeItem extends StatelessWidget {
     String cabangNama,
     bool isSelected,
   ) async {
-    if (employeeId <= 0) {
-      return;
-    }
-
-    // ------------------------------------------------------------
-    // REMOVE
-    // ------------------------------------------------------------
+    if (employeeId <= 0) return;
 
     if (isSelected) {
       if (branchIds.length == 1) {
-        if (!context.mounted) {
-          return;
-        }
+        if (!context.mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -500,9 +432,7 @@ class EmployeeItem extends StatelessWidget {
         type: AppConfirmType.warning,
       );
 
-      if (!confirmed) {
-        return;
-      }
+      if (!confirmed) return;
 
       await controller.processKasirCabang(
         employeeId,
@@ -513,24 +443,18 @@ class EmployeeItem extends StatelessWidget {
       return;
     }
 
-    // ------------------------------------------------------------
-    // ADD
-    // ------------------------------------------------------------
-
     final confirmed = await AppConfirmDialog.show(
       context,
       title: 'Tambah Akses Outlet',
-      message: 'Karyawan "$employeeName" akan diberikan akses '
-          'ke outlet "$cabangNama".',
+      message: 'Karyawan "$employeeName" akan diberikan '
+          'akses ke outlet "$cabangNama".',
       confirmText: 'Tambah',
       cancelText: 'Batal',
       icon: Icons.add_business_outlined,
       type: AppConfirmType.success,
     );
 
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     await controller.processKasirCabang(
       employeeId,
@@ -540,9 +464,39 @@ class EmployeeItem extends StatelessWidget {
   }
 }
 
-// ==================================================================
-// BRANCH CHIP
-// ==================================================================
+class _PopupMenuItemContent extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _PopupMenuItemContent({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 18,
+          color: color,
+        ),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 class _BranchChip extends StatelessWidget {
   final String label;

@@ -11,14 +11,14 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddOutletPage extends StatefulWidget {
-  const AddOutletPage({super.key});
+class BrandForm extends StatefulWidget {
+  const BrandForm({super.key});
 
   @override
-  State<AddOutletPage> createState() => _AddOutletPageState();
+  State<BrandForm> createState() => _BrandFormState();
 }
 
-class _AddOutletPageState extends State<AddOutletPage> {
+class _BrandFormState extends State<BrandForm> {
   final KiosController _kiosController = Get.put(KiosController());
 
   @override

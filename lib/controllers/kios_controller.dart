@@ -43,7 +43,7 @@ class KiosController extends BaseController {
     update();
   }
 
-  void fetchDataListKiosFinancial() async {
+  Future<void> fetchDataListKiosFinancial() async {
     try {
       isLoadingFinancialKios(false);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -155,7 +155,7 @@ class KiosController extends BaseController {
     }
   }
 
-  void deleteOutlet(int id) async {
+  Future<void> deleteOutlet(int id) async {
     var resultUpdate = await RemoteDataSource.deleteOutlet(id);
     if (resultUpdate) {
       Get.snackbar('Notification', 'Data deleted successfully',
@@ -167,7 +167,7 @@ class KiosController extends BaseController {
     }
   }
 
-  void updateStatusOutlet(int id, bool newStatus) async {
+  Future<void> updateStatusOutlet(int id, bool newStatus) async {
     try {
       final rawFormat = {'id': id, 'status': newStatus};
       final success = await RemoteDataSource.updateOutletStatus(rawFormat);

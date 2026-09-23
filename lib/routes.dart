@@ -14,14 +14,13 @@ import 'package:cashier_management/pages/history/history_page.dart';
 
 import 'package:cashier_management/pages/setting/branch/add_branch_page.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
+import 'package:cashier_management/pages/setting/brand/brand_form.dart';
+import 'package:cashier_management/pages/setting/brand/brand_page.dart';
 
 import 'package:cashier_management/pages/setting/category_income_expenses/category_page.dart';
 import 'package:cashier_management/pages/setting/employee/employee_form.dart';
 
 import 'package:cashier_management/pages/setting/employee/employee_page.dart';
-
-import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
-import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
 
 import 'package:cashier_management/pages/setting/product_management/product_category_form_page.dart';
 import 'package:cashier_management/pages/setting/product_management/product_form_page.dart';
@@ -208,12 +207,12 @@ class RouterClass {
 
     GetPage(
       name: outlet,
-      page: () => const OutletPage(),
+      page: () => const BrandPage(),
     ),
 
     GetPage(
       name: addoutlet,
-      page: () => const AddOutletPage(),
+      page: () => const BrandForm(),
     ),
 
     // ========================================================
