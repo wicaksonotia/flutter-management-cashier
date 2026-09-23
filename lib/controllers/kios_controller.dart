@@ -12,43 +12,92 @@ import 'package:dio/dio.dart' as dio;
 class KiosController extends BaseController {
   @override
   var resultDataKios = <KiosModel>[].obs;
+
   var isLoading = true.obs;
   var isLoadingFinancialKios = true.obs;
   var isLoadingSaveKios = true.obs;
-  TextEditingController kios = TextEditingController();
-  TextEditingController phone = TextEditingController();
-  TextEditingController description = TextEditingController();
+
+  final TextEditingController kios = TextEditingController();
+  final TextEditingController phone = TextEditingController();
+  final TextEditingController description = TextEditingController();
+
+  /// Logo yang sedang ditampilkan dari server.
   var logo = ''.obs;
+
+  /// Logo lama yang akan dikirim ke backend
+  /// untuk kebutuhan replace/delete file lama.
   var oldLogo = ''.obs;
-  Rx<XFile> pickedFile1 = XFile('').obs;
+
+  /// File logo baru yang dipilih dari device.
+  var pickedFile1 = XFile('').obs;
+
+  // ============================================================
+  // RESET FORM
+  // ============================================================
 
   void clearOutletController() {
     kios.clear();
     phone.clear();
     description.clear();
+
     logo.value = '';
     oldLogo.value = '';
+
     idKios.value = 0;
-    pickedFile1.value = XFile('');
+
+    resetPickedLogo();
+
     update();
   }
 
+  /// Reset hanya file lokal yang dipilih.
+  ///
+  /// Dipanggil ketika:
+  /// - membuka form baru
+  /// - membuka edit brand lain
+  /// - selesai save
+  /// - membatalkan perubahan logo
+  void resetPickedLogo() {
+    pickedFile1.value = XFile('');
+  }
+
+  // ============================================================
+  // EDIT
+  // ============================================================
+
   void editKios(KiosModel kiosModel) {
-    kios.text = kiosModel.kios!;
-    phone.text = kiosModel.phone!;
-    description.text = kiosModel.keterangan!;
-    logo.value = kiosModel.logo!;
-    oldLogo.value = kiosModel.logo!;
-    idKios.value = kiosModel.idKios!;
+    // Sangat penting:
+    // jangan membawa file lokal dari proses edit sebelumnya.
+    resetPickedLogo();
+
+    kios.text = kiosModel.kios ?? '';
+    phone.text = kiosModel.phone ?? '';
+    description.text = kiosModel.keterangan ?? '';
+
+    logo.value = kiosModel.logo ?? '';
+    oldLogo.value = kiosModel.logo ?? '';
+
+    idKios.value = kiosModel.idKios ?? 0;
+
     update();
   }
+
+  // ============================================================
+  // FETCH
+  // ============================================================
 
   Future<void> fetchDataListKiosFinancial() async {
     try {
       isLoadingFinancialKios(false);
+
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var rawFormat = {'id_owner': prefs.getInt('id_owner')!};
-      var result = await RemoteDataSource.getListKiosAndDetail(rawFormat);
+
+      final rawFormat = {
+        'id_owner': prefs.getInt('id_owner')!,
+      };
+
+      final result = await RemoteDataSource.getListKiosAndDetail(rawFormat);
+
       if (result != null) {
         resultDataKios.assignAll(result);
       }
@@ -57,26 +106,55 @@ class KiosController extends BaseController {
     }
   }
 
+  // ============================================================
+  // CHANGE OUTLET
+  // ============================================================
+
   Future<void> changeOutlet() async {
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setInt('id_kios', idKios.value);
-      prefs.setString('kios', selectedKios.value);
-    });
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt(
+      'id_kios',
+      idKios.value,
+    );
+
+    await prefs.setString(
+      'kios',
+      selectedKios.value,
+    );
   }
+
+  // ============================================================
+  // IMAGE
+  // ============================================================
 
   Future<void> selectImage1(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
-    final picked = await picker.pickImage(source: source);
-    if (picked != null) {
-      pickedFile1.value = picked;
-    }
+
+    final picked = await picker.pickImage(
+      source: source,
+    );
+
+    if (picked == null) return;
+
+    pickedFile1.value = picked;
   }
 
-  // === SIMPAN KIOS ===
-  void saveOutlet() async {
+  // ============================================================
+  // SAVE
+  // ============================================================
+
+  Future<void> saveOutlet() async {
     try {
-      // === CEK VALIDASI DASAR ===
-      if (kios.text.isEmpty || phone.text.isEmpty || description.text.isEmpty) {
+      isLoadingSaveKios(true);
+
+      // --------------------------------------------------------
+      // VALIDASI
+      // --------------------------------------------------------
+
+      if (kios.text.trim().isEmpty ||
+          phone.text.trim().isEmpty ||
+          description.text.trim().isEmpty) {
         throw 'Please fill all fields';
       }
 
@@ -84,11 +162,19 @@ class KiosController extends BaseController {
       final logoFromApi = logo.value;
       final oldLogoFromApi = oldLogo.value;
 
-      dio.FormData formData;
+      late dio.FormData formData;
 
-      // === JIKA ADA FILE BARU DIPILIH ===
+      // --------------------------------------------------------
+      // LOGO BARU
+      // --------------------------------------------------------
+
       if (filePath.isNotEmpty) {
         final file = File(filePath);
+
+        if (!file.existsSync()) {
+          throw 'Selected image not found';
+        }
+
         final fileSizeInBytes = await file.length();
         final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
 
@@ -97,100 +183,153 @@ class KiosController extends BaseController {
         }
 
         formData = dio.FormData.fromMap({
-          "id_owner": idOwner.value,
-          "kios_id": idKios.value,
-          "kios": kios.text,
-          "phone": phone.text,
-          "description": description.text,
-          "old_logo": oldLogoFromApi,
-          // kirim file baru
-          "logo": await dio.MultipartFile.fromFile(
+          'id_owner': idOwner.value,
+          'kios_id': idKios.value,
+          'kios': kios.text.trim(),
+          'phone': phone.text.trim(),
+          'description': description.text.trim(),
+          'old_logo': oldLogoFromApi,
+          'logo': await dio.MultipartFile.fromFile(
             filePath,
             filename: filePath.split('/').last,
           ),
         });
-      } else {
-        // === JIKA TIDAK ADA FILE BARU, GUNAKAN LOGO LAMA ===
+      }
+
+      // --------------------------------------------------------
+      // TANPA LOGO BARU
+      // --------------------------------------------------------
+
+      else {
         if (logoFromApi.isEmpty) {
           throw 'Please select an image';
         }
 
         formData = dio.FormData.fromMap({
-          "id_owner": idOwner.value,
-          "kios_id": idKios.value,
-          "kios": kios.text,
-          "phone": phone.text,
-          "description": description.text,
-          "old_logo": oldLogoFromApi,
-          "logo": logoFromApi, // kirim nama file lama saja
+          'id_owner': idOwner.value,
+          'kios_id': idKios.value,
+          'kios': kios.text.trim(),
+          'phone': phone.text.trim(),
+          'description': description.text.trim(),
+          'old_logo': oldLogoFromApi,
+          'logo': logoFromApi,
         });
       }
 
-      final result = await RemoteDataSource.saveOutlet(formData);
-      if (result) {
-        clearOutletController();
-        Get.snackbar(
-          'Success',
-          'Kios saved successfully',
-          icon: const Icon(Icons.check_circle, color: Colors.green),
-          snackPosition: SnackPosition.TOP,
-        );
+      // --------------------------------------------------------
+      // REQUEST
+      // --------------------------------------------------------
 
-        // Delay sedikit agar snackbar tampil
-        // await Future.delayed(const Duration(seconds: 2));
-        // Get.back();
-      } else {
+      final result = await RemoteDataSource.saveOutlet(formData);
+
+      if (!result) {
         throw 'Failed to save Kios';
       }
+
+      // --------------------------------------------------------
+      // CLEAR STATE
+      // --------------------------------------------------------
+
+      clearOutletController();
+
+      Get.snackbar(
+        'Success',
+        'Kios saved successfully',
+        icon: const Icon(
+          Icons.check_circle,
+          color: Colors.green,
+        ),
+        snackPosition: SnackPosition.TOP,
+      );
     } catch (error) {
       Get.snackbar(
         'Notification',
         error.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error,
+        ),
         snackPosition: SnackPosition.TOP,
       );
     } finally {
       isLoadingSaveKios(false);
+
       fetchDataListKiosFinancial();
     }
   }
+
+  // ============================================================
+  // DELETE
+  // ============================================================
 
   Future<void> deleteOutlet(int id) async {
-    var resultUpdate = await RemoteDataSource.deleteOutlet(id);
+    final resultUpdate = await RemoteDataSource.deleteOutlet(id);
+
     if (resultUpdate) {
-      Get.snackbar('Notification', 'Data deleted successfully',
-          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notification',
+        'Data deleted successfully',
+        icon: const Icon(
+          Icons.check,
+        ),
+        snackPosition: SnackPosition.TOP,
+      );
+
       fetchDataListKiosFinancial();
     } else {
-      Get.snackbar('Notification', 'Failed to delete data',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notification',
+        'Failed to delete data',
+        icon: const Icon(
+          Icons.error,
+        ),
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 
-  Future<void> updateStatusOutlet(int id, bool newStatus) async {
+  // ============================================================
+  // STATUS
+  // ============================================================
+
+  Future<void> updateStatusOutlet(
+    int id,
+    bool newStatus,
+  ) async {
     try {
-      final rawFormat = {'id': id, 'status': newStatus};
-      final success = await RemoteDataSource.updateOutletStatus(rawFormat);
+      final rawFormat = {
+        'id': id,
+        'status': newStatus,
+      };
+
+      final success = await RemoteDataSource.updateOutletStatus(
+        rawFormat,
+      );
 
       if (success) {
-        // Update data lokal
-        final index = resultDataKios.indexWhere((item) => item.idKios == id);
+        final index = resultDataKios.indexWhere(
+          (item) => item.idKios == id,
+        );
+
         if (index != -1) {
           resultDataKios[index].isActive = newStatus;
-          resultDataKios.refresh(); // <--- update UI tanpa reload seluruh data
+          resultDataKios.refresh();
         }
 
         Get.snackbar(
           'Notification',
           'Status updated successfully',
-          icon: const Icon(Icons.check),
+          icon: const Icon(
+            Icons.check,
+          ),
           snackPosition: SnackPosition.TOP,
         );
       } else {
         Get.snackbar(
           'Notification',
           'Failed to update data',
-          icon: const Icon(Icons.error),
+          icon: const Icon(
+            Icons.error,
+          ),
           snackPosition: SnackPosition.TOP,
         );
       }
@@ -198,7 +337,9 @@ class KiosController extends BaseController {
       Get.snackbar(
         'Error',
         e.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error,
+        ),
         snackPosition: SnackPosition.TOP,
       );
     }
