@@ -12,6 +12,7 @@ class InputField extends StatelessWidget {
   final String? hint;
   final String? helperText;
   final bool enabled;
+  final TextCapitalization textCapitalization;
 
   const InputField({
     super.key,
@@ -24,6 +25,7 @@ class InputField extends StatelessWidget {
     this.hint,
     this.helperText,
     this.enabled = true,
+    this.textCapitalization = TextCapitalization.none,
   });
 
   @override
@@ -33,6 +35,7 @@ class InputField extends StatelessWidget {
       maxLines: maxLines,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
+      textCapitalization: textCapitalization,
       enabled: enabled,
       style: const TextStyle(
         fontSize: 13,
@@ -61,6 +64,11 @@ class InputField extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color: MyColors.textMuted,
           height: 1.3,
+        ),
+        hintStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: MyColors.textMuted,
         ),
         prefixIcon: Padding(
           padding: const EdgeInsets.only(

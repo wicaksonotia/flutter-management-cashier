@@ -6,6 +6,7 @@ import 'package:cashier_management/controllers/product_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/management_shimmer_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -817,7 +818,7 @@ class _LoadingStateState extends State<_LoadingState>
               const SizedBox(height: 16),
               Row(
                 children: [
-                  _ShimmerBox(
+                  ManagementShimmerBox(
                     animation: _animationController,
                     width: 42,
                     height: 42,
@@ -828,14 +829,14 @@ class _LoadingStateState extends State<_LoadingState>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _ShimmerBox(
+                        ManagementShimmerBox(
                           animation: _animationController,
                           width: 125,
                           height: 15,
                           borderRadius: 7,
                         ),
                         const SizedBox(height: 7),
-                        _ShimmerBox(
+                        ManagementShimmerBox(
                           animation: _animationController,
                           width: 175,
                           height: 10,
@@ -845,7 +846,7 @@ class _LoadingStateState extends State<_LoadingState>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  _ShimmerBox(
+                  ManagementShimmerBox(
                     animation: _animationController,
                     width: 40,
                     height: 40,
@@ -884,14 +885,14 @@ class _LoadingStateState extends State<_LoadingState>
 
               Row(
                 children: [
-                  _ShimmerBox(
+                  ManagementShimmerBox(
                     animation: _animationController,
                     width: 88,
                     height: 13,
                     borderRadius: 6,
                   ),
                   const Spacer(),
-                  _ShimmerBox(
+                  ManagementShimmerBox(
                     animation: _animationController,
                     width: 48,
                     height: 10,
@@ -934,7 +935,7 @@ class _LoadingStateState extends State<_LoadingState>
       ),
       child: Row(
         children: [
-          _ShimmerBox(
+          ManagementShimmerBox(
             animation: _animationController,
             width: 42,
             height: 42,
@@ -945,14 +946,14 @@ class _LoadingStateState extends State<_LoadingState>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _ShimmerBox(
+                ManagementShimmerBox(
                   animation: _animationController,
                   width: 65,
                   height: 9,
                   borderRadius: 5,
                 ),
                 const SizedBox(height: 7),
-                _ShimmerBox(
+                ManagementShimmerBox(
                   animation: _animationController,
                   width: 105,
                   height: 13,
@@ -962,7 +963,7 @@ class _LoadingStateState extends State<_LoadingState>
             ),
           ),
           const SizedBox(width: 8),
-          _ShimmerBox(
+          ManagementShimmerBox(
             animation: _animationController,
             width: 48,
             height: 22,
@@ -993,7 +994,7 @@ class _LoadingStateState extends State<_LoadingState>
           // LOGO
           // ==============================================================
 
-          _ShimmerBox(
+          ManagementShimmerBox(
             animation: _animationController,
             width: 62,
             height: 62,
@@ -1010,21 +1011,21 @@ class _LoadingStateState extends State<_LoadingState>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _ShimmerBox(
+                ManagementShimmerBox(
                   animation: _animationController,
                   width: 105,
                   height: 13,
                   borderRadius: 6,
                 ),
                 const SizedBox(height: 8),
-                _ShimmerBox(
+                ManagementShimmerBox(
                   animation: _animationController,
                   width: double.infinity,
                   height: 9,
                   borderRadius: 5,
                 ),
                 const SizedBox(height: 6),
-                _ShimmerBox(
+                ManagementShimmerBox(
                   animation: _animationController,
                   width: 145,
                   height: 9,
@@ -1040,7 +1041,7 @@ class _LoadingStateState extends State<_LoadingState>
           // ACTION
           // ==============================================================
 
-          _ShimmerBox(
+          ManagementShimmerBox(
             animation: _animationController,
             width: 34,
             height: 34,
@@ -1052,56 +1053,6 @@ class _LoadingStateState extends State<_LoadingState>
   }
 }
 
-// ============================================================================
-// SHIMMER BOX
-// ============================================================================
-
-class _ShimmerBox extends StatelessWidget {
-  final Animation<double> animation;
-  final double width;
-  final double height;
-  final double borderRadius;
-
-  const _ShimmerBox({
-    required this.animation,
-    required this.width,
-    required this.height,
-    required this.borderRadius,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        final position = animation.value * 2 - 1;
-
-        return ShaderMask(
-          blendMode: BlendMode.srcATop,
-          shaderCallback: (bounds) {
-            return LinearGradient(
-              begin: Alignment(position - 1, 0),
-              end: Alignment(position + 1, 0),
-              colors: [
-                MyColors.surfaceSoft,
-                MyColors.border.withValues(alpha: .65),
-                MyColors.surfaceSoft,
-              ],
-            ).createShader(bounds);
-          },
-          child: Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              color: MyColors.surfaceSoft,
-              borderRadius: BorderRadius.circular(borderRadius),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
 // ============================================================================
 // EMPTY STATE
 // ============================================================================

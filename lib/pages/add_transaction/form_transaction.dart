@@ -100,7 +100,6 @@ class _FormTransactionState extends State<FormTransaction> {
                     _transactionController.idKios.value = data.idKios!;
                     _transactionController.selectedKios.value = data.kios!;
                     await _transactionController.fetchDataListCabang();
-                    Get.back();
                   },
                   onRefresh: () async {
                     await _transactionController
@@ -155,7 +154,6 @@ class _FormTransactionState extends State<FormTransaction> {
                         _transactionController.idCabang.value = data.id!;
                         _transactionController.selectedCabang.value =
                             data.cabang!;
-                        Get.back();
                       },
                       onRefresh: () async {
                         await _transactionController
@@ -248,7 +246,6 @@ class _FormTransactionState extends State<FormTransaction> {
                         data.id!;
                     _transactionController.selectedCategoryTransaction.value =
                         data.categoryName!;
-                    Get.back();
                   },
                   onRefresh: () async {
                     await _transactionController

@@ -46,12 +46,11 @@ class _BranchPageState extends State<BranchPage> {
         child: Column(
           children: [
             ManagementHeader(
-              title: 'Kelola Outlet',
-              subtitle:
-                  'Kelola outlet ${cabangController.headerNamaKios.value}',
+              title: 'Management Outlet',
+              subtitle: 'Brand ${cabangController.headerNamaKios.value}',
               addLabel: 'Tambah Outlet',
               onAddTap: _addOutlet,
-              onMenuTap: () => Get.toNamed(RouterClass.outlet),
+              showBack: true,
             ),
             const SizedBox(height: 8),
             Expanded(

@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/employee_controller.dart';
 import 'package:cashier_management/pages/setting/employee/employee_item.dart';
 import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/management_shimmer_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -186,7 +187,7 @@ class _EmployeeItemShimmer extends StatelessWidget {
           children: [
             Row(
               children: [
-                _ShimmerBox(
+                ManagementShimmerBox(
                   animation: animation,
                   width: 48,
                   height: 48,
@@ -197,14 +198,14 @@ class _EmployeeItemShimmer extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _ShimmerBox(
+                      ManagementShimmerBox(
                         animation: animation,
                         width: 130,
                         height: 13,
                         borderRadius: 6,
                       ),
                       const SizedBox(height: 8),
-                      _ShimmerBox(
+                      ManagementShimmerBox(
                         animation: animation,
                         width: 90,
                         height: 10,
@@ -214,7 +215,7 @@ class _EmployeeItemShimmer extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                _ShimmerBox(
+                ManagementShimmerBox(
                   animation: animation,
                   width: 45,
                   height: 20,
@@ -223,14 +224,14 @@ class _EmployeeItemShimmer extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            _ShimmerBox(
+            ManagementShimmerBox(
               animation: animation,
               width: double.infinity,
               height: 10,
               borderRadius: 5,
             ),
             const SizedBox(height: 8),
-            _ShimmerBox(
+            ManagementShimmerBox(
               animation: animation,
               width: 180,
               height: 10,
@@ -240,7 +241,7 @@ class _EmployeeItemShimmer extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _ShimmerBox(
+                  child: ManagementShimmerBox(
                     animation: animation,
                     width: double.infinity,
                     height: 30,
@@ -249,7 +250,7 @@ class _EmployeeItemShimmer extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: _ShimmerBox(
+                  child: ManagementShimmerBox(
                     animation: animation,
                     width: double.infinity,
                     height: 30,
@@ -261,61 +262,6 @@ class _EmployeeItemShimmer extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ShimmerBox extends StatelessWidget {
-  final Animation<double> animation;
-  final double width;
-  final double height;
-  final double borderRadius;
-
-  const _ShimmerBox({
-    required this.animation,
-    required this.width,
-    required this.height,
-    required this.borderRadius,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        final position = animation.value * 2 - 1;
-
-        return ShaderMask(
-          blendMode: BlendMode.srcATop,
-          shaderCallback: (bounds) {
-            return LinearGradient(
-              begin: Alignment(
-                position - 1,
-                0,
-              ),
-              end: Alignment(
-                position + 1,
-                0,
-              ),
-              colors: [
-                MyColors.surfaceSoft,
-                MyColors.border.withValues(alpha: .65),
-                MyColors.surfaceSoft,
-              ],
-            ).createShader(bounds);
-          },
-          child: Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              color: MyColors.surfaceSoft,
-              borderRadius: BorderRadius.circular(
-                borderRadius,
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

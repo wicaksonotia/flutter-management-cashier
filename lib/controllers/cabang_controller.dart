@@ -23,9 +23,7 @@ class CabangController extends GetxController {
   // ============================================================
 
   final TextEditingController kodeCabang = TextEditingController();
-
   final TextEditingController namaCabang = TextEditingController();
-
   final TextEditingController alamatCabang = TextEditingController();
 
   // ============================================================
@@ -91,17 +89,7 @@ class CabangController extends GetxController {
     } catch (error) {
       resultItem.clear();
 
-      Get.snackbar(
-        'Gagal',
-        'Gagal mengambil data outlet.',
-        icon: const Icon(
-          Icons.error_outline_rounded,
-          color: Colors.white,
-        ),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _showError('Gagal mengambil data outlet.');
     } finally {
       isLoadingList(false);
     }
@@ -116,52 +104,56 @@ class CabangController extends GetxController {
       return false;
     }
 
+    // ----------------------------------------------------------
+    // VALIDASI
+    // ----------------------------------------------------------
+
+    final kode = kodeCabang.text.trim();
+    final nama = namaCabang.text.trim();
+    final alamat = alamatCabang.text.trim();
+
+    if (kode.isEmpty) {
+      _showWarning('Kode outlet wajib diisi.');
+      return false;
+    }
+
+    if (nama.isEmpty) {
+      _showWarning('Nama outlet wajib diisi.');
+      return false;
+    }
+
+    if (alamat.isEmpty) {
+      _showWarning('Alamat outlet wajib diisi.');
+      return false;
+    }
+
+    if (kiosId.value <= 0) {
+      _showWarning('Brand tidak ditemukan.');
+      return false;
+    }
+
+    // ----------------------------------------------------------
+    // LOADING
+    // ----------------------------------------------------------
+
+    isLoadingSave(true);
+
     try {
-      // ----------------------------------------------------------
-      // VALIDASI
-      // ----------------------------------------------------------
-
-      if (kodeCabang.text.trim().isEmpty) {
-        _showWarning('Kode outlet wajib diisi.');
-        return false;
-      }
-
-      if (namaCabang.text.trim().isEmpty) {
-        _showWarning('Nama outlet wajib diisi.');
-        return false;
-      }
-
-      if (alamatCabang.text.trim().isEmpty) {
-        _showWarning('Alamat outlet wajib diisi.');
-        return false;
-      }
-
-      if (kiosId.value <= 0) {
-        _showWarning('Brand tidak ditemukan.');
-        return false;
-      }
-
-      // ----------------------------------------------------------
-      // LOADING
-      // ----------------------------------------------------------
-
-      isLoadingSave(true);
-
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
       // PAYLOAD
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
 
       final rawFormat = {
         'kios_id': kiosId.value,
         'cabang_id': branchId.value,
-        'kode_cabang': kodeCabang.text.trim(),
-        'nama_cabang': namaCabang.text.trim(),
-        'alamat_cabang': alamatCabang.text.trim(),
+        'kode_cabang': kode.toUpperCase(),
+        'nama_cabang': nama,
+        'alamat_cabang': alamat,
       };
 
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
       // REQUEST
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
 
       final result = await RemoteDataSource.saveBranch(
         rawFormat,
@@ -172,9 +164,9 @@ class CabangController extends GetxController {
         return false;
       }
 
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
       // SUCCESS
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
 
       clearBranchController();
 

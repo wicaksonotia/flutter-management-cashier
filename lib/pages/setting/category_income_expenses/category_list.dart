@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/category_controller.dart';
 import 'package:cashier_management/pages/setting/category_income_expenses/category_item.dart';
 import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/management_shimmer_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -215,7 +216,7 @@ class _CategoryItemShimmer extends StatelessWidget {
         padding: const EdgeInsets.all(13),
         child: Row(
           children: [
-            _ShimmerBox(
+            ManagementShimmerBox(
               animation: animation,
               width: 44,
               height: 44,
@@ -226,14 +227,14 @@ class _CategoryItemShimmer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ShimmerBox(
+                  ManagementShimmerBox(
                     animation: animation,
                     width: 125,
                     height: 12,
                     borderRadius: 6,
                   ),
                   const SizedBox(height: 8),
-                  _ShimmerBox(
+                  ManagementShimmerBox(
                     animation: animation,
                     width: 82,
                     height: 18,
@@ -243,14 +244,14 @@ class _CategoryItemShimmer extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            _ShimmerBox(
+            ManagementShimmerBox(
               animation: animation,
               width: 34,
               height: 20,
               borderRadius: 12,
             ),
             const SizedBox(width: 8),
-            _ShimmerBox(
+            ManagementShimmerBox(
               animation: animation,
               width: 22,
               height: 28,
@@ -259,59 +260,6 @@ class _CategoryItemShimmer extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-// ===================================================================
-// SHIMMER BOX
-// ===================================================================
-
-class _ShimmerBox extends StatelessWidget {
-  final Animation<double> animation;
-  final double width;
-  final double height;
-  final double borderRadius;
-
-  const _ShimmerBox({
-    required this.animation,
-    required this.width,
-    required this.height,
-    required this.borderRadius,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        final position = animation.value * 2 - 1;
-
-        return ShaderMask(
-          blendMode: BlendMode.srcATop,
-          shaderCallback: (bounds) {
-            return LinearGradient(
-              begin: Alignment(position - 1, 0),
-              end: Alignment(position + 1, 0),
-              colors: [
-                MyColors.surfaceSoft,
-                MyColors.border.withValues(alpha: .65),
-                MyColors.surfaceSoft,
-              ],
-            ).createShader(bounds);
-          },
-          child: Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              color: MyColors.surfaceSoft,
-              borderRadius: BorderRadius.circular(
-                borderRadius,
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

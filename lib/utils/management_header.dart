@@ -1,5 +1,6 @@
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ManagementHeader extends StatelessWidget {
   final String title;
@@ -11,6 +12,17 @@ class ManagementHeader extends StatelessWidget {
   /// Jika null, tombol Add tidak ditampilkan.
   final VoidCallback? onAddTap;
 
+  /// Menentukan icon kiri header.
+  /// true  = back
+  /// false = menu
+  final bool showBack;
+
+  /// Dipanggil ketika tombol back ditekan.
+  /// Jika null, otomatis menggunakan Get.back().
+  final VoidCallback? onBackTap;
+
+  /// Dipanggil ketika tombol menu ditekan.
+  /// Jika null, otomatis membuka drawer.
   final VoidCallback? onMenuTap;
 
   const ManagementHeader({
@@ -19,6 +31,8 @@ class ManagementHeader extends StatelessWidget {
     required this.subtitle,
     this.addLabel,
     this.onAddTap,
+    this.showBack = false,
+    this.onBackTap,
     this.onMenuTap,
   });
 
@@ -35,8 +49,10 @@ class ManagementHeader extends StatelessWidget {
           Builder(
             builder: (context) {
               return _HeaderIconButton(
-                icon: Icons.menu_rounded,
-                onTap: onMenuTap ?? () => Scaffold.of(context).openDrawer(),
+                icon: showBack ? Icons.arrow_back_rounded : Icons.menu_rounded,
+                onTap: showBack
+                    ? (onBackTap ?? Get.back)
+                    : (onMenuTap ?? () => Scaffold.of(context).openDrawer()),
               );
             },
           ),
@@ -130,7 +146,7 @@ class _AddButton extends StatelessWidget {
 }
 
 // ================================================================
-// MENU BUTTON
+// HEADER ICON BUTTON
 // ================================================================
 
 class _HeaderIconButton extends StatelessWidget {

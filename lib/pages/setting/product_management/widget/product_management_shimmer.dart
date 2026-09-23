@@ -1,4 +1,5 @@
 import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/management_shimmer_box.dart';
 import 'package:flutter/material.dart';
 
 class ProductManagementShimmer extends StatefulWidget {
@@ -129,7 +130,7 @@ class _ShimmerGridCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ShimmerBox(
+            ManagementShimmerBox(
               animation: animation,
               width: double.infinity,
               height: 104,
@@ -146,21 +147,21 @@ class _ShimmerGridCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ShimmerBox(
+                    ManagementShimmerBox(
                       animation: animation,
                       width: double.infinity,
                       height: 12,
                       borderRadius: 5,
                     ),
                     const SizedBox(height: 7),
-                    _ShimmerBox(
+                    ManagementShimmerBox(
                       animation: animation,
                       width: 85,
                       height: 10,
                       borderRadius: 5,
                     ),
                     const SizedBox(height: 12),
-                    _ShimmerBox(
+                    ManagementShimmerBox(
                       animation: animation,
                       width: 80,
                       height: 14,
@@ -170,7 +171,7 @@ class _ShimmerGridCard extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: _ShimmerBox(
+                          child: ManagementShimmerBox(
                             animation: animation,
                             width: double.infinity,
                             height: 32,
@@ -179,7 +180,7 @@ class _ShimmerGridCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 5),
                         Expanded(
-                          child: _ShimmerBox(
+                          child: ManagementShimmerBox(
                             animation: animation,
                             width: double.infinity,
                             height: 32,
@@ -188,7 +189,7 @@ class _ShimmerGridCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 5),
                         Expanded(
-                          child: _ShimmerBox(
+                          child: ManagementShimmerBox(
                             animation: animation,
                             width: double.infinity,
                             height: 32,
@@ -236,7 +237,7 @@ class _ShimmerListCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ShimmerBox(
+            ManagementShimmerBox(
               animation: animation,
               width: 76,
               height: 76,
@@ -250,7 +251,7 @@ class _ShimmerListCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: _ShimmerBox(
+                        child: ManagementShimmerBox(
                           animation: animation,
                           width: double.infinity,
                           height: 12,
@@ -258,7 +259,7 @@ class _ShimmerListCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      _ShimmerBox(
+                      ManagementShimmerBox(
                         animation: animation,
                         width: 18,
                         height: 18,
@@ -267,14 +268,14 @@ class _ShimmerListCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  _ShimmerBox(
+                  ManagementShimmerBox(
                     animation: animation,
                     width: double.infinity,
                     height: 9,
                     borderRadius: 5,
                   ),
                   const SizedBox(height: 5),
-                  _ShimmerBox(
+                  ManagementShimmerBox(
                     animation: animation,
                     width: 120,
                     height: 9,
@@ -283,14 +284,14 @@ class _ShimmerListCard extends StatelessWidget {
                   const SizedBox(height: 9),
                   Row(
                     children: [
-                      _ShimmerBox(
+                      ManagementShimmerBox(
                         animation: animation,
                         width: 75,
                         height: 12,
                         borderRadius: 5,
                       ),
                       const SizedBox(width: 8),
-                      _ShimmerBox(
+                      ManagementShimmerBox(
                         animation: animation,
                         width: 55,
                         height: 18,
@@ -301,21 +302,21 @@ class _ShimmerListCard extends StatelessWidget {
                   const SizedBox(height: 9),
                   Row(
                     children: [
-                      _ShimmerBox(
+                      ManagementShimmerBox(
                         animation: animation,
                         width: 55,
                         height: 30,
                         borderRadius: 8,
                       ),
                       const SizedBox(width: 5),
-                      _ShimmerBox(
+                      ManagementShimmerBox(
                         animation: animation,
                         width: 78,
                         height: 30,
                         borderRadius: 8,
                       ),
                       const SizedBox(width: 5),
-                      _ShimmerBox(
+                      ManagementShimmerBox(
                         animation: animation,
                         width: 55,
                         height: 30,
@@ -351,89 +352,5 @@ class _ShimmerContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return child;
-  }
-}
-
-// ================================================================
-// SHIMMER BOX
-// ================================================================
-
-class _ShimmerBox extends StatelessWidget {
-  final Animation<double> animation;
-  final double width;
-  final double height;
-  final double borderRadius;
-
-  const _ShimmerBox({
-    required this.animation,
-    required this.width,
-    required this.height,
-    required this.borderRadius,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        return ShaderMask(
-          blendMode: BlendMode.srcATop,
-          shaderCallback: (bounds) {
-            final slide = animation.value;
-
-            return LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              stops: const [
-                0.0,
-                0.5,
-                1.0,
-              ],
-              colors: [
-                MyColors.surfaceSoft,
-                MyColors.border.withValues(alpha: .55),
-                MyColors.surfaceSoft,
-              ],
-              transform: _ShimmerGradientTransform(
-                slide,
-              ),
-            ).createShader(bounds);
-          },
-          child: child,
-        );
-      },
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: MyColors.surfaceSoft,
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
-      ),
-    );
-  }
-}
-
-// ================================================================
-// GRADIENT TRANSFORM
-// ================================================================
-
-class _ShimmerGradientTransform extends GradientTransform {
-  final double slidePercent;
-
-  const _ShimmerGradientTransform(
-    this.slidePercent,
-  );
-
-  @override
-  Matrix4 transform(
-    Rect bounds, {
-    TextDirection? textDirection,
-  }) {
-    return Matrix4.translationValues(
-      bounds.width * slidePercent,
-      0,
-      0,
-    );
   }
 }

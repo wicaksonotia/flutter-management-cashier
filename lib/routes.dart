@@ -12,7 +12,7 @@ import 'package:cashier_management/pages/monitoring_outlet/monitoring_page.dart'
 
 import 'package:cashier_management/pages/history/history_page.dart';
 
-import 'package:cashier_management/pages/setting/branch/add_branch_page.dart';
+import 'package:cashier_management/pages/setting/branch/branch_form.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
 import 'package:cashier_management/pages/setting/brand/brand_form.dart';
 import 'package:cashier_management/pages/setting/brand/brand_page.dart';
@@ -226,7 +226,7 @@ class RouterClass {
 
     GetPage(
       name: addbranch,
-      page: () => const AddBranchPage(),
+      page: () => const BranchForm(),
     ),
 
     // ========================================================
