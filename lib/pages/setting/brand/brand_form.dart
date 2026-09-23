@@ -20,7 +20,65 @@ class BrandForm extends StatefulWidget {
 }
 
 class _BrandFormState extends State<BrandForm> {
-  final KiosController _kiosController = Get.put(KiosController());
+  late final KiosController _kiosController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _kiosController = Get.isRegistered<KiosController>()
+        ? Get.find<KiosController>()
+        : Get.put(KiosController());
+
+    _kiosController.kios.addListener(
+      _onFormChanged,
+    );
+
+    _kiosController.phone.addListener(
+      _onFormChanged,
+    );
+
+    _kiosController.description.addListener(
+      _onFormChanged,
+    );
+  }
+
+  @override
+  void dispose() {
+    _kiosController.kios.removeListener(
+      _onFormChanged,
+    );
+
+    _kiosController.phone.removeListener(
+      _onFormChanged,
+    );
+
+    _kiosController.description.removeListener(
+      _onFormChanged,
+    );
+
+    super.dispose();
+  }
+
+  // ============================================================
+  // FORM
+  // ============================================================
+
+  void _onFormChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  bool get _isFormValid {
+    return _kiosController.kios.text.trim().isNotEmpty &&
+        _kiosController.phone.text.trim().isNotEmpty &&
+        _kiosController.description.text.trim().isNotEmpty;
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +118,10 @@ class _BrandFormState extends State<BrandForm> {
     );
   }
 
+  // ============================================================
+  // FORM CARD
+  // ============================================================
+
   Widget _buildFormCard() {
     return Container(
       width: double.infinity,
@@ -96,19 +158,29 @@ class _BrandFormState extends State<BrandForm> {
           _buildSectionTitle(
             icon: Icons.image_outlined,
             title: 'Logo Brand',
-            subtitle: 'Gunakan logo yang mewakili brand kamu',
+            subtitle: 'Logo bersifat opsional',
           ),
           const SizedBox(height: 14),
           _buildLogoSection(),
           const SizedBox(height: 24),
-          ManagementSaveButton(
-            label: 'Simpan Brand',
-            onPressed: _saveBrand,
+          Obx(
+            () => ManagementSaveButton(
+              label: 'Simpan Brand',
+              onPressed:
+                  _isFormValid && !_kiosController.isLoadingSaveKios.value
+                      ? _saveBrand
+                      : null,
+              isLoading: _kiosController.isLoadingSaveKios.value,
+            ),
           ),
         ],
       ),
     );
   }
+
+  // ============================================================
+  // INPUT
+  // ============================================================
 
   Widget _buildBrandNameField() {
     return InputField(
@@ -116,7 +188,6 @@ class _BrandFormState extends State<BrandForm> {
       label: 'Nama Brand',
       hint: 'Masukkan nama brand',
       icon: Icons.storefront_outlined,
-      // helperText: 'Nama brand yang akan ditampilkan pada aplikasi.',
     );
   }
 
@@ -127,7 +198,6 @@ class _BrandFormState extends State<BrandForm> {
       hint: 'Masukkan nomor telepon',
       icon: Icons.phone_outlined,
       keyboardType: TextInputType.phone,
-      // helperText: 'Nomor telepon yang dapat dihubungi pelanggan.',
     );
   }
 
@@ -138,9 +208,12 @@ class _BrandFormState extends State<BrandForm> {
       hint: 'Masukkan deskripsi brand',
       icon: Icons.description_outlined,
       maxLines: 4,
-      // helperText: 'Deskripsi singkat mengenai brand atau outlet.',
     );
   }
+
+  // ============================================================
+  // SECTION TITLE
+  // ============================================================
 
   Widget _buildSectionTitle({
     required IconData icon,
@@ -192,9 +265,14 @@ class _BrandFormState extends State<BrandForm> {
     );
   }
 
+  // ============================================================
+  // LOGO SECTION
+  // ============================================================
+
   Widget _buildLogoSection() {
     return Obx(() {
       final file = _kiosController.pickedFile1.value;
+
       final logo = _kiosController.logo.value.trim();
 
       final hasLocalImage =
@@ -204,13 +282,17 @@ class _BrandFormState extends State<BrandForm> {
         return _buildLocalImage(file);
       }
 
-      if (logo.isNotEmpty) {
+      if (logo.isNotEmpty && !_kiosController.removeLogo.value) {
         return _buildServerImage(logo);
       }
 
       return _buildEmptyUpload();
     });
   }
+
+  // ============================================================
+  // EMPTY UPLOAD
+  // ============================================================
 
   Widget _buildEmptyUpload() {
     return DottedBorder(
@@ -256,7 +338,7 @@ class _BrandFormState extends State<BrandForm> {
             ),
             const SizedBox(height: 3),
             const Text(
-              'Maksimal ukuran file 2 MB',
+              'Opsional • Maksimal 2 MB',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: MyColors.textSecondary,
@@ -275,7 +357,13 @@ class _BrandFormState extends State<BrandForm> {
     );
   }
 
-  Widget _buildLocalImage(XFile file) {
+  // ============================================================
+  // LOCAL IMAGE
+  // ============================================================
+
+  Widget _buildLocalImage(
+    XFile file,
+  ) {
     final imageFile = File(file.path);
 
     final fileSizeMB =
@@ -290,17 +378,25 @@ class _BrandFormState extends State<BrandForm> {
         height: 86,
         fit: BoxFit.cover,
       ),
+      showDelete: true,
+      onDelete: _removeSelectedImage,
     );
   }
 
-  Widget _buildServerImage(String logo) {
+  // ============================================================
+  // SERVER IMAGE
+  // ============================================================
+
+  Widget _buildServerImage(
+    String logo,
+  ) {
     return _buildImagePreviewCard(
       name: logo,
       preview: Image.network(
         '${ApiEndPoints.ipPublic}images/logo/$logo',
         width: 86,
         height: 86,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (
           context,
           error,
@@ -318,13 +414,21 @@ class _BrandFormState extends State<BrandForm> {
           );
         },
       ),
+      showDelete: true,
+      onDelete: _removeServerLogo,
     );
   }
+
+  // ============================================================
+  // IMAGE PREVIEW CARD
+  // ============================================================
 
   Widget _buildImagePreviewCard({
     required String name,
     required Widget preview,
     String? size,
+    required bool showDelete,
+    required VoidCallback onDelete,
   }) {
     return Container(
       width: double.infinity,
@@ -359,9 +463,9 @@ class _BrandFormState extends State<BrandForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Logo saat ini',
-                  style: TextStyle(
+                Text(
+                  size != null ? 'Logo baru' : 'Logo saat ini',
+                  style: const TextStyle(
                     color: MyColors.textMuted,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
@@ -390,9 +494,19 @@ class _BrandFormState extends State<BrandForm> {
                   ),
                 ],
                 const SizedBox(height: 10),
-                _buildUploadButton(
-                  label: 'Ganti Logo',
-                  icon: Icons.refresh_rounded,
+                Wrap(
+                  spacing: 7,
+                  runSpacing: 7,
+                  children: [
+                    _buildUploadButton(
+                      label: 'Ganti Logo',
+                      icon: Icons.refresh_rounded,
+                    ),
+                    if (showDelete)
+                      _buildDeleteButton(
+                        onPressed: onDelete,
+                      ),
+                  ],
                 ),
               ],
             ),
@@ -402,6 +516,10 @@ class _BrandFormState extends State<BrandForm> {
     );
   }
 
+  // ============================================================
+  // UPLOAD BUTTON
+  // ============================================================
+
   Widget _buildUploadButton({
     required String label,
     required IconData icon,
@@ -409,11 +527,7 @@ class _BrandFormState extends State<BrandForm> {
     return SizedBox(
       height: 36,
       child: OutlinedButton.icon(
-        onPressed: () {
-          _kiosController.selectImage1(
-            ImageSource.gallery,
-          );
-        },
+        onPressed: _pickLogo,
         icon: Icon(
           icon,
           size: 17,
@@ -442,7 +556,236 @@ class _BrandFormState extends State<BrandForm> {
     );
   }
 
-  void _saveBrand() {
-    _kiosController.saveOutlet();
+  // ============================================================
+  // DELETE BUTTON
+  // ============================================================
+
+  Widget _buildDeleteButton({
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      height: 36,
+      child: OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: const Icon(
+          Icons.delete_outline_rounded,
+          size: 17,
+        ),
+        label: const Text(
+          'Hapus Logo',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: MyColors.error,
+          side: BorderSide(
+            color: MyColors.error.withValues(alpha: .35),
+          ),
+          backgroundColor: MyColors.errorBg,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // PICK LOGO
+  // ============================================================
+
+  Future<void> _pickLogo() async {
+    final success = await _kiosController.selectImage1(
+      ImageSource.gallery,
+    );
+
+    if (!mounted) return;
+
+    if (!success) {
+      _showMessage(
+        'Notifikasi',
+        'Gambar tidak valid atau ukuran logo lebih dari 2 MB.',
+        isError: true,
+      );
+    }
+  }
+
+  // ============================================================
+  // REMOVE SELECTED IMAGE
+  // ============================================================
+
+  void _removeSelectedImage() {
+    _kiosController.resetPickedLogo();
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  // ============================================================
+  // REMOVE SERVER LOGO
+  // ============================================================
+
+  Future<void> _removeServerLogo() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            'Hapus Logo?',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: MyColors.textPrimary,
+            ),
+          ),
+          content: const Text(
+            'Logo brand akan dihapus setelah perubahan disimpan.',
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.5,
+              color: MyColors.textSecondary,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                  false,
+                );
+              },
+              child: const Text(
+                'Batal',
+                style: TextStyle(
+                  color: MyColors.textSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                  true,
+                );
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: MyColors.error,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'Hapus',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    _kiosController.removeLogoImage();
+
+    if (!mounted) return;
+
+    setState(() {});
+  }
+
+  // ============================================================
+  // SAVE
+  // ============================================================
+
+  Future<void> _saveBrand() async {
+    if (!_isFormValid) {
+      _showMessage(
+        'Notifikasi',
+        'Lengkapi nama brand, nomor telepon, dan deskripsi.',
+        isError: true,
+      );
+      return;
+    }
+
+    final success = await _kiosController.saveOutlet();
+
+    if (!mounted) return;
+
+    if (!success) {
+      _showMessage(
+        'Gagal',
+        'Brand gagal disimpan. Silakan coba lagi.',
+        isError: true,
+      );
+      return;
+    }
+
+    Navigator.pop(context);
+  }
+
+  // ============================================================
+  // LOCAL MESSAGE
+  // ============================================================
+
+  void _showMessage(
+    String title,
+    String message, {
+    bool isError = false,
+  }) {
+    if (!mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+
+    messenger.hideCurrentSnackBar();
+
+    messenger.showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(
+          16,
+          0,
+          16,
+          16,
+        ),
+        elevation: 0,
+        backgroundColor: isError ? MyColors.error : MyColors.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        content: Row(
+          children: [
+            Icon(
+              isError
+                  ? Icons.error_outline_rounded
+                  : Icons.check_circle_outline_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -2,12 +2,12 @@ import 'package:cashier_management/controllers/cabang_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/models/kios_model.dart';
 import 'package:cashier_management/pages/setting/brand/widget/brand_financial_info.dart';
-import 'package:cashier_management/pages/setting/brand/widget/brand_logo.dart';
 import 'package:cashier_management/pages/setting/brand/widget/brand_popup_menu.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/management_status_badge.dart';
+import 'package:cashier_management/utils/product_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -78,7 +78,14 @@ class BrandCard extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BrandLogo(logo: quotation.logo),
+        ProductImage(
+          image: quotation.logo,
+          folder: 'logo',
+          size: 68,
+          borderRadius: 15,
+          fit: BoxFit.contain,
+          placeholderIcon: Icons.storefront_outlined,
+        ),
         const Gap(12),
         Expanded(
           child: Stack(

@@ -37,6 +37,10 @@ class _BranchPageState extends State<BranchPage> {
     await cabangController.fetchDataListCabangFinancial();
   }
 
+  void _handleBack() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +55,7 @@ class _BranchPageState extends State<BranchPage> {
               addLabel: 'Tambah Outlet',
               onAddTap: _addOutlet,
               showBack: true,
+              onBackTap: _handleBack,
             ),
             const SizedBox(height: 8),
             Expanded(

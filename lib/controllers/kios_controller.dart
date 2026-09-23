@@ -10,26 +10,54 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as dio;
 
 class KiosController extends BaseController {
-  @override
-  var resultDataKios = <KiosModel>[].obs;
+  // ============================================================
+  // LOADING
+  // ============================================================
 
-  var isLoading = true.obs;
-  var isLoadingFinancialKios = true.obs;
-  var isLoadingSaveKios = true.obs;
+  final RxBool isLoading = false.obs;
+  final RxBool isLoadingFinancialKios = false.obs;
+  final RxBool isLoadingSaveKios = false.obs;
+
+  // ============================================================
+  // FORM
+  // ============================================================
 
   final TextEditingController kios = TextEditingController();
   final TextEditingController phone = TextEditingController();
   final TextEditingController description = TextEditingController();
 
-  /// Logo yang sedang ditampilkan dari server.
-  var logo = ''.obs;
+  // ============================================================
+  // LOGO
+  // ============================================================
 
-  /// Logo lama yang akan dikirim ke backend
-  /// untuk kebutuhan replace/delete file lama.
-  var oldLogo = ''.obs;
+  /// Nama/path logo dari server.
+  ///
+  /// Kosong berarti brand tidak memiliki logo.
+  final RxString logo = ''.obs;
+
+  /// Logo lama yang digunakan backend ketika:
+  /// - mengganti logo
+  /// - menghapus logo
+  final RxString oldLogo = ''.obs;
 
   /// File logo baru yang dipilih dari device.
-  var pickedFile1 = XFile('').obs;
+  final Rx<XFile> pickedFile1 = XFile('').obs;
+
+  /// True jika user meminta logo lama dihapus.
+  ///
+  /// Logo tidak langsung dihapus dari server.
+  /// Penghapusan dilakukan ketika user menekan Simpan.
+  final RxBool removeLogo = false.obs;
+
+  // ============================================================
+  // FORM VALIDATION
+  // ============================================================
+
+  bool get isFormValid {
+    return kios.text.trim().isNotEmpty &&
+        phone.text.trim().isNotEmpty &&
+        description.text.trim().isNotEmpty;
+  }
 
   // ============================================================
   // RESET FORM
@@ -45,20 +73,39 @@ class KiosController extends BaseController {
 
     idKios.value = 0;
 
+    removeLogo.value = false;
+
     resetPickedLogo();
 
     update();
   }
 
-  /// Reset hanya file lokal yang dipilih.
-  ///
-  /// Dipanggil ketika:
-  /// - membuka form baru
-  /// - membuka edit brand lain
-  /// - selesai save
-  /// - membatalkan perubahan logo
   void resetPickedLogo() {
     pickedFile1.value = XFile('');
+  }
+
+  // ============================================================
+  // LOGO ACTION
+  // ============================================================
+
+  /// Membatalkan status hapus logo.
+  void resetLogoAction() {
+    removeLogo.value = false;
+    update();
+  }
+
+  /// Menandai logo lama untuk dihapus.
+  ///
+  /// File fisik di server baru dihapus ketika saveOutlet()
+  /// berhasil diproses oleh backend.
+  void removeLogoImage() {
+    resetPickedLogo();
+
+    if (logo.value.trim().isNotEmpty) {
+      removeLogo.value = true;
+    }
+
+    update();
   }
 
   // ============================================================
@@ -66,9 +113,9 @@ class KiosController extends BaseController {
   // ============================================================
 
   void editKios(KiosModel kiosModel) {
-    // Sangat penting:
-    // jangan membawa file lokal dari proses edit sebelumnya.
     resetPickedLogo();
+
+    removeLogo.value = false;
 
     kios.text = kiosModel.kios ?? '';
     phone.text = kiosModel.phone ?? '';
@@ -88,19 +135,32 @@ class KiosController extends BaseController {
 
   Future<void> fetchDataListKiosFinancial() async {
     try {
-      isLoadingFinancialKios(false);
+      isLoadingFinancialKios(true);
 
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
+      final ownerId = prefs.getInt('id_owner');
+
+      if (ownerId == null) {
+        resultDataKios.clear();
+        return;
+      }
+
       final rawFormat = {
-        'id_owner': prefs.getInt('id_owner')!,
+        'id_owner': ownerId,
       };
 
-      final result = await RemoteDataSource.getListKiosAndDetail(rawFormat);
+      final result = await RemoteDataSource.getListKiosAndDetail(
+        rawFormat,
+      );
 
       if (result != null) {
         resultDataKios.assignAll(result);
       }
+    } catch (e) {
+      debugPrint(
+        'KiosController.fetchDataListKiosFinancial: $e',
+      );
     } finally {
       isLoadingFinancialKios(false);
     }
@@ -125,173 +185,183 @@ class KiosController extends BaseController {
   }
 
   // ============================================================
-  // IMAGE
+  // IMAGE PICKER
   // ============================================================
 
-  Future<void> selectImage1(ImageSource source) async {
-    final ImagePicker picker = ImagePicker();
+  Future<bool> selectImage1(
+    ImageSource source,
+  ) async {
+    try {
+      final ImagePicker picker = ImagePicker();
 
-    final picked = await picker.pickImage(
-      source: source,
-    );
+      final picked = await picker.pickImage(
+        source: source,
+      );
 
-    if (picked == null) return;
+      if (picked == null) {
+        return false;
+      }
 
-    pickedFile1.value = picked;
+      final file = File(picked.path);
+
+      if (!file.existsSync()) {
+        return false;
+      }
+
+      final fileSizeInBytes = await file.length();
+
+      final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+
+      if (fileSizeInMB > 2) {
+        return false;
+      }
+
+      // Memilih logo baru otomatis membatalkan
+      // status hapus logo lama.
+      removeLogo.value = false;
+
+      pickedFile1.value = picked;
+
+      update();
+
+      return true;
+    } catch (e) {
+      debugPrint(
+        'KiosController.selectImage1: $e',
+      );
+
+      return false;
+    }
   }
 
   // ============================================================
   // SAVE
   // ============================================================
 
-  Future<void> saveOutlet() async {
+  Future<bool> saveOutlet() async {
+    if (!isFormValid) {
+      return false;
+    }
+
     try {
       isLoadingSaveKios(true);
 
-      // --------------------------------------------------------
-      // VALIDASI
-      // --------------------------------------------------------
+      final filePath = pickedFile1.value.path.trim();
 
-      if (kios.text.trim().isEmpty ||
-          phone.text.trim().isEmpty ||
-          description.text.trim().isEmpty) {
-        throw 'Please fill all fields';
-      }
+      final Map<String, dynamic> formMap = {
+        'id_owner': idOwner.value,
+        'kios_id': idKios.value,
+        'kios': kios.text.trim(),
+        'phone': phone.text.trim(),
+        'description': description.text.trim(),
+        'old_logo': oldLogo.value.trim(),
 
-      final filePath = pickedFile1.value.path;
-      final logoFromApi = logo.value;
-      final oldLogoFromApi = oldLogo.value;
+        // 1 = hapus logo lama
+        // 0 = pertahankan logo lama
+        'remove_logo': removeLogo.value ? '1' : '0',
+      };
 
-      late dio.FormData formData;
-
-      // --------------------------------------------------------
+      // ========================================================
       // LOGO BARU
-      // --------------------------------------------------------
+      // ========================================================
 
       if (filePath.isNotEmpty) {
         final file = File(filePath);
 
         if (!file.existsSync()) {
-          throw 'Selected image not found';
+          return false;
         }
 
         final fileSizeInBytes = await file.length();
+
         final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
 
         if (fileSizeInMB > 2) {
-          throw 'File size must be less than 2 MB';
+          return false;
         }
 
-        formData = dio.FormData.fromMap({
-          'id_owner': idOwner.value,
-          'kios_id': idKios.value,
-          'kios': kios.text.trim(),
-          'phone': phone.text.trim(),
-          'description': description.text.trim(),
-          'old_logo': oldLogoFromApi,
-          'logo': await dio.MultipartFile.fromFile(
-            filePath,
-            filename: filePath.split('/').last,
-          ),
-        });
+        // Logo baru selalu menjadi prioritas.
+        formMap['remove_logo'] = '0';
+
+        formMap['logo'] = await dio.MultipartFile.fromFile(
+          filePath,
+          filename: filePath.split('/').last,
+        );
       }
 
-      // --------------------------------------------------------
+      // ========================================================
       // TANPA LOGO BARU
-      // --------------------------------------------------------
+      // ========================================================
+      //
+      // Jangan kirim logo lama sebagai string.
+      //
+      // Backend menentukan:
+      //
+      // remove_logo = 1
+      // -> hapus logo lama
+      //
+      // remove_logo = 0
+      // -> pertahankan logo lama
+      //
+      // Brand baru tanpa logo:
+      // -> backend menyimpan logo kosong.
+      // ========================================================
 
-      else {
-        if (logoFromApi.isEmpty) {
-          throw 'Please select an image';
-        }
+      final formData = dio.FormData.fromMap(formMap);
 
-        formData = dio.FormData.fromMap({
-          'id_owner': idOwner.value,
-          'kios_id': idKios.value,
-          'kios': kios.text.trim(),
-          'phone': phone.text.trim(),
-          'description': description.text.trim(),
-          'old_logo': oldLogoFromApi,
-          'logo': logoFromApi,
-        });
-      }
-
-      // --------------------------------------------------------
-      // REQUEST
-      // --------------------------------------------------------
-
-      final result = await RemoteDataSource.saveOutlet(formData);
+      final result = await RemoteDataSource.saveOutlet(
+        formData,
+      );
 
       if (!result) {
-        throw 'Failed to save Kios';
+        return false;
       }
-
-      // --------------------------------------------------------
-      // CLEAR STATE
-      // --------------------------------------------------------
 
       clearOutletController();
 
-      Get.snackbar(
-        'Success',
-        'Kios saved successfully',
-        icon: const Icon(
-          Icons.check_circle,
-          color: Colors.green,
-        ),
-        snackPosition: SnackPosition.TOP,
+      return true;
+    } catch (e) {
+      debugPrint(
+        'KiosController.saveOutlet: $e',
       );
-    } catch (error) {
-      Get.snackbar(
-        'Notification',
-        error.toString(),
-        icon: const Icon(
-          Icons.error,
-        ),
-        snackPosition: SnackPosition.TOP,
-      );
+
+      return false;
     } finally {
       isLoadingSaveKios(false);
 
-      fetchDataListKiosFinancial();
+      await fetchDataListKiosFinancial();
     }
   }
 
   // ============================================================
-  // DELETE
+  // DELETE OUTLET
   // ============================================================
 
-  Future<void> deleteOutlet(int id) async {
-    final resultUpdate = await RemoteDataSource.deleteOutlet(id);
+  Future<bool> deleteOutlet(int id) async {
+    try {
+      final resultUpdate = await RemoteDataSource.deleteOutlet(id);
 
-    if (resultUpdate) {
-      Get.snackbar(
-        'Notification',
-        'Data deleted successfully',
-        icon: const Icon(
-          Icons.check,
-        ),
-        snackPosition: SnackPosition.TOP,
+      if (resultUpdate) {
+        await fetchDataListKiosFinancial();
+
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      debugPrint(
+        'KiosController.deleteOutlet: $e',
       );
 
-      fetchDataListKiosFinancial();
-    } else {
-      Get.snackbar(
-        'Notification',
-        'Failed to delete data',
-        icon: const Icon(
-          Icons.error,
-        ),
-        snackPosition: SnackPosition.TOP,
-      );
+      return false;
     }
   }
 
   // ============================================================
-  // STATUS
+  // UPDATE STATUS OUTLET
   // ============================================================
 
-  Future<void> updateStatusOutlet(
+  Future<bool> updateStatusOutlet(
     int id,
     bool newStatus,
   ) async {
@@ -305,43 +375,40 @@ class KiosController extends BaseController {
         rawFormat,
       );
 
-      if (success) {
-        final index = resultDataKios.indexWhere(
-          (item) => item.idKios == id,
-        );
-
-        if (index != -1) {
-          resultDataKios[index].isActive = newStatus;
-          resultDataKios.refresh();
-        }
-
-        Get.snackbar(
-          'Notification',
-          'Status updated successfully',
-          icon: const Icon(
-            Icons.check,
-          ),
-          snackPosition: SnackPosition.TOP,
-        );
-      } else {
-        Get.snackbar(
-          'Notification',
-          'Failed to update data',
-          icon: const Icon(
-            Icons.error,
-          ),
-          snackPosition: SnackPosition.TOP,
-        );
+      if (!success) {
+        return false;
       }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        icon: const Icon(
-          Icons.error,
-        ),
-        snackPosition: SnackPosition.TOP,
+
+      final index = resultDataKios.indexWhere(
+        (item) => item.idKios == id,
       );
+
+      if (index != -1) {
+        resultDataKios[index].isActive = newStatus;
+
+        resultDataKios.refresh();
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint(
+        'KiosController.updateStatusOutlet: $e',
+      );
+
+      return false;
     }
+  }
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
+
+  @override
+  void onClose() {
+    kios.dispose();
+    phone.dispose();
+    description.dispose();
+
+    super.onClose();
   }
 }

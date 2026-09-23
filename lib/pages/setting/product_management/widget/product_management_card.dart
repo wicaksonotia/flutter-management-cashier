@@ -123,6 +123,7 @@ class ProductManagementCard extends StatelessWidget {
           Positioned.fill(
             child: ProductImage(
               image: item.photo1,
+              folder: 'product',
               size: double.infinity,
               borderRadius: 0,
             ),
@@ -254,6 +255,7 @@ class ProductManagementCard extends StatelessWidget {
         children: [
           ProductImage(
             image: item.photo1,
+            folder: 'product',
             size: 76,
             borderRadius: 12,
           ),
