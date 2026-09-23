@@ -1,3 +1,4 @@
+import 'package:cashier_management/controllers/employee_controller.dart';
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/controllers/monitoring_outlet_controller.dart';
@@ -24,6 +25,7 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
   late final TotalPerTypeController totalPerTypeController;
   late final HistoryController historyController;
   late final MonitoringOutletController monitoringOutletController;
+  late final EmployeeController employeeController;
 
   bool isChangingOutlet = false;
 
@@ -46,6 +48,10 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
     monitoringOutletController = Get.isRegistered<MonitoringOutletController>()
         ? Get.find<MonitoringOutletController>()
         : Get.put(MonitoringOutletController());
+
+    employeeController = Get.isRegistered<EmployeeController>()
+        ? Get.find<EmployeeController>()
+        : Get.put(EmployeeController());
 
     _loadData();
   }
@@ -435,6 +441,16 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
       }
 
       // ========================================================
+      // EMPLOYEE
+      // ========================================================
+
+      if (Get.isRegistered<EmployeeController>()) {
+        await employeeController.refreshAfterBrandChanged(
+          newKiosId,
+        );
+      }
+
+      // ========================================================
       // CLOSE
       // ========================================================
 
@@ -744,10 +760,6 @@ class _LogoPlaceholder extends StatelessWidget {
 // LOADING STATE
 // ============================================================================
 
-// ============================================================================
-// LOADING STATE
-// ============================================================================
-
 class _LoadingState extends StatefulWidget {
   const _LoadingState();
 
@@ -779,45 +791,270 @@ class _LoadingStateState extends State<_LoadingState>
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 14),
-        const _SheetDragIndicator(),
-        const SizedBox(height: 22),
-        Expanded(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+        // ==============================================================
+        // HEADER SHIMMER
+        // ==============================================================
+
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            14,
+            12,
+            16,
+          ),
+          decoration: const BoxDecoration(
+            color: MyColors.surface,
+            border: Border(
+              bottom: BorderSide(
+                color: MyColors.border,
+              ),
+            ),
+          ),
+          child: Column(
+            children: [
+              const _SheetDragIndicator(),
+              const SizedBox(height: 16),
+              Row(
                 children: [
                   _ShimmerBox(
                     animation: _animationController,
-                    width: 64,
-                    height: 64,
-                    borderRadius: 14,
+                    width: 42,
+                    height: 42,
+                    borderRadius: 12,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _ShimmerBox(
+                          animation: _animationController,
+                          width: 125,
+                          height: 15,
+                          borderRadius: 7,
+                        ),
+                        const SizedBox(height: 7),
+                        _ShimmerBox(
+                          animation: _animationController,
+                          width: 175,
+                          height: 10,
+                          borderRadius: 5,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   _ShimmerBox(
                     animation: _animationController,
-                    width: 130,
+                    width: 40,
+                    height: 40,
+                    borderRadius: 12,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // ==============================================================
+        // CONTENT SHIMMER
+        // ==============================================================
+
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              16,
+              18,
+              16,
+              24,
+            ),
+            children: [
+              // ========================================================
+              // CURRENT BRAND
+              // ========================================================
+
+              _buildCurrentBrandShimmer(),
+
+              const SizedBox(height: 20),
+
+              // ========================================================
+              // SECTION HEADER
+              // ========================================================
+
+              Row(
+                children: [
+                  _ShimmerBox(
+                    animation: _animationController,
+                    width: 88,
                     height: 13,
-                    borderRadius: 7,
+                    borderRadius: 6,
                   ),
-                  const SizedBox(height: 8),
+                  const Spacer(),
                   _ShimmerBox(
                     animation: _animationController,
-                    width: 190,
+                    width: 48,
                     height: 10,
                     borderRadius: 5,
                   ),
                 ],
               ),
-            ),
+
+              const SizedBox(height: 10),
+
+              // ========================================================
+              // BRAND LIST
+              // ========================================================
+
+              _buildBrandCardShimmer(),
+              const SizedBox(height: 10),
+              _buildBrandCardShimmer(),
+              const SizedBox(height: 10),
+              _buildBrandCardShimmer(),
+            ],
           ),
         ),
       ],
     );
   }
+
+  // ==========================================================================
+  // CURRENT BRAND SHIMMER
+  // ==========================================================================
+
+  Widget _buildCurrentBrandShimmer() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: MyColors.primaryLight,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: MyColors.primary.withValues(alpha: .10),
+        ),
+      ),
+      child: Row(
+        children: [
+          _ShimmerBox(
+            animation: _animationController,
+            width: 42,
+            height: 42,
+            borderRadius: 12,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ShimmerBox(
+                  animation: _animationController,
+                  width: 65,
+                  height: 9,
+                  borderRadius: 5,
+                ),
+                const SizedBox(height: 7),
+                _ShimmerBox(
+                  animation: _animationController,
+                  width: 105,
+                  height: 13,
+                  borderRadius: 6,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          _ShimmerBox(
+            animation: _animationController,
+            width: 48,
+            height: 22,
+            borderRadius: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // BRAND CARD SHIMMER
+  // ==========================================================================
+
+  Widget _buildBrandCardShimmer() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: MyColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: MyColors.border,
+        ),
+      ),
+      child: Row(
+        children: [
+          // ==============================================================
+          // LOGO
+          // ==============================================================
+
+          _ShimmerBox(
+            animation: _animationController,
+            width: 62,
+            height: 62,
+            borderRadius: 14,
+          ),
+
+          const SizedBox(width: 12),
+
+          // ==============================================================
+          // INFORMATION
+          // ==============================================================
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ShimmerBox(
+                  animation: _animationController,
+                  width: 105,
+                  height: 13,
+                  borderRadius: 6,
+                ),
+                const SizedBox(height: 8),
+                _ShimmerBox(
+                  animation: _animationController,
+                  width: double.infinity,
+                  height: 9,
+                  borderRadius: 5,
+                ),
+                const SizedBox(height: 6),
+                _ShimmerBox(
+                  animation: _animationController,
+                  width: 145,
+                  height: 9,
+                  borderRadius: 5,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
+          // ==============================================================
+          // ACTION
+          // ==============================================================
+
+          _ShimmerBox(
+            animation: _animationController,
+            width: 34,
+            height: 34,
+            borderRadius: 10,
+          ),
+        ],
+      ),
+    );
+  }
 }
+
+// ============================================================================
+// SHIMMER BOX
+// ============================================================================
 
 class _ShimmerBox extends StatelessWidget {
   final Animation<double> animation;
@@ -837,11 +1074,11 @@ class _ShimmerBox extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
+        final position = animation.value * 2 - 1;
+
         return ShaderMask(
           blendMode: BlendMode.srcATop,
           shaderCallback: (bounds) {
-            final position = animation.value * 2 - 1;
-
             return LinearGradient(
               begin: Alignment(position - 1, 0),
               end: Alignment(position + 1, 0),
@@ -865,7 +1102,6 @@ class _ShimmerBox extends StatelessWidget {
     );
   }
 }
-
 // ============================================================================
 // EMPTY STATE
 // ============================================================================

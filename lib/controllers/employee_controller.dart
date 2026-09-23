@@ -61,11 +61,11 @@ class EmployeeController extends BaseController {
   /// Membuat prefix username berdasarkan nama brand.
   ///
   /// Contoh:
-  /// Himalaya       -> himalaya-
-  /// Helios         -> helios-
-  /// Helios Adikara -> helios-adikara-
-  /// Citra Vera     -> citra-vera-
-  /// CitraVera      -> citravera-
+  /// Himalaya       -> himalaya.
+  /// Helios         -> helios.
+  /// Helios Adikara -> helios.adikara.
+  /// Citra Vera     -> citra.vera.
+  /// CitraVera      -> citravera.
   String generateUsernamePrefix(String brand) {
     final normalized =
         brand.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '.');
@@ -79,9 +79,7 @@ class EmployeeController extends BaseController {
 
   /// Mengisi username awal dengan prefix brand.
   ///
-  /// Hanya dipanggil saat membuat karyawan baru.
-  /// Setelah user mulai mengedit username, method ini tidak
-  /// dipanggil otomatis lagi.
+  /// Hanya digunakan saat membuat karyawan baru.
   void setInitialUsernamePrefix() {
     if (idKasir.value != 0) {
       return;
@@ -130,16 +128,16 @@ class EmployeeController extends BaseController {
   // ==========================================================
 
   void editEmployee(DataEmployee employeeModel) {
-    // ==========================================================
+    // ========================================================
     // RESET STATE OUTLET
-    // ==========================================================
+    // ========================================================
 
     selectedOutletIds.clear();
     defaultOutletId.value = 0;
 
-    // ==========================================================
+    // ========================================================
     // DATA KARYAWAN
-    // ==========================================================
+    // ========================================================
 
     idKasir.value = employeeModel.idKasir!;
 
@@ -149,9 +147,9 @@ class EmployeeController extends BaseController {
 
     noTelponController.text = employeeModel.phoneKasir ?? '';
 
-    // ==========================================================
+    // ========================================================
     // OUTLET
-    // ==========================================================
+    // ========================================================
 
     if (employeeModel.idCabang != null) {
       selectedOutletIds.assignAll(
@@ -159,9 +157,9 @@ class EmployeeController extends BaseController {
       );
     }
 
-    // ==========================================================
+    // ========================================================
     // DEFAULT OUTLET
-    // ==========================================================
+    // ========================================================
 
     if (employeeModel.defaultOutlet != null) {
       defaultOutletId.value = employeeModel.defaultOutlet!;
@@ -174,9 +172,16 @@ class EmployeeController extends BaseController {
   // FETCH EMPLOYEE
   // ==========================================================
 
-  Future<void> fetchDataListEmployee() async {
+  Future<void> fetchDataListEmployee({
+    int? kiosId,
+  }) async {
     try {
       isLoadingEmployee(true);
+
+      // Jika kiosId diberikan, sinkronkan idKios terlebih dahulu.
+      if (kiosId != null && kiosId > 0) {
+        idKios.value = kiosId;
+      }
 
       final rawFormat = {
         'id_kios': idKios.value,
@@ -188,6 +193,8 @@ class EmployeeController extends BaseController {
 
       if (result != null) {
         resultDataEmployee.assignAll(result);
+      } else {
+        resultDataEmployee.clear();
       }
     } finally {
       isLoadingEmployee(false);
@@ -195,12 +202,42 @@ class EmployeeController extends BaseController {
   }
 
   // ==========================================================
-  // SAVE
+  // REFRESH AFTER BRAND CHANGED
   // ==========================================================
 
+  Future<void> refreshAfterBrandChanged(
+    int newKiosId,
+  ) async {
+    if (newKiosId <= 0) {
+      return;
+    }
+
+    // ========================================================
+    // UPDATE BRAND
+    // ========================================================
+
+    idKios.value = newKiosId;
+
+    // ========================================================
+    // CLEAR DATA LAMA
+    // ========================================================
+
+    resultDataEmployee.clear();
+
+    // ========================================================
+    // FETCH DATA BRAND BARU
+    // ========================================================
+
+    await fetchDataListEmployee(
+      kiosId: newKiosId,
+    );
+
+    update();
+  }
+
   // ==========================================================
-// SAVE
-// ==========================================================
+  // SAVE
+  // ==========================================================
 
   Future<Map<String, dynamic>> saveEmployee() async {
     try {
@@ -208,12 +245,14 @@ class EmployeeController extends BaseController {
       update();
 
       final username = usernameController.text.trim();
+
       final nama = namaController.text.trim();
+
       final phone = noTelponController.text.trim();
 
-      // ==========================================================
+      // ========================================================
       // VALIDASI
-      // ==========================================================
+      // ========================================================
 
       if (username.isEmpty || nama.isEmpty || phone.isEmpty) {
         throw '* Semua field wajib diisi';
@@ -231,13 +270,15 @@ class EmployeeController extends BaseController {
         throw '* Silakan tentukan outlet default';
       }
 
-      if (!selectedOutletIds.contains(defaultOutletId.value)) {
+      if (!selectedOutletIds.contains(
+        defaultOutletId.value,
+      )) {
         throw '* Outlet default harus termasuk outlet yang dipilih';
       }
 
-      // ==========================================================
+      // ========================================================
       // PAYLOAD
-      // ==========================================================
+      // ========================================================
 
       final rawFormat = {
         'id_kasir': idKasir.value,
@@ -248,9 +289,9 @@ class EmployeeController extends BaseController {
         'outlets': selectedOutletIds.toList(),
       };
 
-      // ==========================================================
+      // ========================================================
       // SAVE
-      // ==========================================================
+      // ========================================================
 
       final result = await RemoteDataSource.saveEmployee(
         rawFormat,
@@ -260,6 +301,7 @@ class EmployeeController extends BaseController {
         return result;
       }
 
+      // Refresh employee sesuai brand aktif.
       await fetchDataListEmployee();
 
       return result;
@@ -354,7 +396,7 @@ class EmployeeController extends BaseController {
         snackPosition: SnackPosition.TOP,
       );
 
-      fetchDataListEmployee();
+      await fetchDataListEmployee();
     } else {
       Get.snackbar(
         'Notifikasi',
@@ -418,6 +460,7 @@ class EmployeeController extends BaseController {
   // ==========================================================
   // OUTLET
   // ==========================================================
+
   void toggleOutlet(int id) {
     if (selectedOutletIds.contains(id)) {
       selectedOutletIds.remove(id);

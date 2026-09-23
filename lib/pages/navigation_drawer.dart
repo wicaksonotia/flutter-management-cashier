@@ -357,7 +357,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Brand & Outlet',
+                      'Brand',
                       style: TextStyle(
                         fontSize: MySizes.fontSizeSm,
                         color: MyColors.textMuted,
@@ -365,7 +365,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'Kelola outlet',
+                      'Kelola brand',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
