@@ -16,9 +16,9 @@ import 'package:cashier_management/pages/setting/branch/add_branch_page.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
 
 import 'package:cashier_management/pages/setting/category_income_expenses/category_page.dart';
+import 'package:cashier_management/pages/setting/employee/employee_form.dart';
 
-import 'package:cashier_management/pages/setting/employee/add_employee_page.dart';
-import 'package:cashier_management/pages/setting/employee/list_employee_page.dart';
+import 'package:cashier_management/pages/setting/employee/employee_page.dart';
 
 import 'package:cashier_management/pages/setting/outlet/add_outlet_page.dart';
 import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
@@ -26,8 +26,6 @@ import 'package:cashier_management/pages/setting/outlet/outlet_page.dart';
 import 'package:cashier_management/pages/setting/product_management/product_category_form_page.dart';
 import 'package:cashier_management/pages/setting/product_management/product_form_page.dart';
 import 'package:cashier_management/pages/setting/product_management/product_management_page.dart';
-
-import 'package:cashier_management/pages/setting/setting_page.dart';
 
 import 'package:cashier_management/pages/setting/user/change_password_page.dart';
 import 'package:cashier_management/pages/setting/user/profile_page.dart';
@@ -87,7 +85,7 @@ class RouterClass {
   // SETTING - EMPLOYEE
   // ==========================================================
 
-  static const String listemployee = '/listemployee';
+  static const String employee = '/employee';
   static const String addemployee = '/addemployee';
 
   // ==========================================================
@@ -109,12 +107,6 @@ class RouterClass {
   // ==========================================================
 
   static const String splash = '/splash';
-
-  // ==========================================================
-  // SETTINGS
-  // ==========================================================
-
-  static const String settings = '/settings';
 
   // ==========================================================
   // ROUTES
@@ -244,12 +236,12 @@ class RouterClass {
 
     GetPage(
       name: addemployee,
-      page: () => const AddEmployeePage(),
+      page: () => EmployeeForm(),
     ),
 
     GetPage(
-      name: listemployee,
-      page: () => const ListEmployeePage(),
+      name: employee,
+      page: () => const EmployeePage(),
     ),
 
     // ========================================================
@@ -268,7 +260,7 @@ class RouterClass {
 
     GetPage(
       name: addProduct,
-      page: () => const AddProductPage(),
+      page: () => AddProductPage(),
     ),
 
     // ========================================================
@@ -278,15 +270,6 @@ class RouterClass {
     GetPage(
       name: category,
       page: () => const CategoryPage(),
-    ),
-
-    // ========================================================
-    // SETTINGS
-    // ========================================================
-
-    GetPage(
-      name: settings,
-      page: () => const SettingsPage(),
     ),
   ];
 }

@@ -3,9 +3,9 @@ import 'package:cashier_management/pages/navigation_drawer.dart'
     as custom_drawer;
 import 'package:cashier_management/pages/setting/category_income_expenses/category_filter.dart';
 import 'package:cashier_management/pages/setting/category_income_expenses/category_form.dart';
-import 'package:cashier_management/pages/setting/category_income_expenses/category_header.dart';
 import 'package:cashier_management/pages/setting/category_income_expenses/category_list.dart';
 import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/management_header.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,6 +19,8 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   late final CategoryController categoryController;
 
   @override
@@ -35,6 +37,7 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       drawer: const custom_drawer.NavigationDrawer(),
       backgroundColor: MyColors.background,
       resizeToAvoidBottomInset: false,
@@ -47,18 +50,24 @@ class _CategoryPageState extends State<CategoryPage> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               // =====================================================
-              // HEADER / NAVBAR
+              // HEADER
               // =====================================================
 
               SliverToBoxAdapter(
-                child: CategoryHeader(
+                child: ManagementHeader(
                   title: 'Kategori',
                   subtitle: 'Kelola pemasukan dan pengeluaran',
                   addLabel: 'Kategori',
+                  onMenuTap: () {
+                    scaffoldKey.currentState?.openDrawer();
+                  },
                   onAddTap: _onAddCategory,
                 ),
               ),
 
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 10),
+              ),
               // =====================================================
               // FILTER
               // =====================================================

@@ -3,7 +3,7 @@ import 'package:cashier_management/pages/navigation_drawer.dart'
     as custom_drawer;
 import 'package:cashier_management/pages/setting/product_management/widget/product_category_management.dart';
 import 'package:cashier_management/pages/setting/product_management/widget/product_list_management.dart';
-import 'package:cashier_management/pages/setting/product_management/widget/product_management_header.dart';
+import 'package:cashier_management/utils/management_header.dart';
 import 'package:cashier_management/pages/setting/product_management/widget/product_management_tabs.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/colors.dart';
@@ -105,7 +105,7 @@ class _ProductManagementPageState extends State<ProductManagementPage>
       body: SafeArea(
         child: Column(
           children: [
-            ProductManagementHeader(
+            ManagementHeader(
               title: tabController.index == 0 ? 'Produk' : 'Kategori',
               subtitle: tabController.index == 0
                   ? 'Kelola katalog produk'

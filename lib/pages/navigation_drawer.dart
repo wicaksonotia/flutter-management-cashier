@@ -136,7 +136,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   _buildDrawerItem(
                     icon: Icons.groups_outlined,
                     text: 'Karyawan',
-                    route: RouterClass.listemployee,
+                    route: RouterClass.employee,
                   ),
 
                   // ==================================================

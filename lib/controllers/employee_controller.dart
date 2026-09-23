@@ -1,49 +1,164 @@
-// import 'dart:convert';
-
 import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/employee_model.dart';
-// import 'package:cashier_management/models/kios_model.dart';
-// import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 
 class EmployeeController extends BaseController {
-  var resultDataEmployee = <DataEmployee>[].obs;
-  var isLoadingSave = true.obs;
-  var isLoadingEmployee = true.obs;
+  // ==========================================================
+  // DATA
+  // ==========================================================
 
-  var idKasir = 0.obs;
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController namaController = TextEditingController();
-  TextEditingController noTelponController = TextEditingController();
+  final resultDataEmployee = <DataEmployee>[].obs;
+
+  final isLoadingSaveEmployee = false.obs;
+  final isLoadingEmployee = true.obs;
+
+  final idKasir = 0.obs;
+
+  // ==========================================================
+  // FORM
+  // ==========================================================
+
+  final TextEditingController usernameController = TextEditingController();
+
+  final TextEditingController namaController = TextEditingController();
+
+  final TextEditingController noTelponController = TextEditingController();
+
+  // ==========================================================
+  // INIT
+  // ==========================================================
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    usernameController.addListener(update);
+    namaController.addListener(update);
+    noTelponController.addListener(update);
+  }
+
+  // ==========================================================
+  // VALIDATION
+  // ==========================================================
+
+  bool get canSaveEmployee {
+    return usernameController.text.trim().isNotEmpty &&
+        namaController.text.trim().isNotEmpty &&
+        noTelponController.text.trim().isNotEmpty &&
+        idCabang.value != 0;
+  }
+
+  // ==========================================================
+  // USERNAME PREFIX
+  // ==========================================================
+
+  /// Membuat prefix username berdasarkan nama brand.
+  ///
+  /// Contoh:
+  /// Himalaya       -> himalaya-
+  /// Helios         -> helios-
+  /// Helios Adikara -> helios-adikara-
+  /// Citra Vera     -> citra-vera-
+  /// CitraVera      -> citravera-
+  String generateUsernamePrefix(String brand) {
+    final normalized =
+        brand.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '.');
+
+    if (normalized.isEmpty) {
+      return '';
+    }
+
+    return '$normalized.';
+  }
+
+  /// Mengisi username awal dengan prefix brand.
+  ///
+  /// Hanya dipanggil saat membuat karyawan baru.
+  /// Setelah user mulai mengedit username, method ini tidak
+  /// dipanggil otomatis lagi.
+  void setInitialUsernamePrefix() {
+    if (idKasir.value != 0) {
+      return;
+    }
+
+    final prefix = generateUsernamePrefix(
+      selectedKios.value,
+    );
+
+    if (prefix.isEmpty) {
+      usernameController.clear();
+      return;
+    }
+
+    usernameController.value = TextEditingValue(
+      text: prefix,
+      selection: TextSelection.collapsed(
+        offset: prefix.length,
+      ),
+    );
+
+    update();
+  }
+
+  // ==========================================================
+  // CLEAR FORM
+  // ==========================================================
 
   void clearEmployeeController() {
     idKasir.value = 0;
+
     usernameController.clear();
     namaController.clear();
     noTelponController.clear();
+
+    idCabang.value = 0;
+    selectedCabang.value = '';
+
+    // Username baru otomatis mendapatkan prefix brand.
+    setInitialUsernamePrefix();
+
     update();
   }
+
+  // ==========================================================
+  // EDIT
+  // ==========================================================
 
   void editEmployee(DataEmployee employeeModel) {
     idKasir.value = employeeModel.idKasir!;
+
+    // Username existing tidak diubah.
     usernameController.text = employeeModel.usernameKasir!;
+
     namaController.text = employeeModel.namaKasir!;
+
     noTelponController.text = employeeModel.phoneKasir!;
+
     idCabang.value = employeeModel.defaultOutlet!;
+
     selectedCabang.value = employeeModel.defaultOutletName!;
+
     update();
   }
 
+  // ==========================================================
+  // FETCH EMPLOYEE
+  // ==========================================================
+
   Future<void> fetchDataListEmployee() async {
     try {
-      var rawFormat = {
+      isLoadingEmployee(true);
+
+      final rawFormat = {
         'id_kios': idKios.value,
-        // 'id_cabang': idCabang.value,
       };
-      var result = await RemoteDataSource.getListEmployee(rawFormat);
+
+      final result = await RemoteDataSource.getListEmployee(
+        rawFormat,
+      );
+
       if (result != null) {
         resultDataEmployee.assignAll(result);
       }
@@ -52,76 +167,113 @@ class EmployeeController extends BaseController {
     }
   }
 
-  Future<void> saveEmployee() async {
+  // ==========================================================
+  // SAVE
+  // ==========================================================
+
+  // ==========================================================
+// SAVE
+// ==========================================================
+
+  Future<Map<String, dynamic>> saveEmployee() async {
     try {
-      isLoadingSave(true);
-      if (usernameController.text.isEmpty ||
-          namaController.text.isEmpty ||
-          noTelponController.text.isEmpty) {
-        throw "* All fields are required";
+      isLoadingSaveEmployee(true);
+      update();
+
+      final username = usernameController.text.trim();
+      final nama = namaController.text.trim();
+      final phone = noTelponController.text.trim();
+
+      if (username.isEmpty || nama.isEmpty || phone.isEmpty) {
+        throw '* Semua field wajib diisi';
       }
-      if (usernameController.text.contains(' ')) {
-        throw "* Username cannot contain spaces";
+
+      if (username.contains(' ')) {
+        throw '* Username tidak boleh mengandung spasi';
       }
+
       if (idCabang.value == 0) {
-        throw "* Please select a branch";
+        throw '* Silakan pilih outlet';
       }
-      var rawFormat = {
-        "id_kasir": idKasir.value,
-        "username": usernameController.text,
-        "nama_kasir": namaController.text,
-        "phone_kasir": noTelponController.text,
-        "id_cabang": idCabang.value,
+
+      final rawFormat = {
+        'id_kasir': idKasir.value,
+        'username': username,
+        'nama_kasir': nama,
+        'phone_kasir': phone,
+        'id_cabang': idCabang.value,
       };
-      bool result = await RemoteDataSource.saveEmployee(rawFormat);
-      if (result) {
-        Get.snackbar(
-          'Notification',
-          'Saved successfully',
-          icon: const Icon(Icons.check),
-          snackPosition: SnackPosition.TOP,
-        );
-        fetchDataListEmployee();
-      } else {
-        throw "Failed to save data";
+
+      final result = await RemoteDataSource.saveEmployee(
+        rawFormat,
+      );
+
+      if (result['status'] != 'ok') {
+        return result;
       }
-    } catch (error) {
+
       Get.snackbar(
-        'Notification',
-        error.toString(),
-        icon: const Icon(Icons.error),
+        'Notifikasi',
+        idKasir.value != 0
+            ? 'Karyawan berhasil diperbarui'
+            : 'Karyawan berhasil ditambahkan',
+        icon: const Icon(Icons.check),
         snackPosition: SnackPosition.TOP,
       );
+
+      await fetchDataListEmployee();
+
+      return result;
+    } catch (error) {
+      return {
+        'status': 'error',
+        'message': error.toString(),
+      };
     } finally {
-      isLoadingSave(false);
+      isLoadingSaveEmployee(false);
+      update();
     }
   }
 
-  void updateEmployeeStatus(int id, bool newStatus) async {
+  // ==========================================================
+  // UPDATE STATUS
+  // ==========================================================
+
+  Future<void> updateEmployeeStatus(
+    int id,
+    bool newStatus,
+  ) async {
     try {
-      final rawFormat = {'id': id, 'status': newStatus};
-      final success = await RemoteDataSource.updateEmployeeStatus(rawFormat);
+      final rawFormat = {
+        'id': id,
+        'status': newStatus,
+      };
+
+      final success = await RemoteDataSource.updateEmployeeStatus(
+        rawFormat,
+      );
 
       if (success) {
-        // Update data lokal
-        final index =
-            resultDataEmployee.indexWhere((item) => item.idKasir == id);
+        final index = resultDataEmployee.indexWhere(
+          (item) => item.idKasir == id,
+        );
+
         if (index != -1) {
           resultDataEmployee[index].statusKasir = newStatus;
-          resultDataEmployee
-              .refresh(); // <--- update UI tanpa reload seluruh data
+
+          resultDataEmployee.refresh();
         }
 
         Get.snackbar(
-          'Notification',
-          'Status updated successfully',
+          'Notifikasi',
+          'Status berhasil diperbarui',
           icon: const Icon(Icons.check),
           snackPosition: SnackPosition.TOP,
         );
       } else {
         Get.snackbar(
-          'Notification',
-          'Failed to update data',
+          'Notifikasi',
+          'Gagal memperbarui data',
           icon: const Icon(Icons.error),
           snackPosition: SnackPosition.TOP,
         );
@@ -136,43 +288,104 @@ class EmployeeController extends BaseController {
     }
   }
 
-  void processKasirCabang(int idEmployee, int idOutlet, String proses) async {
-    var rawFormat = {
+  // ==========================================================
+  // EMPLOYEE - BRANCH
+  // ==========================================================
+
+  Future<void> processKasirCabang(
+    int idEmployee,
+    int idOutlet,
+    String proses,
+  ) async {
+    final rawFormat = {
       'id_kasir': idEmployee,
       'id_kios_cabang': idOutlet,
-      'proses': proses
+      'proses': proses,
     };
-    var resultUpdate = await RemoteDataSource.updateEmployeeBranch(rawFormat);
+
+    final resultUpdate = await RemoteDataSource.updateEmployeeBranch(
+      rawFormat,
+    );
+
     if (resultUpdate) {
-      Get.snackbar('Notification', 'Data updated successfully',
-          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notifikasi',
+        'Data berhasil diperbarui',
+        icon: const Icon(Icons.check),
+        snackPosition: SnackPosition.TOP,
+      );
+
       fetchDataListEmployee();
     } else {
-      Get.snackbar('Notification', 'Failed to update data',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notifikasi',
+        'Gagal memperbarui data',
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 
-  void deleteEmployee(int id) async {
-    var resultUpdate = await RemoteDataSource.deleteEmployee(id);
+  // ==========================================================
+  // DELETE
+  // ==========================================================
+
+  Future<void> deleteEmployee(int id) async {
+    final resultUpdate = await RemoteDataSource.deleteEmployee(id);
+
     if (resultUpdate) {
-      Get.snackbar('Notification', 'Data deleted successfully',
-          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notifikasi',
+        'Data berhasil dihapus',
+        icon: const Icon(Icons.check),
+        snackPosition: SnackPosition.TOP,
+      );
+
       fetchDataListEmployee();
     } else {
-      Get.snackbar('Notification', 'Failed to delete data',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notifikasi',
+        'Gagal menghapus data',
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 
-  void resetPassword(int id) async {
-    var result = await RemoteDataSource.resetPassword(id);
+  // ==========================================================
+  // RESET PASSWORD
+  // ==========================================================
+
+  Future<void> resetPassword(int id) async {
+    final result = await RemoteDataSource.resetPassword(id);
+
     if (result) {
-      Get.snackbar('Notification', 'Reset password successfully',
-          icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notifikasi',
+        'Password berhasil direset',
+        icon: const Icon(Icons.check),
+        snackPosition: SnackPosition.TOP,
+      );
     } else {
-      Get.snackbar('Notification', 'Failed to reset password',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notifikasi',
+        'Gagal mereset password',
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     }
+  }
+
+  // ==========================================================
+  // DISPOSE
+  // ==========================================================
+
+  @override
+  void onClose() {
+    usernameController.dispose();
+    namaController.dispose();
+    noTelponController.dispose();
+
+    super.onClose();
   }
 }

@@ -535,22 +535,34 @@ class RemoteDataSource {
     }
   }
 
-  static Future<bool> saveEmployee(Map<String, dynamic> rawFormat) async {
+  static Future<Map<String, dynamic>> saveEmployee(
+    Map<String, dynamic> rawFormat,
+  ) async {
     try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveEmployee;
-      Response response = await Dio().post(
+      final url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveEmployee;
+
+      final response = await Dio().post(
         url,
         data: rawFormat,
-        options: Options(contentType: Headers.jsonContentType),
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
       );
-      if (response.statusCode == 200) {
-        if (response.data['status'] == 'ok') {
-          return true;
-        }
+
+      if (response.statusCode == 200 && response.data is Map) {
+        return Map<String, dynamic>.from(response.data);
       }
-      return false;
+
+      return {
+        'status': 'error',
+        'message': 'Gagal menyimpan data',
+      };
     } catch (e) {
-      return false;
+      return {
+        'status': 'error',
+        'message': 'Terjadi kesalahan saat menyimpan data',
+      };
     }
   }
 
