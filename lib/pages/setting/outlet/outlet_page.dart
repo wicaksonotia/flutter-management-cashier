@@ -3,7 +3,6 @@ import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/database/api_endpoints.dart';
 import 'package:cashier_management/models/kios_model.dart';
 import 'package:cashier_management/routes.dart';
-import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/currency.dart';
 import 'package:cashier_management/utils/sizes.dart';
 import 'package:flutter/material.dart';

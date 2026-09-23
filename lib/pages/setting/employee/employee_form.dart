@@ -1,11 +1,10 @@
 import 'package:cashier_management/controllers/employee_controller.dart';
-import 'package:cashier_management/pages/select_table_list_page.dart';
 import 'package:cashier_management/utils/background_form.dart';
 import 'package:cashier_management/utils/colors.dart';
+import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/input_field.dart';
 import 'package:cashier_management/utils/management_header_form.dart';
 import 'package:cashier_management/utils/management_save_button.dart';
-import 'package:cashier_management/utils/management_selector_field.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -48,18 +47,13 @@ class _EmployeeFormBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        110,
-        20,
-        30,
-      ),
+      padding: const EdgeInsets.fromLTRB(20, 110, 20, 30),
       child: Column(
         children: [
           ManagementHeaderForm(
             title: isEdit ? 'Edit Karyawan' : 'Karyawan Baru',
             subtitle: isEdit
-                ? 'Perbarui informasi dan penempatan karyawan'
+                ? 'Perbarui informasi dan akses outlet'
                 : 'Buat akun dan tentukan outlet kerja',
             icon: isEdit
                 ? Icons.manage_accounts_rounded
@@ -106,40 +100,93 @@ class _EmployeeFormCard extends StatelessWidget {
         children: [
           const _SectionTitle(
             title: 'Penempatan',
-            subtitle: 'Tentukan outlet kerja karyawan',
+            subtitle: 'Pilih outlet yang dapat diakses karyawan',
           ),
-          const Gap(20),
-          _brandField(controller: controller),
+          const Gap(18),
+
+          // ==========================================================
+          // BRAND
+          // ==========================================================
+
           Obx(
-            () => SelectorField(
-              title: 'Outlet',
-              icon: Icons.location_on_outlined,
-              value: controller.selectedCabang.value,
-              onTap: () => _selectOutlet(),
+            () => _BrandCard(
+              brand: controller.selectedKios.value,
             ),
           ),
+
+          const Gap(18),
+
+          // ==========================================================
+          // OUTLET LIST
+          // ==========================================================
+
+          Obx(() {
+            if (controller.isLoadingCabang.value) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            return Column(
+              children: controller.resultDataCabang.map((outlet) {
+                final id = outlet.id ?? 0;
+
+                final selected = controller.selectedOutletIds.contains(id);
+
+                final isDefault =
+                    controller.defaultOutletId.value == id && selected;
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _OutletTile(
+                    title: outlet.cabang ?? '-',
+                    address: outlet.alamat ?? '',
+                    selected: selected,
+                    isDefault: isDefault,
+                    onChanged: () => controller.toggleOutlet(id),
+                    onSetDefault: () => controller.setDefaultOutlet(id),
+                  ),
+                );
+              }).toList(),
+            );
+          }),
+
           const Gap(28),
+
+          // ==========================================================
+          // EMPLOYEE INFO
+          // ==========================================================
+
           const _SectionTitle(
             title: 'Informasi Karyawan',
             subtitle: 'Lengkapi informasi akun dan data karyawan',
           ),
+
           const Gap(20),
+
           InputField(
             label: 'Username',
             icon: Icons.alternate_email_rounded,
             controller: controller.usernameController,
-            hint: 'Username untuk login',
+            hint: 'Masukkan username',
             helperText:
-                'Contoh: himalaya.tia \nAwalan dapat diubah, untuk menghindari username sama',
+                'Contoh: himalaya.tia\nAwalan dapat diubah agar username tetap unik.',
           ),
+
           const Gap(16),
+
           InputField(
             label: 'Nama Lengkap',
             icon: Icons.person_outline_rounded,
             controller: controller.namaController,
             hint: 'Masukkan nama lengkap',
           ),
+
           const Gap(16),
+
           InputField(
             label: 'Nomor Telepon',
             icon: Icons.phone_outlined,
@@ -147,7 +194,9 @@ class _EmployeeFormCard extends StatelessWidget {
             keyboardType: TextInputType.phone,
             hint: 'Masukkan nomor telepon',
           ),
+
           const Gap(30),
+
           _SaveButton(
             controller: controller,
             isEdit: isEdit,
@@ -156,43 +205,210 @@ class _EmployeeFormCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _brandField({
-    required EmployeeController controller,
-  }) {
-    return Column(
-      children: [
-        Obx(
-          () => SelectorField(
-            title: 'Brand',
-            icon: Icons.storefront_outlined,
-            value: controller.selectedKios.value,
-            enabled: false,
-            onTap: () {},
+class _BrandCard extends StatelessWidget {
+  final String brand;
+
+  const _BrandCard({
+    required this.brand,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: MyColors.background,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: MyColors.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: MyColors.primaryLight,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.storefront_outlined,
+              color: MyColors.primary,
+            ),
           ),
-        ),
-        const Gap(16),
-      ],
+          const Gap(12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Brand',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: MyColors.textSecondary,
+                  ),
+                ),
+                const Gap(2),
+                Text(
+                  brand,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: MyColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
+}
 
-  void _selectOutlet() {
-    Get.to(
-      () => SelectTableListPage(
-        title: 'Outlet',
-        isLoading: controller.isLoadingCabang,
-        items: controller.resultDataCabang,
-        titleBuilder: (e) => e.cabang!,
-        subtitleBuilder: (e) => e.alamat ?? '',
-        isSelected: (e) => e.id == controller.idCabang.value,
-        onItemTap: (e) async {
-          controller.idCabang.value = e.id!;
-          controller.selectedCabang.value = e.cabang!;
-          controller.update();
-        },
-        onRefresh: () => controller.fetchDataListCabang(),
+class _OutletTile extends StatelessWidget {
+  final String title;
+  final String address;
+  final bool selected;
+  final bool isDefault;
+  final VoidCallback onChanged;
+  final VoidCallback onSetDefault;
+
+  const _OutletTile({
+    required this.title,
+    required this.address,
+    required this.selected,
+    required this.isDefault,
+    required this.onChanged,
+    required this.onSetDefault,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      decoration: BoxDecoration(
+        color: selected ? MyColors.primaryLight : MyColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDefault
+              ? MyColors.success
+              : selected
+                  ? MyColors.selectedBorder
+                  : MyColors.border,
+        ),
       ),
-      transition: Transition.rightToLeft,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onChanged,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: onChanged,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: selected ? MyColors.primary : Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color:
+                          selected ? MyColors.primary : MyColors.disabledText,
+                    ),
+                  ),
+                  child: selected
+                      ? const Icon(
+                          Icons.check,
+                          size: 15,
+                          color: Colors.white,
+                        )
+                      : null,
+                ),
+              ),
+              const Gap(14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: selected
+                            ? MyColors.primaryDark
+                            : MyColors.textPrimary,
+                      ),
+                    ),
+                    // if (address.isNotEmpty) ...[
+                    //   const Gap(3),
+                    //   Text(
+                    //     address,
+                    //     style: const TextStyle(
+                    //       fontSize: 11,
+                    //       color: MyColors.textSecondary,
+                    //     ),
+                    //   ),
+                    // ],
+                  ],
+                ),
+              ),
+              if (selected)
+                isDefault
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: MyColors.success,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.star_rounded,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              'Default',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : TextButton(
+                        onPressed: onSetDefault,
+                        style: TextButton.styleFrom(
+                          foregroundColor: MyColors.primary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                          ),
+                        ),
+                        child: const Text(
+                          'Jadikan Default',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -261,9 +477,7 @@ class _SaveButton extends StatelessWidget {
   Future<void> _save(BuildContext context) async {
     final result = await controller.saveEmployee();
 
-    if (!context.mounted) {
-      return;
-    }
+    if (!context.mounted) return;
 
     switch (result['status']) {
       case 'ok':
@@ -271,198 +485,27 @@ class _SaveButton extends StatelessWidget {
         break;
 
       case 'username_exists':
-        _showUsernameExistsDialog(
+        await AppConfirmDialog.show(
           context,
-          result['message'] ?? 'Username sudah digunakan oleh karyawan lain.',
+          title: 'Username Sudah Digunakan',
+          message: result['message'],
+          confirmText: 'Ubah Username',
+          cancelText: 'Tutup',
+          icon: Icons.info_outline_rounded,
+          type: AppConfirmType.warning,
         );
         break;
 
       default:
-        _showErrorDialog(
+        await AppConfirmDialog.show(
           context,
-          result['message'] ?? 'Gagal menyimpan data.',
+          title: 'Gagal Menyimpan',
+          message: result['message'],
+          confirmText: 'Tutup',
+          cancelText: 'Batal',
+          icon: Icons.error_outline_rounded,
+          type: AppConfirmType.danger,
         );
-        break;
     }
-  }
-
-  void _showUsernameExistsDialog(
-    BuildContext context,
-    String message,
-  ) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          titlePadding: const EdgeInsets.fromLTRB(
-            24,
-            24,
-            24,
-            8,
-          ),
-          contentPadding: const EdgeInsets.fromLTRB(
-            24,
-            8,
-            24,
-            20,
-          ),
-          actionsPadding: const EdgeInsets.fromLTRB(
-            20,
-            0,
-            20,
-            18,
-          ),
-          title: const Row(
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                color: MyColors.warning,
-                size: 24,
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Username Sudah Digunakan',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: MyColors.textPrimary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            message,
-            style: const TextStyle(
-              fontSize: 13,
-              height: 1.4,
-              color: MyColors.textSecondary,
-            ),
-          ),
-          actions: [
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: MyColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 13,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Ubah Username',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorDialog(
-    BuildContext context,
-    String message,
-  ) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          titlePadding: const EdgeInsets.fromLTRB(
-            24,
-            24,
-            24,
-            8,
-          ),
-          contentPadding: const EdgeInsets.fromLTRB(
-            24,
-            8,
-            24,
-            20,
-          ),
-          actionsPadding: const EdgeInsets.fromLTRB(
-            20,
-            0,
-            20,
-            18,
-          ),
-          title: const Row(
-            children: [
-              Icon(
-                Icons.error_outline_rounded,
-                color: MyColors.error,
-                size: 24,
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Gagal Menyimpan',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: MyColors.textPrimary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            message,
-            style: const TextStyle(
-              fontSize: 13,
-              height: 1.4,
-              color: MyColors.textSecondary,
-            ),
-          ),
-          actions: [
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: MyColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 13,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Tutup',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 }

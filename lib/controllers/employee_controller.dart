@@ -16,6 +16,9 @@ class EmployeeController extends BaseController {
 
   final idKasir = 0.obs;
 
+  final selectedOutletIds = <int>[].obs;
+  final defaultOutletId = 0.obs;
+
   // ==========================================================
   // FORM
   // ==========================================================
@@ -47,7 +50,8 @@ class EmployeeController extends BaseController {
     return usernameController.text.trim().isNotEmpty &&
         namaController.text.trim().isNotEmpty &&
         noTelponController.text.trim().isNotEmpty &&
-        idCabang.value != 0;
+        selectedOutletIds.isNotEmpty &&
+        defaultOutletId.value != 0;
   }
 
   // ==========================================================
@@ -113,10 +117,9 @@ class EmployeeController extends BaseController {
     namaController.clear();
     noTelponController.clear();
 
-    idCabang.value = 0;
-    selectedCabang.value = '';
+    selectedOutletIds.clear();
+    defaultOutletId.value = 0;
 
-    // Username baru otomatis mendapatkan prefix brand.
     setInitialUsernamePrefix();
 
     update();
@@ -127,18 +130,42 @@ class EmployeeController extends BaseController {
   // ==========================================================
 
   void editEmployee(DataEmployee employeeModel) {
+    // ==========================================================
+    // RESET STATE OUTLET
+    // ==========================================================
+
+    selectedOutletIds.clear();
+    defaultOutletId.value = 0;
+
+    // ==========================================================
+    // DATA KARYAWAN
+    // ==========================================================
+
     idKasir.value = employeeModel.idKasir!;
 
-    // Username existing tidak diubah.
-    usernameController.text = employeeModel.usernameKasir!;
+    usernameController.text = employeeModel.usernameKasir ?? '';
 
-    namaController.text = employeeModel.namaKasir!;
+    namaController.text = employeeModel.namaKasir ?? '';
 
-    noTelponController.text = employeeModel.phoneKasir!;
+    noTelponController.text = employeeModel.phoneKasir ?? '';
 
-    idCabang.value = employeeModel.defaultOutlet!;
+    // ==========================================================
+    // OUTLET
+    // ==========================================================
 
-    selectedCabang.value = employeeModel.defaultOutletName!;
+    if (employeeModel.idCabang != null) {
+      selectedOutletIds.assignAll(
+        employeeModel.idCabang!,
+      );
+    }
+
+    // ==========================================================
+    // DEFAULT OUTLET
+    // ==========================================================
+
+    if (employeeModel.defaultOutlet != null) {
+      defaultOutletId.value = employeeModel.defaultOutlet!;
+    }
 
     update();
   }
@@ -184,6 +211,10 @@ class EmployeeController extends BaseController {
       final nama = namaController.text.trim();
       final phone = noTelponController.text.trim();
 
+      // ==========================================================
+      // VALIDASI
+      // ==========================================================
+
       if (username.isEmpty || nama.isEmpty || phone.isEmpty) {
         throw '* Semua field wajib diisi';
       }
@@ -192,17 +223,34 @@ class EmployeeController extends BaseController {
         throw '* Username tidak boleh mengandung spasi';
       }
 
-      if (idCabang.value == 0) {
-        throw '* Silakan pilih outlet';
+      if (selectedOutletIds.isEmpty) {
+        throw '* Silakan pilih minimal 1 outlet';
       }
+
+      if (defaultOutletId.value == 0) {
+        throw '* Silakan tentukan outlet default';
+      }
+
+      if (!selectedOutletIds.contains(defaultOutletId.value)) {
+        throw '* Outlet default harus termasuk outlet yang dipilih';
+      }
+
+      // ==========================================================
+      // PAYLOAD
+      // ==========================================================
 
       final rawFormat = {
         'id_kasir': idKasir.value,
         'username': username,
         'nama_kasir': nama,
         'phone_kasir': phone,
-        'id_cabang': idCabang.value,
+        'default_outlet': defaultOutletId.value,
+        'outlets': selectedOutletIds.toList(),
       };
+
+      // ==========================================================
+      // SAVE
+      // ==========================================================
 
       final result = await RemoteDataSource.saveEmployee(
         rawFormat,
@@ -211,15 +259,6 @@ class EmployeeController extends BaseController {
       if (result['status'] != 'ok') {
         return result;
       }
-
-      Get.snackbar(
-        'Notifikasi',
-        idKasir.value != 0
-            ? 'Karyawan berhasil diperbarui'
-            : 'Karyawan berhasil ditambahkan',
-        icon: const Icon(Icons.check),
-        snackPosition: SnackPosition.TOP,
-      );
 
       await fetchDataListEmployee();
 
@@ -374,6 +413,38 @@ class EmployeeController extends BaseController {
         snackPosition: SnackPosition.TOP,
       );
     }
+  }
+
+  // ==========================================================
+  // OUTLET
+  // ==========================================================
+  void toggleOutlet(int id) {
+    if (selectedOutletIds.contains(id)) {
+      selectedOutletIds.remove(id);
+
+      if (defaultOutletId.value == id) {
+        defaultOutletId.value =
+            selectedOutletIds.isEmpty ? 0 : selectedOutletIds.first;
+      }
+    } else {
+      selectedOutletIds.add(id);
+
+      if (defaultOutletId.value == 0) {
+        defaultOutletId.value = id;
+      }
+    }
+
+    update();
+  }
+
+  void setDefaultOutlet(int id) {
+    if (!selectedOutletIds.contains(id)) {
+      return;
+    }
+
+    defaultOutletId.value = id;
+
+    update();
   }
 
   // ==========================================================
