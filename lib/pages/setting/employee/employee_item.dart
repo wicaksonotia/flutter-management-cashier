@@ -6,7 +6,6 @@ import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/management_action_button.dart';
 import 'package:cashier_management/utils/management_status_badge.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class EmployeeItem extends StatelessWidget {
   final DataEmployee model;
@@ -65,7 +64,7 @@ class EmployeeItem extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
-          onTap: () => _editEmployee(),
+          onTap: () => _editEmployee(context),
           borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.all(13),
@@ -85,7 +84,7 @@ class EmployeeItem extends StatelessWidget {
                       child: _buildIdentity(),
                     ),
                     const SizedBox(width: 8),
-                    _buildTopActions(),
+                    _buildTopActions(context),
                   ],
                 ),
 
@@ -120,7 +119,7 @@ class EmployeeItem extends StatelessWidget {
                 // BRANCHES
                 // ==================================================
 
-                _buildBranchSection(),
+                _buildBranchSection(context),
               ],
             ),
           ),
@@ -207,7 +206,7 @@ class EmployeeItem extends StatelessWidget {
   // TOP ACTIONS
   // ==============================================================
 
-  Widget _buildTopActions() {
+  Widget _buildTopActions(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -215,7 +214,7 @@ class EmployeeItem extends StatelessWidget {
           icon: Icons.edit_outlined,
           background: MyColors.primaryLight,
           foreground: MyColors.primaryDark,
-          onTap: _editEmployee,
+          onTap: () => _editEmployee(context),
           height: 30,
           iconSize: 14,
         ),
@@ -227,7 +226,7 @@ class EmployeeItem extends StatelessWidget {
           background:
               isActive ? MyColors.dashboardAccentBorder : MyColors.successBg,
           foreground: isActive ? MyColors.accent : MyColors.success,
-          onTap: _changeStatus,
+          onTap: () => _changeStatus(context),
           height: 30,
           iconSize: 14,
         ),
@@ -236,7 +235,7 @@ class EmployeeItem extends StatelessWidget {
           icon: Icons.lock_reset_outlined,
           background: MyColors.primaryLight,
           foreground: MyColors.primaryDark,
-          onTap: _resetPassword,
+          onTap: () => _resetPassword(context),
           height: 30,
           iconSize: 14,
         ),
@@ -245,7 +244,7 @@ class EmployeeItem extends StatelessWidget {
           icon: Icons.delete_outline_rounded,
           background: canDelete ? MyColors.errorBg : MyColors.surfaceSoft,
           foreground: canDelete ? MyColors.error : MyColors.textMuted,
-          onTap: canDelete ? _deleteEmployee : null,
+          onTap: canDelete ? () => _deleteEmployee(context) : null,
           height: 30,
           iconSize: 14,
         ),
@@ -289,7 +288,7 @@ class EmployeeItem extends StatelessWidget {
   // BRANCH SECTION
   // ==============================================================
 
-  Widget _buildBranchSection() {
+  Widget _buildBranchSection(BuildContext context) {
     final branches = controller.listCabang;
 
     if (branches.isEmpty) {
@@ -321,6 +320,7 @@ class EmployeeItem extends StatelessWidget {
               label: cabangNama,
               selected: isSelected,
               onTap: () => _processBranch(
+                context,
                 cabangValue,
                 cabangNama,
                 isSelected,
@@ -336,10 +336,10 @@ class EmployeeItem extends StatelessWidget {
   // EDIT
   // ==============================================================
 
-  void _editEmployee() {
+  void _editEmployee(BuildContext context) {
     controller.editEmployee(model);
 
-    Get.toNamed(
+    Navigator.of(context).pushNamed(
       RouterClass.addemployee,
     );
   }
@@ -348,11 +348,11 @@ class EmployeeItem extends StatelessWidget {
   // STATUS
   // ==============================================================
 
-  Future<void> _changeStatus() async {
+  Future<void> _changeStatus(BuildContext context) async {
     final newStatus = !isActive;
 
     final confirmed = await AppConfirmDialog.show(
-      Get.context!,
+      context,
       title: newStatus ? 'Aktifkan Karyawan' : 'Nonaktifkan Karyawan',
       message: newStatus
           ? 'Karyawan "$employeeName" akan diaktifkan.'
@@ -382,7 +382,7 @@ class EmployeeItem extends StatelessWidget {
   // DELETE
   // ==============================================================
 
-  Future<void> _deleteEmployee() async {
+  Future<void> _deleteEmployee(BuildContext context) async {
     if (!canDelete) {
       return;
     }
@@ -392,7 +392,7 @@ class EmployeeItem extends StatelessWidget {
     }
 
     final confirmed = await AppConfirmDialog.show(
-      Get.context!,
+      context,
       title: 'Hapus Karyawan',
       message: 'Karyawan "$employeeName" akan dihapus. '
           'Tindakan ini tidak dapat dibatalkan.',
@@ -406,8 +406,21 @@ class EmployeeItem extends StatelessWidget {
       return;
     }
 
-    await controller.deleteEmployee(
+    final success = await controller.deleteEmployee(
       employeeId,
+    );
+
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success ? 'Karyawan berhasil dihapus' : 'Gagal menghapus karyawan',
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
@@ -415,13 +428,13 @@ class EmployeeItem extends StatelessWidget {
   // RESET PASSWORD
   // ==============================================================
 
-  Future<void> _resetPassword() async {
+  Future<void> _resetPassword(BuildContext context) async {
     if (employeeId <= 0) {
       return;
     }
 
     final confirmed = await AppConfirmDialog.show(
-      Get.context!,
+      context,
       title: 'Reset Password',
       message: 'Password karyawan "$employeeName" akan direset. '
           'Lanjutkan?',
@@ -445,6 +458,7 @@ class EmployeeItem extends StatelessWidget {
   // ==============================================================
 
   Future<void> _processBranch(
+    BuildContext context,
     int cabangValue,
     String cabangNama,
     bool isSelected,
@@ -459,21 +473,24 @@ class EmployeeItem extends StatelessWidget {
 
     if (isSelected) {
       if (branchIds.length == 1) {
-        Get.snackbar(
-          'Tidak dapat dihapus',
-          'Karyawan harus memiliki minimal satu outlet.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: MyColors.errorBg,
-          colorText: MyColors.error,
-          margin: const EdgeInsets.all(12),
-          borderRadius: 12,
+        if (!context.mounted) {
+          return;
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Karyawan harus memiliki minimal satu outlet.',
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
 
         return;
       }
 
       final confirmed = await AppConfirmDialog.show(
-        Get.context!,
+        context,
         title: 'Hapus Akses Outlet',
         message: 'Karyawan "$employeeName" akan dihapus '
             'aksesnya dari outlet "$cabangNama".',
@@ -501,7 +518,7 @@ class EmployeeItem extends StatelessWidget {
     // ------------------------------------------------------------
 
     final confirmed = await AppConfirmDialog.show(
-      Get.context!,
+      context,
       title: 'Tambah Akses Outlet',
       message: 'Karyawan "$employeeName" akan diberikan akses '
           'ke outlet "$cabangNama".',

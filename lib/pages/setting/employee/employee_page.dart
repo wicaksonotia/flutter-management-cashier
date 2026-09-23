@@ -90,7 +90,7 @@ class _EmployeePageState extends State<EmployeePage> {
   void _onAddEmployee() {
     employeeController.clearEmployeeController();
 
-    Get.toNamed(
+    Navigator.of(context).pushNamed(
       RouterClass.addemployee,
     );
   }

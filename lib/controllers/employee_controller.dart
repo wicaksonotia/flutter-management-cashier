@@ -369,25 +369,25 @@ class EmployeeController extends BaseController {
   // DELETE
   // ==========================================================
 
-  Future<void> deleteEmployee(int id) async {
-    final resultUpdate = await RemoteDataSource.deleteEmployee(id);
+  Future<bool> deleteEmployee(int id) async {
+    try {
+      final resultUpdate = await RemoteDataSource.deleteEmployee(id);
 
-    if (resultUpdate) {
-      Get.snackbar(
-        'Notifikasi',
-        'Data berhasil dihapus',
-        icon: const Icon(Icons.check),
-        snackPosition: SnackPosition.TOP,
+      if (!resultUpdate) {
+        return false;
+      }
+
+      final index = resultDataEmployee.indexWhere(
+        (item) => item.idKasir == id,
       );
 
-      fetchDataListEmployee();
-    } else {
-      Get.snackbar(
-        'Notifikasi',
-        'Gagal menghapus data',
-        icon: const Icon(Icons.error),
-        snackPosition: SnackPosition.TOP,
-      );
+      if (index != -1) {
+        resultDataEmployee.removeAt(index);
+      }
+
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 

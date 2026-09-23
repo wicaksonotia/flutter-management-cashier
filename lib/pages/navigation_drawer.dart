@@ -89,6 +89,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   const SizedBox(height: 6),
 
                   _buildDrawerItem(
+                    context: context,
                     icon: Icons.dashboard_outlined,
                     text: 'Dashboard',
                     route: RouterClass.home,
@@ -105,12 +106,14 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   const SizedBox(height: 6),
 
                   _buildDrawerItem(
+                    context: context,
                     icon: Icons.account_balance_wallet_outlined,
                     text: 'Pemasukan & Pengeluaran',
                     route: RouterClass.transactionhistory,
                   ),
 
                   _buildDrawerItem(
+                    context: context,
                     icon: Icons.storefront_outlined,
                     text: 'Riwayat per Outlet',
                     route: RouterClass.monitoringoutlet,
@@ -128,12 +131,14 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   const SizedBox(height: 6),
 
                   _buildDrawerItem(
+                    context: context,
                     icon: Icons.store_outlined,
                     text: 'Outlet',
                     route: RouterClass.outlet,
                   ),
 
                   _buildDrawerItem(
+                    context: context,
                     icon: Icons.groups_outlined,
                     text: 'Karyawan',
                     route: RouterClass.employee,
@@ -145,12 +150,14 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
                   // _buildProductMenu(),
                   _buildDrawerItem(
+                    context: context,
                     icon: Icons.groups_outlined,
                     text: 'Produk',
                     route: RouterClass.product,
                   ),
 
                   _buildDrawerItem(
+                    context: context,
                     icon: Icons.category_outlined,
                     text: 'Kategori Pemasukan & Pengeluaran',
                     route: RouterClass.category,
@@ -167,6 +174,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   const SizedBox(height: 6),
 
                   _buildDrawerItem(
+                    context: context,
                     icon: Icons.manage_accounts_outlined,
                     text: 'Akun',
                     route: RouterClass.userSetting,
@@ -303,7 +311,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         splashColor: MyColors.primary.withValues(alpha: .06),
         highlightColor: MyColors.primary.withValues(alpha: .03),
         onTap: () {
-          Get.back();
+          Navigator.of(context).pop();
 
           _showChangeOutlet(context);
         },
@@ -411,6 +419,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   // ============================================================
 
   Widget _buildDrawerItem({
+    required BuildContext context,
     required IconData icon,
     required String text,
     String? route,
@@ -431,7 +440,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           highlightColor: MyColors.primary.withValues(alpha: .03),
           onTap: onTap ??
               () {
-                Get.back();
+                Navigator.of(context).pop();
 
                 if (route != null) {
                   Get.toNamed(route);
@@ -528,7 +537,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   // ============================================================
 
   void _openMonitoringOutlet() {
-    Get.back();
+    Navigator.of(context).pop();
 
     final MonitoringOutletController monitoringOutletController =
         Get.isRegistered<MonitoringOutletController>()
