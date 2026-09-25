@@ -38,8 +38,6 @@ class HistoryController extends GetxController {
 
   // ============================================================
   // APPLIED FILTER
-  //
-  // Filter yang benar-benar dikirim ke API.
   // ============================================================
 
   final RxList<dynamic> tagCategory = <dynamic>[].obs;
@@ -48,9 +46,6 @@ class HistoryController extends GetxController {
 
   // ============================================================
   // TEMPORARY FILTER
-  //
-  // Digunakan ketika bottom sheet filter sedang dibuka.
-  // Belum mempengaruhi data sampai user menekan Terapkan.
   // ============================================================
 
   final RxList<dynamic> tempTagCategory = <dynamic>[].obs;
@@ -84,7 +79,7 @@ class HistoryController extends GetxController {
   late RxString monthYear;
 
   // ============================================================
-  // ACTIVE OUTLET / BRAND
+  // ACTIVE BRAND
   // ============================================================
 
   final RxInt idKios = 0.obs;
@@ -99,10 +94,9 @@ class HistoryController extends GetxController {
   void onInit() async {
     super.onInit();
 
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
 
     idKios.value = prefs.getInt('id_kios') ?? 0;
-
     namaKios.value = prefs.getString('kios') ?? '';
 
     monthYear = '${singleDate.value.month}-${singleDate.value.year}'.obs;
@@ -111,18 +105,15 @@ class HistoryController extends GetxController {
   }
 
   // ============================================================
-  // OUTLET
+  // OUTLET / BRAND
   // ============================================================
 
   Future<void> changeOutlet() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
 
     idKios.value = prefs.getInt('id_kios') ?? 0;
-
     namaKios.value = prefs.getString('kios') ?? '';
 
-    // Ketika pindah brand/outlet utama,
-    // filter cabang sebelumnya tidak lagi relevan.
     resetTransactionFilter();
 
     await getHistoriesBySingleDate();
@@ -133,7 +124,7 @@ class HistoryController extends GetxController {
   }
 
   // ============================================================
-  // CATEGORY PEMASUKAN / CABANG OUTLET
+  // CATEGORY PEMASUKAN
   // ============================================================
 
   Future<void> getDataListCategoryPemasukan() async {
@@ -168,7 +159,7 @@ class HistoryController extends GetxController {
       }
     } catch (error, stackTrace) {
       debugPrint(
-        '>>> getDataListCategoryPemasukan ERROR: $error',
+        'getDataListCategoryPemasukan ERROR: $error',
       );
       debugPrint('$stackTrace');
 
@@ -201,10 +192,6 @@ class HistoryController extends GetxController {
         'sort': 'ASC',
       };
 
-      debugPrint(
-        '>>> getDataListCategoryPengeluaran: $rawFormat',
-      );
-
       final result = await RemoteDataSource.listCategories(rawFormat);
 
       if (result?.data != null) {
@@ -221,14 +208,9 @@ class HistoryController extends GetxController {
       } else {
         listCategoryPengeluaran.clear();
       }
-
-      debugPrint(
-        '>>> kategori pengeluaran: '
-        '${listCategoryPengeluaran.length}',
-      );
     } catch (error, stackTrace) {
       debugPrint(
-        '>>> getDataListCategoryPengeluaran ERROR: $error',
+        'getDataListCategoryPengeluaran ERROR: $error',
       );
       debugPrint('$stackTrace');
 
@@ -292,11 +274,13 @@ class HistoryController extends GetxController {
         'monthYear': monthYear.value,
         'filter_by_date_or_month': filterBy.value,
         'id_kios': idKios.value,
-
-        // FILTER YANG SUDAH DITERAPKAN
         'kategori': tagCategory.toList(),
         'cabang_kios': tagCabangKios.toList(),
       };
+
+      debugPrint(
+        '>>> HISTORY FILTER: $rawFormat',
+      );
 
       final result = await RemoteDataSource.histories(rawFormat);
 
@@ -304,6 +288,12 @@ class HistoryController extends GetxController {
         resultData.assignAll(result.data!);
 
         _calculateSummary();
+      } else {
+        resultData.clear();
+
+        totalIncome.value = 0;
+        totalExpense.value = 0;
+        totalBalance.value = 0;
       }
     } catch (error) {
       Get.snackbar(
@@ -347,8 +337,6 @@ class HistoryController extends GetxController {
   // TRANSACTION FILTER
   // ============================================================
 
-  /// Membuka filter dengan kondisi filter yang
-  /// sedang aktif.
   void prepareTransactionFilter() {
     tempTagCabangKios.assignAll(
       tagCabangKios.toList(),
@@ -359,34 +347,25 @@ class HistoryController extends GetxController {
     );
   }
 
-  /// Terapkan filter sementara menjadi filter aktif.
   Future<void> applyTransactionFilter({
-    required bool isExpense,
+    required int selectedType,
   }) async {
     tagCabangKios.assignAll(
       tempTagCabangKios.toList(),
     );
 
-    // Kategori hanya berlaku untuk pengeluaran.
-    if (isExpense) {
-      tagCategory.assignAll(
-        tempTagCategory.toList(),
-      );
-    } else {
-      tagCategory.clear();
-      tempTagCategory.clear();
-    }
+    tagCategory.assignAll(
+      tempTagCategory.toList(),
+    );
 
     await getHistoriesByFilter();
   }
 
-  /// Reset pilihan sementara.
   void resetTemporaryTransactionFilter() {
     tempTagCabangKios.clear();
     tempTagCategory.clear();
   }
 
-  /// Reset filter yang sudah diterapkan.
   Future<void> resetTransactionFilter() async {
     tagCabangKios.clear();
     tagCategory.clear();
@@ -396,10 +375,6 @@ class HistoryController extends GetxController {
 
     await getHistoriesByFilter();
   }
-
-  // ============================================================
-  // FILTER HELPER
-  // ============================================================
 
   bool isOutletSelected(dynamic value) {
     return tempTagCabangKios.contains(value);
@@ -434,7 +409,7 @@ class HistoryController extends GetxController {
   }
 
   // ============================================================
-  // FILTER DATE / MONTH
+  // DATE / MONTH
   // ============================================================
 
   void goToNextMonth() {

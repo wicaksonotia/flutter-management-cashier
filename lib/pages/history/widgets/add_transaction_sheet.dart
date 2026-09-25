@@ -40,14 +40,6 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     super.dispose();
   }
 
-  String _currency(int value) {
-    return NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    ).format(value);
-  }
-
   String _selectedDate() {
     return DateFormat(
       'dd MMMM yyyy',

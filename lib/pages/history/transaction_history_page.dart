@@ -10,6 +10,7 @@ import 'package:cashier_management/pages/history/widgets/finance_loading_state.d
 import 'package:cashier_management/pages/history/widgets/finance_segmented.dart';
 import 'package:cashier_management/pages/history/widgets/finance_summary_card.dart';
 import 'package:cashier_management/pages/history/widgets/finance_transaction_card.dart';
+import 'package:cashier_management/pages/history/widgets/transaction_filter/transaction_category_filter_page.dart';
 import 'package:cashier_management/pages/history/widgets/transaction_filter/transaction_filter_sheet.dart';
 import 'package:cashier_management/pages/navigation_drawer.dart'
     as custom_drawer;
@@ -55,15 +56,19 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Future<void> _loadData() async {
     await historyController.getHistoriesByFilter();
 
-    historyController.getDataListCategoryPemasukan();
-    historyController.getDataListCategoryPengeluaran();
+    await Future.wait([
+      historyController.getDataListCategoryPemasukan(),
+      historyController.getDataListCategoryPengeluaran(),
+    ]);
   }
 
   Future<void> _refresh() async {
     await historyController.getHistoriesByFilter();
 
-    historyController.getDataListCategoryPemasukan();
-    historyController.getDataListCategoryPengeluaran();
+    await Future.wait([
+      historyController.getDataListCategoryPemasukan(),
+      historyController.getDataListCategoryPengeluaran(),
+    ]);
   }
 
   // ================================================================
@@ -246,13 +251,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                   periodLabel: _periodLabel(),
                   filterBy: historyController.filterBy.value,
                   onPeriodTap: _showPeriodMenu,
-                  onFilterTap: () {
-                    debugPrint(
-                      '>>> FINANCE FILTER BAR DIKLIK',
-                    );
-
-                    _showFilterInfo();
-                  },
+                  onFilterTap: _showFilterInfo,
                 ),
               ),
 
@@ -294,9 +293,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                     ) {
                       final item = transactions[index];
 
-                      final currentDate = _transactionDateKey(
-                        item,
-                      );
+                      final currentDate = _transactionDateKey(item);
 
                       final previousDate = index > 0
                           ? _transactionDateKey(
@@ -320,14 +317,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             data: item,
                             onEdit: item.id == null
                                 ? null
-                                : () => _editTransaction(
-                                      item,
-                                    ),
+                                : () => _editTransaction(item),
                             onDelete: item.id == null
                                 ? null
-                                : () => _confirmDelete(
-                                      item.id!,
-                                    ),
+                                : () => _confirmDelete(item.id!),
                           ),
                         ],
                       );
@@ -370,26 +363,16 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // ==================================================
-                    // HANDLE
-                    // ==================================================
-
                     Container(
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
                         color: MyColors.border,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
 
                     const SizedBox(height: 20),
-
-                    // ==================================================
-                    // TITLE
-                    // ==================================================
 
                     const Align(
                       alignment: Alignment.centerLeft,
@@ -416,9 +399,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                         height: 42,
                         decoration: BoxDecoration(
                           color: MyColors.primaryLight,
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.calendar_month_rounded,
@@ -445,9 +426,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               height: 28,
                               decoration: BoxDecoration(
                                 color: MyColors.primaryLight,
-                                borderRadius: BorderRadius.circular(
-                                  10,
-                                ),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               child: const Icon(
                                 Icons.check_rounded,
@@ -483,9 +462,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                         height: 42,
                         decoration: BoxDecoration(
                           color: MyColors.primaryLight,
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.date_range_rounded,
@@ -512,9 +489,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               height: 28,
                               decoration: BoxDecoration(
                                 color: MyColors.primaryLight,
-                                borderRadius: BorderRadius.circular(
-                                  10,
-                                ),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               child: const Icon(
                                 Icons.check_rounded,
@@ -548,24 +523,12 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   // ================================================================
 
   void _showFilterInfo() {
-    debugPrint(
-      '>>> _showFilterInfo DIPANGGIL',
-    );
-
-    debugPrint(
-      '>>> selectedType = $selectedType',
-    );
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.35),
       builder: (_) {
-        debugPrint(
-          '>>> TransactionFilterSheet BUILD',
-        );
-
         return TransactionFilterSheet(
           selectedType: selectedType,
         );
@@ -649,10 +612,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   void _editTransaction(
     DataHistory data,
   ) {
-    // Edit belum diarahkan ke TransactionForm
-    // karena state edit pada controller belum dibuat.
-    //
-    // Jangan membuka form kosong untuk edit.
     debugPrint(
       'Edit transaksi id: ${data.id}',
     );

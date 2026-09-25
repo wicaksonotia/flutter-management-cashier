@@ -244,39 +244,3 @@ class BranchCard extends StatelessWidget {
     );
   }
 }
-
-class _PopupMenuItemContent extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color? color;
-
-  const _PopupMenuItemContent({
-    required this.icon,
-    required this.label,
-    this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final itemColor = color ?? MyColors.textPrimary;
-
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 18,
-          color: itemColor,
-        ),
-        const SizedBox(width: 10),
-        Text(
-          label,
-          style: TextStyle(
-            color: itemColor,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-}
