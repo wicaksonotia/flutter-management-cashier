@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/models/history_model.dart';
+import 'package:cashier_management/pages/history/widgets/transaction_filter/transaction_filter_sheet.dart';
 import 'package:cashier_management/pages/navigation_drawer.dart'
     as custom_drawer;
 import 'package:cashier_management/pages/history/widgets/add_transaction_sheet.dart';
@@ -467,83 +468,12 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   void _showFilterInfo() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
-      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.35),
       builder: (_) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              12,
-              20,
-              28,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: MyColors.border,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Icon(
-                  Icons.tune_rounded,
-                  size: 32,
-                  color: MyColors.primary,
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Filter transaksi',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: MyColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Filter kategori dan outlet akan mengikuti '
-                  'filter yang sudah tersedia pada laporan.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 1.5,
-                    color: MyColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: MyColors.primary,
-                      minimumSize: const Size.fromHeight(48),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    onPressed: () {
-                      Get.back();
-                    },
-                    child: const Text(
-                      'Tutup',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        return TransactionFilterSheet(
+          selectedType: selectedType,
         );
       },
     );
