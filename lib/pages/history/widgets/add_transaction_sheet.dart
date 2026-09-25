@@ -358,7 +358,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                 // TYPE
                 // =================================================
 
-                _SectionLabel(
+                const _SectionLabel(
                   title: 'Jenis transaksi',
                 ),
                 const SizedBox(height: 8),
@@ -465,7 +465,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                 // CATEGORY
                 // =================================================
 
-                _SectionLabel(
+                const _SectionLabel(
                   title: 'Kategori',
                 ),
                 const SizedBox(height: 8),
@@ -483,7 +483,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                 // AMOUNT
                 // =================================================
 
-                _SectionLabel(
+                const _SectionLabel(
                   title: 'Nominal',
                 ),
                 const SizedBox(height: 8),
@@ -548,7 +548,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                 // DESCRIPTION
                 // =================================================
 
-                _SectionLabel(
+                const _SectionLabel(
                   title: 'Keterangan',
                 ),
                 const SizedBox(height: 8),
@@ -719,7 +719,7 @@ class _TypeButton extends StatelessWidget {
           color: selected ? background : MyColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? color.withOpacity(.35) : MyColors.border,
+            color: selected ? color.withValues(alpha: .35) : MyColors.border,
             width: selected ? 1.3 : 1,
           ),
         ),

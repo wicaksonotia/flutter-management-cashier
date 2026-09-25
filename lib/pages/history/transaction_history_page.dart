@@ -10,7 +10,6 @@ import 'package:cashier_management/pages/history/widgets/finance_loading_state.d
 import 'package:cashier_management/pages/history/widgets/finance_segmented.dart';
 import 'package:cashier_management/pages/history/widgets/finance_summary_card.dart';
 import 'package:cashier_management/pages/history/widgets/finance_transaction_card.dart';
-import 'package:cashier_management/pages/history/widgets/transaction_filter/transaction_category_filter_page.dart';
 import 'package:cashier_management/pages/history/widgets/transaction_filter/transaction_filter_sheet.dart';
 import 'package:cashier_management/pages/navigation_drawer.dart'
     as custom_drawer;
