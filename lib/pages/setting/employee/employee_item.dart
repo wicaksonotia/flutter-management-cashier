@@ -1,6 +1,7 @@
 import 'package:cashier_management/controllers/employee_controller.dart';
 import 'package:cashier_management/models/employee_model.dart';
 import 'package:cashier_management/routes.dart';
+import 'package:cashier_management/utils/app_popup_menu.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/management_status_badge.dart';
@@ -161,22 +162,34 @@ class EmployeeItem extends StatelessWidget {
   }
 
   Widget _buildMenu(BuildContext context) {
-    return PopupMenuButton<String>(
-      tooltip: 'Menu',
-      padding: EdgeInsets.zero,
-      icon: const Icon(
-        Icons.more_horiz_rounded,
-        color: MyColors.textSecondary,
-        size: 22,
-      ),
-      constraints: const BoxConstraints(
-        minWidth: 180,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: MyColors.surface,
-      elevation: 6,
+    return AppPopupMenu(
+      items: [
+        const AppPopupMenuItem(
+          value: 'edit',
+          label: 'Edit Karyawan',
+          icon: Icons.edit_outlined,
+        ),
+        AppPopupMenuItem(
+          value: 'status',
+          label: isActive ? 'Nonaktifkan' : 'Aktifkan',
+          icon: isActive
+              ? Icons.pause_circle_outline_rounded
+              : Icons.play_circle_outline_rounded,
+          color: isActive ? MyColors.warning : MyColors.success,
+        ),
+        const AppPopupMenuItem(
+          value: 'reset',
+          label: 'Reset Password',
+          icon: Icons.lock_reset_outlined,
+        ),
+        AppPopupMenuItem(
+          value: 'delete',
+          label: 'Hapus Karyawan',
+          icon: Icons.delete_outline_rounded,
+          color: MyColors.error,
+          enabled: canDelete,
+        ),
+      ],
       onSelected: (value) {
         switch (value) {
           case 'edit':
@@ -195,45 +208,6 @@ class EmployeeItem extends StatelessWidget {
             _deleteEmployee(context);
             break;
         }
-      },
-      itemBuilder: (context) {
-        return [
-          const PopupMenuItem<String>(
-            value: 'edit',
-            child: _PopupMenuItemContent(
-              icon: Icons.edit_outlined,
-              label: 'Edit Karyawan',
-              color: MyColors.textPrimary,
-            ),
-          ),
-          PopupMenuItem<String>(
-            value: 'status',
-            child: _PopupMenuItemContent(
-              icon: isActive
-                  ? Icons.pause_circle_outline_rounded
-                  : Icons.play_circle_outline_rounded,
-              label: isActive ? 'Nonaktifkan' : 'Aktifkan',
-              color: isActive ? MyColors.warning : MyColors.success,
-            ),
-          ),
-          const PopupMenuItem<String>(
-            value: 'reset',
-            child: _PopupMenuItemContent(
-              icon: Icons.lock_reset_outlined,
-              label: 'Reset Password',
-              color: MyColors.textPrimary,
-            ),
-          ),
-          PopupMenuItem<String>(
-            value: 'delete',
-            enabled: canDelete,
-            child: _PopupMenuItemContent(
-              icon: Icons.delete_outline_rounded,
-              label: 'Hapus Karyawan',
-              color: canDelete ? MyColors.error : MyColors.disabledText,
-            ),
-          ),
-        ];
       },
     );
   }

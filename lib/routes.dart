@@ -2,15 +2,15 @@ import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/controllers/splash_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
+import 'package:cashier_management/controllers/transaction_controller.dart';
 
 import 'package:cashier_management/pages/add_transaction/calculator.dart';
 import 'package:cashier_management/pages/add_transaction/form_transaction.dart';
+import 'package:cashier_management/pages/history/transaction_history_page.dart';
 
 import 'package:cashier_management/pages/login_page.dart';
 
 import 'package:cashier_management/pages/monitoring_outlet/monitoring_page.dart';
-
-import 'package:cashier_management/pages/history/history_page.dart';
 
 import 'package:cashier_management/pages/setting/branch/branch_form.dart';
 import 'package:cashier_management/pages/setting/branch/branch_page.dart';
@@ -170,6 +170,12 @@ class RouterClass {
     GetPage(
       name: transactionhistory,
       page: () => const TransactionHistoryPage(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<TransactionController>(
+          () => TransactionController(),
+          fenix: true,
+        );
+      }),
     ),
 
     GetPage(

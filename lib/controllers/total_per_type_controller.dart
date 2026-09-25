@@ -39,7 +39,7 @@ class TotalPerTypeController extends GetxController {
     }
   }
 
-  void getTotalSaldo() async {
+  Future<void> getTotalSaldo() async {
     try {
       isLoading(true);
       final result = await RemoteDataSource.homeTotalSaldo();

@@ -399,9 +399,9 @@ class _SelectTableListPageState<T> extends State<SelectTableListPage<T>> {
           Center(
             child: TextButton(
               onPressed: _clearSearch,
-              child: Text(
+              child: const Text(
                 'Hapus pencarian',
-                style: TextStyle(
+                style: const TextStyle(
                   color: MyColors.primary,
                   fontWeight: FontWeight.w600,
                 ),

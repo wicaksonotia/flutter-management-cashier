@@ -29,7 +29,7 @@ class UserSetting extends StatelessWidget {
               // HEADER
               // =====================================================
 
-              ManagementHeader(
+              const ManagementHeader(
                 title: 'Settings',
                 subtitle: 'Kelola pengaturan akun dan aplikasi',
               ),
@@ -525,11 +525,11 @@ class _VersionTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 14),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Application Version',
                   style: TextStyle(
                     color: MyColors.textPrimary,
@@ -537,8 +537,8 @@ class _VersionTile extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
-                const Text(
+                SizedBox(height: 4),
+                Text(
                   'Cashier Management',
                   style: TextStyle(
                     color: MyColors.textSecondary,

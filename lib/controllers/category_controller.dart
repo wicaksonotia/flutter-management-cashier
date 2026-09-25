@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cashier_management/controllers/base_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
 import 'package:cashier_management/models/category_model.dart';
@@ -7,56 +5,80 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CategoryController extends BaseController {
-  var resultDataCategory = <DataCategory>[].obs;
-  var resultDataCategoryWithoutPagination = <DataCategory>[].obs;
+  // ===========================================================================
+  // DATA
+  // ===========================================================================
 
-  var isPemasukan = false.obs;
+  final RxList<DataCategory> resultDataCategory = <DataCategory>[].obs;
 
-  var isLoadingWithoutPagination = false.obs;
-  var isLoadingCategory = false.obs;
-  var isLoadingSaveCategory = false.obs;
-  var isLoadingMore = false.obs;
+  final RxList<DataCategory> resultDataCategoryWithoutPagination =
+      <DataCategory>[].obs;
 
-  var dataStatus = true.obs;
-  var isEmptyValueSearchBar = true.obs;
+  // ===========================================================================
+  // STATE
+  // ===========================================================================
 
-  TextEditingController nameController = TextEditingController();
+  final RxBool isPemasukan = false.obs;
 
-  var idCategoryTransaction = 0.obs;
-  var selectedCategoryTransaction = 'Category'.obs;
-  var sortOrder = "ASC".obs;
+  final RxBool isLoadingWithoutPagination = false.obs;
+  final RxBool isLoadingCategory = false.obs;
+  final RxBool isLoadingSaveCategory = false.obs;
+  final RxBool isLoadingMore = false.obs;
 
-  // ============================================================
+  final RxBool dataStatus = true.obs;
+  final RxBool isEmptyValueSearchBar = true.obs;
+
+  // ===========================================================================
+  // FORM
+  // ===========================================================================
+
+  final TextEditingController nameController = TextEditingController();
+
+  final TextEditingController searchBarController = TextEditingController();
+
+  final RxInt idCategoryTransaction = 0.obs;
+
+  final RxString selectedCategoryTransaction = 'Category'.obs;
+
+  final RxString sortOrder = 'ASC'.obs;
+
+  // ===========================================================================
   // PAGINATION
-  // ============================================================
+  // ===========================================================================
 
   int page = 1;
-  final int limit = 10;
+
+  static const int limit = 10;
+
   bool hasMore = true;
 
-  // ============================================================
+  // ===========================================================================
   // FILTER
-  // ============================================================
+  // ===========================================================================
 
-  var tags = ["PENGELUARAN", "PEMASUKAN"].obs;
+  final RxList<String> tags = <String>[
+    'PENGELUARAN',
+    'PEMASUKAN',
+  ].obs;
 
-  TextEditingController searchBarController = TextEditingController();
-
-  // ============================================================
-  // CLEAR FORM
-  // ============================================================
+  // ===========================================================================
+  // CATEGORY MANAGEMENT
+  // ===========================================================================
 
   void clearCategoryController() {
     idCategoryTransaction.value = 0;
+    selectedCategoryTransaction.value = 'Category';
+
     nameController.clear();
+
     isPemasukan.value = false;
 
     update();
   }
 
-  // ============================================================
-  // LOAD PAGE 1
-  // ============================================================
+  // ===========================================================================
+  // LIST CATEGORY
+  // ===========================================================================
 
   Future<void> getData() async {
     try {
@@ -66,13 +88,14 @@ class CategoryController extends BaseController {
       hasMore = true;
 
       isLoadingCategory.value = true;
+
       resultDataCategory.clear();
 
       final rawFormat = {
         'status': 'all',
         'id_kios': idKios.value,
         'kategori': tags.toList(),
-        'textSearch': searchBarController.text,
+        'textSearch': searchBarController.text.trim(),
         'page': page,
         'limit': limit,
         'sort': sortOrder.value,
@@ -85,25 +108,29 @@ class CategoryController extends BaseController {
 
         resultDataCategory.assignAll(data);
 
-        // Jika data yang diterima kurang dari limit,
-        // berarti sudah tidak ada halaman berikutnya.
         hasMore = data.length == limit;
 
-        page++;
+        if (data.isNotEmpty) {
+          page++;
+        }
       }
     } catch (e) {
-      print("getData error: $e");
+      debugPrint(
+        'CategoryController.getData error: $e',
+      );
     } finally {
       isLoadingCategory.value = false;
     }
   }
 
-  // ============================================================
+  // ===========================================================================
   // LOAD MORE
-  // ============================================================
+  // ===========================================================================
 
   Future<void> loadMore() async {
-    if (!hasMore || isLoadingMore.value) return;
+    if (!hasMore || isLoadingMore.value) {
+      return;
+    }
 
     try {
       isLoadingMore.value = true;
@@ -112,7 +139,7 @@ class CategoryController extends BaseController {
         'status': 'all',
         'id_kios': idKios.value,
         'kategori': tags.toList(),
-        'textSearch': searchBarController.text,
+        'textSearch': searchBarController.text.trim(),
         'page': page,
         'limit': limit,
         'sort': sortOrder.value,
@@ -120,56 +147,66 @@ class CategoryController extends BaseController {
 
       final result = await RemoteDataSource.listCategories(rawFormat);
 
-      if (result != null) {
-        final newData = result.data ?? [];
-
-        if (newData.isEmpty) {
-          hasMore = false;
-          return;
-        }
-
-        resultDataCategory.addAll(newData);
-
-        // Jika data kurang dari limit,
-        // berarti tidak ada page berikutnya.
-        hasMore = newData.length == limit;
-
-        page++;
+      if (result == null) {
+        return;
       }
+
+      final newData = result.data ?? [];
+
+      if (newData.isEmpty) {
+        hasMore = false;
+        return;
+      }
+
+      resultDataCategory.addAll(newData);
+
+      hasMore = newData.length == limit;
+
+      page++;
     } catch (e) {
-      print("loadMore error: $e");
+      debugPrint(
+        'CategoryController.loadMore error: $e',
+      );
     } finally {
       isLoadingMore.value = false;
     }
   }
 
-  // ============================================================
-  // PULL TO REFRESH
-  // ============================================================
+  // ===========================================================================
+  // REFRESH
+  // ===========================================================================
 
   Future<void> refreshData() async {
-    return getData();
+    await getData();
   }
 
-  // ============================================================
+  // ===========================================================================
   // SORT
-  // ============================================================
+  // ===========================================================================
 
   void toggleSort() {
-    sortOrder.value = sortOrder.value == "ASC" ? "DESC" : "ASC";
+    sortOrder.value = sortOrder.value == 'ASC' ? 'DESC' : 'ASC';
 
     getData();
   }
 
-  // ============================================================
+  // ===========================================================================
   // FETCH ALL CATEGORY
-  // ============================================================
+  //
+  // Dipakai oleh AddTransactionSheet.
+  //
+  // PENTING:
+  // Tidak lagi otomatis memilih kategori pertama.
+  // User harus memilih kategori sendiri.
+  // ===========================================================================
 
-  Future<void> fetchAllCategory(Object kategori) async {
+  Future<void> fetchAllCategory(
+    Object kategori,
+  ) async {
     try {
       await initializeBaseController();
 
-      isLoadingWithoutPagination(true);
+      isLoadingWithoutPagination.value = true;
 
       final rawFormat = {
         'status': 'all',
@@ -186,37 +223,63 @@ class CategoryController extends BaseController {
       if (result != null) {
         final data = result.data ?? [];
 
-        if (data.isNotEmpty) {
-          idCategoryTransaction.value = data.first.id ?? 0;
-          selectedCategoryTransaction.value = data.first.categoryName ?? '';
-        }
-
         resultDataCategoryWithoutPagination.assignAll(data);
+
+        // Jangan auto-select.
+        //
+        // Sebelumnya:
+        //
+        // idCategoryTransaction.value = data.first.id;
+        // selectedCategoryTransaction.value = ...
+        //
+        // Sekarang user wajib memilih sendiri.
+      } else {
+        resultDataCategoryWithoutPagination.clear();
       }
     } catch (e) {
-      print("fetchAllCategory error: $e");
+      debugPrint(
+        'CategoryController.fetchAllCategory error: $e',
+      );
+
+      resultDataCategoryWithoutPagination.clear();
     } finally {
-      isLoadingWithoutPagination(false);
+      isLoadingWithoutPagination.value = false;
     }
   }
 
-  // ============================================================
+  // ===========================================================================
+  // SELECT CATEGORY
+  // ===========================================================================
+
+  void selectTransactionCategory(
+    DataCategory category,
+  ) {
+    idCategoryTransaction.value = category.id ?? 0;
+
+    selectedCategoryTransaction.value = category.categoryName ?? 'Category';
+
+    update();
+  }
+
+  // ===========================================================================
+  // CLEAR TRANSACTION CATEGORY
+  // ===========================================================================
+
+  void clearSelectedTransactionCategory() {
+    idCategoryTransaction.value = 0;
+
+    selectedCategoryTransaction.value = 'Category';
+
+    update();
+  }
+
+  // ===========================================================================
   // SAVE CATEGORY
-  // ============================================================
-  //
-  // IMPORTANT:
-  // Controller tidak melakukan Get.back().
-  // Modal ditutup oleh CategoryForm menggunakan Navigator.pop(context).
-  //
-  // Return:
-  // true  = berhasil
-  // false = gagal
-  //
-  // ============================================================
+  // ===========================================================================
 
   Future<bool> saveCategory() async {
     try {
-      isLoadingSaveCategory(true);
+      isLoadingSaveCategory.value = true;
 
       final rawFormat = {
         'id_kios': idKios.value,
@@ -225,66 +288,60 @@ class CategoryController extends BaseController {
         'is_pemasukan': isPemasukan.value,
       };
 
-      print(jsonEncode(rawFormat));
+      debugPrint(
+        'saveCategory: $rawFormat',
+      );
 
-      final result = await RemoteDataSource.saveCategory(rawFormat);
+      final result = await RemoteDataSource.saveCategory(
+        rawFormat,
+      );
 
-      if (result != null &&
-          result["status"] == "ok" &&
-          result["data"] != null) {
-        final newItem = DataCategory.fromJson(
-          result["data"],
-        );
-
-        if (idCategoryTransaction.value == 0) {
-          // ======================================================
-          // INSERT
-          // ======================================================
-
-          resultDataCategory.insert(
-            0,
-            newItem,
-          );
-        } else {
-          // ======================================================
-          // UPDATE
-          // ======================================================
-
-          final index = resultDataCategory.indexWhere(
-            (e) => e.id == newItem.id,
-          );
-
-          if (index != -1) {
-            resultDataCategory[index] = newItem;
-          }
-        }
-
-        resultDataCategory.refresh();
-
-        return true;
+      if (result == null ||
+          result['status'] != 'ok' ||
+          result['data'] == null) {
+        return false;
       }
 
-      return false;
+      final newItem = DataCategory.fromJson(
+        result['data'],
+      );
+
+      if (idCategoryTransaction.value == 0) {
+        resultDataCategory.insert(
+          0,
+          newItem,
+        );
+      } else {
+        final index = resultDataCategory.indexWhere(
+          (item) => item.id == newItem.id,
+        );
+
+        if (index != -1) {
+          resultDataCategory[index] = newItem;
+        }
+      }
+
+      resultDataCategory.refresh();
+
+      return true;
     } catch (e) {
-      Get.snackbar(
-        "Notification",
-        "Failed: $e",
-        icon: const Icon(
-          Icons.error,
-        ),
+      debugPrint(
+        'CategoryController.saveCategory error: $e',
       );
 
       return false;
     } finally {
-      isLoadingSaveCategory(false);
+      isLoadingSaveCategory.value = false;
     }
   }
 
-  // ============================================================
+  // ===========================================================================
   // EDIT CATEGORY
-  // ============================================================
+  // ===========================================================================
 
-  void editCategory(DataCategory model) {
+  void editCategory(
+    DataCategory model,
+  ) {
     idCategoryTransaction.value = model.id ?? 0;
 
     nameController.text = model.categoryName ?? '';
@@ -294,11 +351,11 @@ class CategoryController extends BaseController {
     update();
   }
 
-  // ============================================================
+  // ===========================================================================
   // UPDATE STATUS
-  // ============================================================
+  // ===========================================================================
 
-  Future<void> updateStatusCategory(
+  Future<bool> updateStatusCategory(
     int id,
     bool newStatus,
   ) async {
@@ -308,101 +365,75 @@ class CategoryController extends BaseController {
         'status': newStatus,
       };
 
-      final success = await RemoteDataSource.updateStatusCategory(rawFormat);
-
-      if (success) {
-        // ========================================================
-        // UPDATE DATA LOKAL
-        // ========================================================
-
-        final index = resultDataCategory.indexWhere(
-          (item) => item.id == id,
-        );
-
-        if (index != -1) {
-          resultDataCategory[index].status = newStatus;
-
-          resultDataCategory.refresh();
-        }
-
-        Get.snackbar(
-          'Notification',
-          'Status updated successfully',
-          icon: const Icon(
-            Icons.check,
-          ),
-          snackPosition: SnackPosition.TOP,
-        );
-      } else {
-        Get.snackbar(
-          'Notification',
-          'Failed to update data',
-          icon: const Icon(
-            Icons.error,
-          ),
-          snackPosition: SnackPosition.TOP,
-        );
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        icon: const Icon(
-          Icons.error,
-        ),
-        snackPosition: SnackPosition.TOP,
+      final success = await RemoteDataSource.updateStatusCategory(
+        rawFormat,
       );
+
+      if (!success) {
+        return false;
+      }
+
+      final index = resultDataCategory.indexWhere(
+        (item) => item.id == id,
+      );
+
+      if (index != -1) {
+        resultDataCategory[index].status = newStatus;
+
+        resultDataCategory.refresh();
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint(
+        'CategoryController.updateStatusCategory error: $e',
+      );
+
+      return false;
     }
   }
 
-  // ============================================================
+  // ===========================================================================
   // DELETE CATEGORY
-  // ============================================================
+  // ===========================================================================
 
-  Future<void> deleteCategory(int id) async {
+  Future<bool> deleteCategory(
+    int id,
+  ) async {
     try {
-      isLoadingSaveCategory(true);
+      isLoadingSaveCategory.value = true;
 
       final deletedId = await RemoteDataSource.deleteCategory(id);
 
-      if (deletedId != null) {
-        // ========================================================
-        // REMOVE DARI LIST LOKAL
-        // ========================================================
-
-        resultDataCategory.removeWhere(
-          (item) => item.id == deletedId,
-        );
-
-        Get.snackbar(
-          'Notification',
-          'Category deleted successfully',
-          icon: const Icon(
-            Icons.check,
-          ),
-          snackPosition: SnackPosition.TOP,
-        );
-      } else {
-        Get.snackbar(
-          'Notification',
-          'Failed to delete category',
-          icon: const Icon(
-            Icons.error,
-          ),
-          snackPosition: SnackPosition.TOP,
-        );
+      if (deletedId == null) {
+        return false;
       }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        icon: const Icon(
-          Icons.error,
-        ),
-        snackPosition: SnackPosition.TOP,
+
+      resultDataCategory.removeWhere(
+        (item) => item.id == deletedId,
       );
+
+      return true;
+    } catch (e) {
+      debugPrint(
+        'CategoryController.deleteCategory error: $e',
+      );
+
+      return false;
     } finally {
-      isLoadingSaveCategory(false);
+      isLoadingSaveCategory.value = false;
     }
+  }
+
+  // ===========================================================================
+  // DISPOSE
+  // ===========================================================================
+
+  @override
+  void onClose() {
+    nameController.dispose();
+    searchBarController.dispose();
+
+    super.onClose();
   }
 }

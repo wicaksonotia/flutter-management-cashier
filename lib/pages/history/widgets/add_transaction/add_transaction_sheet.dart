@@ -8,82 +8,41 @@ import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionController extends CategoryController {
-  // ============================================================
-  // DEPENDENCIES
-  // ============================================================
-
   late final HistoryController _historyController;
   late final TotalPerTypeController _totalPerTypeController;
-
-  // ============================================================
-  // FORM CONTROLLER
-  // ============================================================
 
   final TextEditingController amountController = TextEditingController();
 
   final TextEditingController descriptionController = TextEditingController();
 
-  // ============================================================
-  // TRANSACTION DATE & TIME
-  // ============================================================
-
   final Rx<DateTime> selectTransactionExpenseDate = DateTime.now().obs;
 
   final Rx<TimeOfDay> selectTransactionExpenseTime = TimeOfDay.now().obs;
 
-  // Tetap dipertahankan karena sudah digunakan oleh
-  // struktur controller sebelumnya.
   final Rx<DateTime> selectTransactionIncomeDate = DateTime.now().obs;
 
   final Rx<TimeOfDay> selectTransactionIncomeTime = TimeOfDay.now().obs;
-
-  // ============================================================
-  // TRANSACTION CATEGORY
-  // ============================================================
 
   final RxInt dataCategoryIncomeId = 0.obs;
 
   final RxString dataCategoryIncomeName = ''.obs;
 
-  // ============================================================
-  // STATE
-  // ============================================================
-
   final RxBool isLoadingSaveTransaction = false.obs;
 
   final RxBool isIncome = false.obs;
 
-  /// true  = transaksi terpusat
-  /// false = transaksi menggunakan cabang aktif
   final RxBool isCentralized = true.obs;
 
-  // ============================================================
-  // CATEGORY TYPE
-  // ============================================================
+  /// Brand aktif yang dipilih melalui Drawer.
+  final RxInt activeKiosId = 0.obs;
 
+  final RxString namaKios = ''.obs;
+
+  /// Kategori transaksi yang sedang aktif.
   List<String> kategori = [];
-
-  String get formattedTransactionDate {
-    return DateFormat(
-      'dd MMMM yyyy',
-      'id_ID',
-    ).format(
-      selectTransactionExpenseDate.value,
-    );
-  }
-
-  String get formattedTransactionTime {
-    final time = selectTransactionExpenseTime.value;
-
-    return '${time.hour.toString().padLeft(2, '0')}:'
-        '${time.minute.toString().padLeft(2, '0')}';
-  }
-
-  // ============================================================
-  // INIT
-  // ============================================================
 
   @override
   void onInit() {
@@ -92,12 +51,35 @@ class TransactionController extends CategoryController {
     _historyController = Get.find<HistoryController>();
     _totalPerTypeController = Get.find<TotalPerTypeController>();
 
+    _loadActiveBrand();
+
     setKategori();
   }
 
-  // ============================================================
-  // CATEGORY
-  // ============================================================
+  // ===========================================================
+  // ACTIVE BRAND
+  // ===========================================================
+
+  Future<void> _loadActiveBrand() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    activeKiosId.value = prefs.getInt('id_kios') ?? 0;
+
+    namaKios.value = prefs.getString('kios') ?? '';
+
+    /// BaseController tetap disinkronkan juga.
+    if (activeKiosId.value > 0) {
+      idKios.value = activeKiosId.value;
+    }
+  }
+
+  Future<void> refreshActiveBrand() async {
+    await _loadActiveBrand();
+  }
+
+  // ===========================================================
+  // TRANSACTION TYPE
+  // ===========================================================
 
   void setKategori() {
     kategori = [
@@ -105,34 +87,45 @@ class TransactionController extends CategoryController {
     ];
   }
 
-  /// Dipanggil ketika user mengganti:
-  /// Pemasukan <-> Pengeluaran
   Future<void> changeTransactionType(
     bool income,
   ) async {
+    if (isIncome.value == income &&
+        resultDataCategoryWithoutPagination.isNotEmpty) {
+      return;
+    }
+
     isIncome.value = income;
 
     setKategori();
 
-    // Reset kategori lama karena kategori pemasukan
-    // dan pengeluaran berbeda.
-    idCategoryTransaction.value = 0;
-
-    selectedCategoryTransaction.value = 'Category';
+    clearSelectedCategory();
 
     await fetchAllCategory(
-      isIncome.value ? ['PEMASUKAN'] : ['PENGELUARAN'],
+      income ? ['PEMASUKAN'] : ['PENGELUARAN'],
     );
   }
 
-  // ============================================================
+  // ===========================================================
   // DATE
-  // ============================================================
+  // ===========================================================
 
   bool disableDate(DateTime day) {
-    return day.isBefore(
-      DateTime.now(),
+    final today = DateTime.now();
+
+    final selectedDay = DateTime(
+      day.year,
+      day.month,
+      day.day,
     );
+
+    final currentDay = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    );
+
+    return selectedDay.isAfter(currentDay);
   }
 
   Future<void> showDialogDatePicker() async {
@@ -142,9 +135,7 @@ class TransactionController extends CategoryController {
       firstDate: DateTime(
         DateTime.now().year - 1,
       ),
-      lastDate: DateTime(
-        DateTime.now().year + 1,
-      ),
+      lastDate: DateTime.now(),
       helpText: 'Tanggal transaksi',
       cancelText: 'Batal',
       confirmText: 'Pilih',
@@ -175,13 +166,12 @@ class TransactionController extends CategoryController {
 
     selectTransactionExpenseDate.value = pickedDate;
 
-    // Sinkronkan juga state income.
     selectTransactionIncomeDate.value = pickedDate;
   }
 
-  // ============================================================
+  // ===========================================================
   // TIME
-  // ============================================================
+  // ===========================================================
 
   Future<void> showDialogTimePicker() async {
     final pickedTime = await showTimePicker(
@@ -217,27 +207,33 @@ class TransactionController extends CategoryController {
 
     selectTransactionExpenseTime.value = pickedTime;
 
-    // Sinkronkan juga state income.
     selectTransactionIncomeTime.value = pickedTime;
   }
 
-  // ============================================================
-  // BRAND / OUTLET
-  // ============================================================
+  // ===========================================================
+  // FORMATTED VALUE
+  // ===========================================================
 
-  /// Brand (`idKios`) selalu mengikuti Brand aktif
-  /// yang sudah dipilih melalui Drawer.
-  ///
-  /// Tidak ada perubahan Brand dari form transaksi.
-  int get activeKiosId {
-    return idKios.value;
+  String get formattedTransactionDate {
+    return DateFormat(
+      'dd MMMM yyyy',
+      'id_ID',
+    ).format(
+      selectTransactionExpenseDate.value,
+    );
   }
 
-  /// Jika transaksi terpusat:
-  ///     id_cabang = 0
-  ///
-  /// Jika tidak:
-  ///     gunakan cabang aktif dari BaseController.
+  String get formattedTransactionTime {
+    final time = selectTransactionExpenseTime.value;
+
+    return '${time.hour.toString().padLeft(2, '0')}:'
+        '${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  // ===========================================================
+  // ACTIVE OUTLET
+  // ===========================================================
+
   int get activeCabangId {
     if (isCentralized.value) {
       return 0;
@@ -246,41 +242,9 @@ class TransactionController extends CategoryController {
     return idCabang.value;
   }
 
-  // ============================================================
-  // VALIDATION
-  // ============================================================
-
-  bool validateTransaction() {
-    final amountText = amountController.text.trim();
-
-    final description = descriptionController.text.trim();
-
-    if (amountText.isEmpty) {
-      return false;
-    }
-
-    if (description.isEmpty) {
-      return false;
-    }
-
-    if (idCategoryTransaction.value <= 0) {
-      return false;
-    }
-
-    if (activeKiosId <= 0) {
-      return false;
-    }
-
-    if (!isCentralized.value && activeCabangId <= 0) {
-      return false;
-    }
-
-    return true;
-  }
-
-  // ============================================================
+  // ===========================================================
   // AMOUNT
-  // ============================================================
+  // ===========================================================
 
   int get amountValue {
     final cleanAmount = amountController.text.replaceAll(
@@ -291,9 +255,37 @@ class TransactionController extends CategoryController {
     return int.tryParse(cleanAmount) ?? 0;
   }
 
-  // ============================================================
-  // TRANSACTION DATE FORMAT
-  // ============================================================
+  // ===========================================================
+  // VALIDATION
+  // ===========================================================
+
+  bool validateTransaction() {
+    if (activeKiosId.value <= 0) {
+      return false;
+    }
+
+    if (amountValue <= 0) {
+      return false;
+    }
+
+    if (descriptionController.text.trim().isEmpty) {
+      return false;
+    }
+
+    if (idCategoryTransaction.value <= 0) {
+      return false;
+    }
+
+    if (!isCentralized.value && idCabang.value <= 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // ===========================================================
+  // REQUEST PAYLOAD
+  // ===========================================================
 
   String get transactionDateValue {
     return selectTransactionExpenseDate.value.toIso8601String();
@@ -315,13 +307,9 @@ class TransactionController extends CategoryController {
     ).format(dateTime);
   }
 
-  // ============================================================
-  // REQUEST PAYLOAD
-  // ============================================================
-
   Map<String, dynamic> buildRequestPayload() {
     return {
-      'id_kios': activeKiosId,
+      'id_kios': activeKiosId.value,
       'id_cabang': activeCabangId,
       'id_kategori_transaksi': idCategoryTransaction.value,
       'amount': amountValue,
@@ -332,20 +320,10 @@ class TransactionController extends CategoryController {
     };
   }
 
-  // ============================================================
-  // SAVE TRANSACTION
-  // ============================================================
+  // ===========================================================
+  // SAVE
+  // ===========================================================
 
-  /// Return:
-  ///
-  /// true  = berhasil
-  /// false = gagal / validation gagal
-  ///
-  /// Controller tidak melakukan:
-  /// - Get.back()
-  /// - Get.snackbar()
-  ///
-  /// UI yang menentukan bagaimana menampilkan hasil.
   Future<bool> saveTransaction() async {
     if (isLoadingSaveTransaction.value) {
       return false;
@@ -357,6 +335,13 @@ class TransactionController extends CategoryController {
 
     try {
       isLoadingSaveTransaction.value = true;
+
+      /// Pastikan Brand masih mengikuti Drawer.
+      await refreshActiveBrand();
+
+      if (activeKiosId.value <= 0) {
+        return false;
+      }
 
       final rawFormat = buildRequestPayload();
 
@@ -372,29 +357,9 @@ class TransactionController extends CategoryController {
         return false;
       }
 
-      // ========================================================
-      // CLEAR FORM
-      // ========================================================
-
       clearForm();
 
-      // ========================================================
-      // REFRESH HISTORY
-      // ========================================================
-
-      await _historyController.getHistoriesByFilter();
-
-      _historyController.getHistoriesBySingleDate();
-
-      // ========================================================
-      // REFRESH DASHBOARD FINANCIAL
-      // ========================================================
-
-      _totalPerTypeController.getTotalSaldo();
-
-      _totalPerTypeController.getTotalBranchSaldo();
-
-      _totalPerTypeController.getTotalPerMonth();
+      await _refreshAfterSave();
 
       return true;
     } catch (e) {
@@ -408,50 +373,66 @@ class TransactionController extends CategoryController {
     }
   }
 
-  // ============================================================
+  // ===========================================================
+  // REFRESH AFTER SAVE
+  // ===========================================================
+
+  Future<void> _refreshAfterSave() async {
+    await _historyController.getHistoriesByFilter();
+
+    await _historyController.getHistoriesBySingleDate();
+
+    await _totalPerTypeController.getTotalSaldo();
+
+    await _totalPerTypeController.getTotalBranchSaldo();
+
+    await _totalPerTypeController.getTotalPerMonth();
+  }
+
+  // ===========================================================
   // CLEAR FORM
-  // ============================================================
+  // ===========================================================
 
-  void clearForm() {
-    amountController.clear();
-    descriptionController.clear();
-
+  void clearSelectedCategory() {
     idCategoryTransaction.value = 0;
 
     selectedCategoryTransaction.value = 'Category';
 
     dataCategoryIncomeId.value = 0;
+
     dataCategoryIncomeName.value = '';
-
-    isIncome.value = false;
-
-    setKategori();
-
-    final now = DateTime.now();
-
-    selectTransactionExpenseDate.value = now;
-
-    selectTransactionExpenseTime.value = TimeOfDay.fromDateTime(now);
-
-    selectTransactionIncomeDate.value = now;
-
-    selectTransactionIncomeTime.value = TimeOfDay.fromDateTime(now);
   }
-
-  // ============================================================
-  // RESET FORM WITHOUT RESETTING OUTLET / BRAND
-  // ============================================================
 
   void resetForm() {
     amountController.clear();
     descriptionController.clear();
 
-    idCategoryTransaction.value = 0;
+    clearSelectedCategory();
 
-    selectedCategoryTransaction.value = 'Category';
+    isIncome.value = false;
+    isCentralized.value = true;
 
-    dataCategoryIncomeId.value = 0;
-    dataCategoryIncomeName.value = '';
+    setKategori();
+
+    final now = DateTime.now();
+
+    selectTransactionExpenseDate.value = now;
+
+    selectTransactionExpenseTime.value = TimeOfDay.fromDateTime(now);
+
+    selectTransactionIncomeDate.value = now;
+
+    selectTransactionIncomeTime.value = TimeOfDay.fromDateTime(now);
+
+    /// Jangan lupa brand aktif dari Drawer.
+    _loadActiveBrand();
+  }
+
+  void clearForm() {
+    amountController.clear();
+    descriptionController.clear();
+
+    clearSelectedCategory();
 
     isIncome.value = false;
 
@@ -468,9 +449,9 @@ class TransactionController extends CategoryController {
     selectTransactionIncomeTime.value = TimeOfDay.fromDateTime(now);
   }
 
-  // ============================================================
+  // ===========================================================
   // DISPOSE
-  // ============================================================
+  // ===========================================================
 
   @override
   void onClose() {

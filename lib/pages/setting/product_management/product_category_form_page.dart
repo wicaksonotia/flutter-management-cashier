@@ -3,7 +3,6 @@ import 'package:cashier_management/utils/app_back_header.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/uppercase_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class AddProductCategoryPage extends StatelessWidget {

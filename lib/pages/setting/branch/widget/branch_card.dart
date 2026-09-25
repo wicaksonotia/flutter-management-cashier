@@ -2,6 +2,7 @@ import 'package:cashier_management/controllers/cabang_controller.dart';
 import 'package:cashier_management/models/outlet_branch_model.dart';
 import 'package:cashier_management/pages/setting/branch/widget/branch_financial_info.dart';
 import 'package:cashier_management/routes.dart';
+import 'package:cashier_management/utils/app_popup_menu.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/confirm_dialog.dart';
 import 'package:cashier_management/utils/management_status_badge.dart';
@@ -123,66 +124,40 @@ class BranchCard extends StatelessWidget {
   }
 
   Widget _buildMenu(BuildContext context) {
-    return PopupMenuButton<String>(
-      tooltip: 'Aksi',
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(
-        minWidth: 180,
-      ),
-      icon: const Icon(
-        Icons.more_horiz_rounded,
-        size: 21,
-        color: MyColors.textSecondary,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: MyColors.surface,
-      elevation: 6,
+    return AppPopupMenu(
+      items: [
+        const AppPopupMenuItem(
+          value: 'edit',
+          label: 'Edit Outlet',
+          icon: Icons.edit_outlined,
+        ),
+        AppPopupMenuItem(
+          value: 'status',
+          label: isActive ? 'Nonaktifkan' : 'Aktifkan',
+          icon: isActive
+              ? Icons.pause_circle_outline_rounded
+              : Icons.play_circle_outline_rounded,
+        ),
+        AppPopupMenuItem(
+          value: 'delete',
+          label: 'Hapus Outlet',
+          icon: Icons.delete_outline_rounded,
+          color: MyColors.error,
+          enabled: !hasFinancialRecord,
+        ),
+      ],
       onSelected: (value) {
         switch (value) {
           case 'edit':
             _editOutlet();
             break;
-
           case 'status':
             _changeStatus(context);
             break;
-
           case 'delete':
             _deleteOutlet(context);
             break;
         }
-      },
-      itemBuilder: (context) {
-        return [
-          const PopupMenuItem(
-            value: 'edit',
-            child: _PopupMenuItemContent(
-              icon: Icons.edit_outlined,
-              label: 'Edit Outlet',
-            ),
-          ),
-          PopupMenuItem(
-            value: 'status',
-            child: _PopupMenuItemContent(
-              icon: isActive
-                  ? Icons.pause_circle_outline_rounded
-                  : Icons.play_circle_outline_rounded,
-              label: isActive ? 'Nonaktifkan' : 'Aktifkan',
-            ),
-          ),
-          PopupMenuItem(
-            value: 'delete',
-            enabled: !hasFinancialRecord,
-            child: _PopupMenuItemContent(
-              icon: Icons.delete_outline_rounded,
-              label: 'Hapus Outlet',
-              color:
-                  !hasFinancialRecord ? MyColors.error : MyColors.disabledText,
-            ),
-          ),
-        ];
       },
     );
   }

@@ -100,7 +100,7 @@ class HistoryController extends GetxController {
     }
   }
 
-  void getHistoriesBySingleDate() async {
+  Future<void> getHistoriesBySingleDate() async {
     try {
       isLoadingSingleDate(true);
       var rawFormat = {
@@ -125,7 +125,7 @@ class HistoryController extends GetxController {
     }
   }
 
-  void getHistoriesByFilter() async {
+  Future<void> getHistoriesByFilter() async {
     try {
       isLoadingHistory(true);
       var rawFormat = {
@@ -176,23 +176,27 @@ class HistoryController extends GetxController {
     getHistoriesByFilter();
   }
 
-  void showDialogDateRangePicker() async {
-    var pickedDate = await showDateRangePicker(
+  Future<void> showDialogDateRangePicker() async {
+    final pickedDate = await showDateRangePicker(
       context: Get.context!,
       initialDateRange: DateTimeRange(
         start: startDate.value,
         end: endDate.value,
       ),
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      firstDate: DateTime.now().subtract(
+        const Duration(days: 365),
+      ),
       lastDate: DateTime.now(),
-      builder: (BuildContext context, Widget? child) {
+      builder: (
+        BuildContext context,
+        Widget? child,
+      ) {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
               primary: MyColors.primary,
               onPrimary: Colors.white,
               outlineVariant: Colors.grey.shade200,
-              // onSurfaceVariant: MyColors.primary,
               outline: Colors.grey.shade300,
               secondaryContainer: Colors.green.shade50,
             ),
@@ -201,14 +205,20 @@ class HistoryController extends GetxController {
         );
       },
     );
-    if (pickedDate != null) {
-      startDate.value = pickedDate.start;
-      endDate.value = pickedDate.end;
-      getHistoriesByFilter();
+
+    if (pickedDate == null) {
+      return;
     }
+
+    startDate.value = pickedDate.start;
+    endDate.value = pickedDate.end;
+
+    filterBy.value = 'tanggal';
+
+    await getHistoriesByFilter();
   }
 
-  void delete(int id) async {
+  Future<void> delete(int id) async {
     var resultUpdate = await RemoteDataSource.deleteHistory(id);
     if (resultUpdate) {
       Get.snackbar('Notification', 'Data deleted successfully',
