@@ -1,57 +1,59 @@
 import 'package:cashier_management/controllers/transaction_controller.dart';
-import 'package:cashier_management/pages/history/widgets/add_transaction/transaction_category_picker.dart';
+import 'package:cashier_management/pages/select_table_list_page.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class TransactionCategoryField extends StatelessWidget {
   final TransactionController controller;
-  final String? error;
-  final bool enabled;
-  final VoidCallback? onSelected;
 
   const TransactionCategoryField({
     super.key,
     required this.controller,
-    required this.error,
-    required this.enabled,
-    this.onSelected,
   });
 
-  Future<void> _openPicker(
-    BuildContext context,
-  ) async {
-    if (!enabled) return;
+  Future<void> _openPicker() async {
+    await Get.to(
+      () => SelectTableListPage(
+        title: 'Pilih Kategori',
+        isLoading: controller.isLoadingWithoutPagination,
+        items: controller.resultDataCategoryWithoutPagination,
+        enableSearch: true,
+        searchHint: 'Cari kategori...',
+        titleBuilder: (item) {
+          return item.categoryName ?? '-';
+        },
+        isSelected: (item) {
+          return controller.idCategoryTransaction.value == (item.id ?? 0);
+        },
+        onItemTap: (item) async {
+          controller.selectTransactionCategory(item);
 
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) {
-        return TransactionCategoryPicker(
-          controller: controller,
-          onSelected: onSelected,
-        );
-      },
+          // JANGAN Get.back() di sini.
+          //
+          // SelectTableListPage sudah menangani
+          // navigasi setelah item dipilih.
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final selected = controller.selectedCategoryTransaction.value != 'Category';
+    return Obx(
+      () {
+        final selected = controller.idCategoryTransaction.value > 0;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(15),
-      onTap: () => _openPicker(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
+        return InkWell(
+          borderRadius: BorderRadius.circular(15),
+          onTap: _openPicker,
+          child: Container(
             padding: const EdgeInsets.all(13),
             decoration: BoxDecoration(
               color: MyColors.surface,
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
-                color: error != null ? MyColors.error : MyColors.border,
+                color: MyColors.border,
               ),
             ),
             child: Row(
@@ -61,9 +63,7 @@ class TransactionCategoryField extends StatelessWidget {
                   height: 38,
                   decoration: BoxDecoration(
                     color: MyColors.primaryLight,
-                    borderRadius: BorderRadius.circular(
-                      11,
-                    ),
+                    borderRadius: BorderRadius.circular(11),
                   ),
                   child: const Icon(
                     Icons.category_outlined,
@@ -108,19 +108,8 @@ class TransactionCategoryField extends StatelessWidget {
               ],
             ),
           ),
-          if (error != null) ...[
-            const SizedBox(height: 5),
-            Text(
-              error!,
-              style: const TextStyle(
-                fontSize: 10.5,
-                color: MyColors.error,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ],
-      ),
+        );
+      },
     );
   }
 }

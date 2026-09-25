@@ -434,22 +434,39 @@ class RemoteDataSource {
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listCategories;
 
+      debugPrint('======================================');
+      debugPrint('LIST CATEGORIES DIPANGGIL');
+      debugPrint('URL: $url');
+      debugPrint('BODY: $rawFormat');
+      debugPrint('======================================');
+
       Response response = await Dio().post(
         url,
         data: rawFormat,
-        options: Options(contentType: Headers.jsonContentType),
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
       );
 
+      debugPrint('STATUS: ${response.statusCode}');
+      debugPrint('DATA: ${response.data}');
+
       if (response.statusCode == 200) {
-        // Pastikan data berupa Map, bukan String
         final data =
             response.data is String ? jsonDecode(response.data) : response.data;
 
-        return CategoryModel.fromJson(data);
+        final result = CategoryModel.fromJson(data);
+
+        debugPrint('CATEGORY RESULT: ${result.data?.length ?? 0}');
+
+        return result;
       }
 
       return null;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('LIST CATEGORIES ERROR: $e');
+      debugPrint('$stackTrace');
+
       throw Exception("listCategories error: $e");
     }
   }

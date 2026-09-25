@@ -141,22 +141,37 @@ class HistoryController extends GetxController {
       isLoadingCategoryPemasukan(true);
 
       final rawFormat = {
+        'status': 'TRUE',
         'id_kios': idKios.value,
+        'kategori': ['PEMASUKAN'],
+        'textSearch': '',
+        'page': 1,
+        'limit': 999999,
+        'sort': 'ASC',
       };
 
-      final result = await RemoteDataSource.getListCabangKios(rawFormat);
+      final result = await RemoteDataSource.listCategories(rawFormat);
 
-      if (result != null) {
+      if (result?.data != null) {
         listCategoryPemasukan.assignAll(
-          result.map(
-            (category) => {
-              'value': category.id,
-              'nama': category.cabang ?? '-',
-            },
-          ),
+          result!.data!
+              .map(
+                (e) => {
+                  'value': e.id,
+                  'nama': e.categoryName,
+                },
+              )
+              .toList(),
         );
+      } else {
+        listCategoryPemasukan.clear();
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      debugPrint(
+        '>>> getDataListCategoryPemasukan ERROR: $error',
+      );
+      debugPrint('$stackTrace');
+
       Get.snackbar(
         'Error',
         error.toString(),
@@ -177,6 +192,8 @@ class HistoryController extends GetxController {
       isLoadingCategoryPengeluaran(true);
 
       final rawFormat = {
+        'status': 'TRUE',
+        'id_kios': idKios.value,
         'kategori': ['PENGELUARAN'],
         'textSearch': '',
         'page': 1,
@@ -184,21 +201,37 @@ class HistoryController extends GetxController {
         'sort': 'ASC',
       };
 
+      debugPrint(
+        '>>> getDataListCategoryPengeluaran: $rawFormat',
+      );
+
       final result = await RemoteDataSource.listCategories(rawFormat);
 
-      if (result != null && result.data != null) {
+      if (result?.data != null) {
         listCategoryPengeluaran.assignAll(
-          result.data!
+          result!.data!
               .map(
                 (e) => {
                   'value': e.id,
-                  'nama': e.categoryName ?? '-',
+                  'nama': e.categoryName,
                 },
               )
               .toList(),
         );
+      } else {
+        listCategoryPengeluaran.clear();
       }
-    } catch (error) {
+
+      debugPrint(
+        '>>> kategori pengeluaran: '
+        '${listCategoryPengeluaran.length}',
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '>>> getDataListCategoryPengeluaran ERROR: $error',
+      );
+      debugPrint('$stackTrace');
+
       Get.snackbar(
         'Error',
         error.toString(),

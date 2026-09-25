@@ -13,6 +13,7 @@ class InputField extends StatelessWidget {
   final String? helperText;
   final bool enabled;
   final TextCapitalization textCapitalization;
+  final Widget? suffixIcon;
 
   const InputField({
     super.key,
@@ -26,6 +27,7 @@ class InputField extends StatelessWidget {
     this.helperText,
     this.enabled = true,
     this.textCapitalization = TextCapitalization.none,
+    this.suffixIcon,
   });
 
   @override
@@ -85,6 +87,7 @@ class InputField extends StatelessWidget {
           minWidth: 48,
           minHeight: 48,
         ),
+        suffixIcon: suffixIcon,
         filled: true,
         fillColor: MyColors.background,
         contentPadding: const EdgeInsets.symmetric(

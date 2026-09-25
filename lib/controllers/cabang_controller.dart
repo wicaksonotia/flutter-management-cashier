@@ -13,9 +13,13 @@ class CabangController extends GetxController {
   final RxBool isLoadingSave = false.obs;
   final RxBool isLoadingList = false.obs;
 
+  /// Brand aktif
   final RxInt kiosId = 0.obs;
+
+  /// Cabang/outlet yang sedang dipilih
   final RxInt branchId = 0.obs;
 
+  /// Nama brand untuk kebutuhan header
   final RxString headerNamaKios = ''.obs;
 
   // ============================================================
@@ -244,16 +248,54 @@ class CabangController extends GetxController {
   }
 
   // ============================================================
-  // HELPER
+  // BRAND
   // ============================================================
 
-  void setBrand({
+  /// Mengubah brand aktif.
+  ///
+  /// Saat brand berubah:
+  /// 1. kiosId mengikuti brand baru
+  /// 2. branchId di-reset
+  /// 3. form cabang lama dibersihkan
+  /// 4. daftar cabang diambil ulang berdasarkan kiosId baru
+  Future<void> setBrand({
     required int idKios,
     required String namaKios,
-  }) {
+  }) async {
+    // Jika brand benar-benar sama, tidak perlu reload.
+    if (kiosId.value == idKios && headerNamaKios.value == namaKios) {
+      return;
+    }
+
+    // ----------------------------------------------------------
+    // SET BRAND BARU
+    // ----------------------------------------------------------
+
     kiosId.value = idKios;
     headerNamaKios.value = namaKios;
+
+    // ----------------------------------------------------------
+    // RESET CABANG LAMA
+    // ----------------------------------------------------------
+
+    branchId.value = 0;
+
+    kodeCabang.clear();
+    namaCabang.clear();
+    alamatCabang.clear();
+
+    update();
+
+    // ----------------------------------------------------------
+    // LOAD CABANG MILIK BRAND BARU
+    // ----------------------------------------------------------
+
+    await fetchDataListCabangFinancial();
   }
+
+  // ============================================================
+  // RESET OUTLET / BRAND
+  // ============================================================
 
   void resetOutlet() {
     kiosId.value = 0;
@@ -262,8 +304,16 @@ class CabangController extends GetxController {
 
     resultItem.clear();
 
-    clearBranchController();
+    kodeCabang.clear();
+    namaCabang.clear();
+    alamatCabang.clear();
+
+    update();
   }
+
+  // ============================================================
+  // HELPER
+  // ============================================================
 
   void _showWarning(String message) {
     Get.snackbar(

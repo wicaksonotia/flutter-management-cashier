@@ -26,15 +26,42 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
   void initState() {
     super.initState();
 
+    debugPrint('>>> TRANSACTION FILTER SHEET INIT');
+
     controller = Get.find<HistoryController>();
 
+    debugPrint('>>> HISTORY CONTROLLER FOUND');
+
     controller.prepareTransactionFilter();
+
+    debugPrint('>>> PREPARE FILTER SELESAI');
+
+    _loadFilterData();
+  }
+
+  Future<void> _loadFilterData() async {
+    debugPrint('>>> LOAD FILTER DATA');
+
+    debugPrint(
+      '>>> selectedType: ${widget.selectedType}',
+    );
+
+    debugPrint(
+      '>>> isExpense: $isExpense',
+    );
+
+    if (isExpense && controller.listCategoryPengeluaran.isEmpty) {
+      debugPrint('>>> MEMANGGIL CATEGORY PENGELUARAN');
+
+      await controller.getDataListCategoryPengeluaran();
+
+      debugPrint('>>> CATEGORY PENGELUARAN SELESAI');
+    }
   }
 
   @override
   void dispose() {
     controller.resetTemporaryTransactionFilter();
-
     super.dispose();
   }
 
@@ -189,17 +216,13 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
       selectedValues: controller.tempTagCabangKios.toList(),
       isLoading: controller.isLoadingCategoryPemasukan.value,
       emptyText: 'Belum ada data outlet',
-      onSelectAll: () {
-        controller.selectAllOutlet();
-      },
-      onToggle: (value) {
-        controller.toggleOutlet(value);
-      },
+      onSelectAll: controller.selectAllOutlet,
+      onToggle: controller.toggleOutlet,
     );
   }
 
   // ============================================================
-  // CATEGORY
+  // KATEGORI PENGELUARAN
   // ============================================================
 
   Widget _buildCategorySection() {
@@ -211,12 +234,8 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
       selectedValues: controller.tempTagCategory.toList(),
       isLoading: controller.isLoadingCategoryPengeluaran.value,
       emptyText: 'Belum ada kategori pengeluaran',
-      onSelectAll: () {
-        controller.selectAllCategory();
-      },
-      onToggle: (value) {
-        controller.toggleCategory(value);
-      },
+      onSelectAll: controller.selectAllCategory,
+      onToggle: controller.toggleCategory,
     );
   }
 

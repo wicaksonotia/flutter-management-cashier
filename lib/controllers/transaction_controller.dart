@@ -447,7 +447,6 @@ class TransactionController extends CategoryController {
     descriptionController.clear();
 
     idCategoryTransaction.value = 0;
-
     selectedCategoryTransaction.value = 'Category';
 
     dataCategoryIncomeId.value = 0;
@@ -455,16 +454,17 @@ class TransactionController extends CategoryController {
 
     isIncome.value = false;
 
+    // Default transaksi baru = terpusat.
+    isCentralized.value = true;
+
     setKategori();
 
     final now = DateTime.now();
 
     selectTransactionExpenseDate.value = now;
-
     selectTransactionExpenseTime.value = TimeOfDay.fromDateTime(now);
 
     selectTransactionIncomeDate.value = now;
-
     selectTransactionIncomeTime.value = TimeOfDay.fromDateTime(now);
   }
 
