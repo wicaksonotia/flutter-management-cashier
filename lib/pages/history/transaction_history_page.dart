@@ -18,7 +18,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
-  const TransactionHistoryPage({super.key});
+  const TransactionHistoryPage({
+    super.key,
+  });
 
   @override
   State<TransactionHistoryPage> createState() => _TransactionHistoryPageState();
@@ -26,6 +28,7 @@ class TransactionHistoryPage extends StatefulWidget {
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   late final HistoryController historyController;
   late final TransactionController transactionController;
 
@@ -57,16 +60,22 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     historyController.getDataListCategoryPengeluaran();
   }
 
-  List<dynamic> _filteredTransactions() {
+  List<DataHistory> _filteredTransactions() {
     final data = historyController.resultData.toList();
 
     if (selectedType == 1) {
-      return data.where((item) => item.transactionType == 'PEMASUKAN').toList();
+      return data
+          .where(
+            (item) => item.transactionType == 'PEMASUKAN',
+          )
+          .toList();
     }
 
     if (selectedType == 2) {
       return data
-          .where((item) => item.transactionType == 'PENGELUARAN')
+          .where(
+            (item) => item.transactionType == 'PENGELUARAN',
+          )
           .toList();
     }
 
@@ -78,18 +87,25 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       final start = historyController.startDate.value;
       final end = historyController.endDate.value;
 
-      final formatter = DateFormat('dd MMM yyyy', 'id_ID');
+      final formatter = DateFormat(
+        'dd MMM yyyy',
+        'id_ID',
+      );
 
       if (DateUtils.isSameDay(start, end)) {
         return formatter.format(start);
       }
 
-      return '${formatter.format(start)} - ${formatter.format(end)}';
+      return '${formatter.format(start)} - '
+          '${formatter.format(end)}';
     }
 
     final date = historyController.singleDate.value;
 
-    return DateFormat('MMMM yyyy', 'id_ID').format(date);
+    return DateFormat(
+      'MMMM yyyy',
+      'id_ID',
+    ).format(date);
   }
 
   void _changeType(int index) {
@@ -119,7 +135,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         foregroundColor: Colors.white,
         elevation: 4,
         onPressed: _openAddTransaction,
-        icon: const Icon(Icons.add_rounded),
+        icon: const Icon(
+          Icons.add_rounded,
+        ),
         label: const Text(
           'Transaksi',
           style: TextStyle(
@@ -132,31 +150,47 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           final transactions = _filteredTransactions();
 
           return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
-                child: FinanceHeader(
-                  brandName: historyController.namaKios.value,
-                  isLoading: historyController.isLoadingHistory.value,
-                  onReload: _refresh,
-                  onMenu: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
-                ),
-              ),
-              SliverToBoxAdapter(
+              // ========================================================
+              // HEADER + SUMMARY
+              // ========================================================
+              FinanceBackground(
+                brandName: historyController.namaKios.value,
+                isLoading: historyController.isLoadingHistory.value,
+                onMenu: () {
+                  _scaffoldKey.currentState?.openDrawer();
+                },
+                onReload: _refresh,
                 child: FinanceSummaryCard(
                   income: historyController.totalIncome.value,
                   expense: historyController.totalExpense.value,
                   balance: historyController.totalBalance.value,
                 ),
               ),
+
+              // ========================================================
+              // SPACE AFTER HEADER
+              // ========================================================
+              const SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 22,
+                ),
+              ),
+
+              // ========================================================
+              // SEGMENTED
+              // ========================================================
               SliverToBoxAdapter(
                 child: FinanceSegmented(
                   selectedIndex: selectedType,
                   onChanged: _changeType,
                 ),
               ),
+
+              // ========================================================
+              // FILTER
+              // ========================================================
               SliverToBoxAdapter(
                 child: FinanceFilterBar(
                   periodLabel: _periodLabel(),
@@ -165,14 +199,26 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                   onFilterTap: _showFilterInfo,
                 ),
               ),
+
+              // ========================================================
+              // LOADING
+              // ========================================================
               if (historyController.isLoadingHistory.value)
                 const SliverToBoxAdapter(
                   child: FinanceLoadingState(),
                 )
+
+              // ========================================================
+              // EMPTY
+              // ========================================================
               else if (transactions.isEmpty)
                 const SliverToBoxAdapter(
                   child: FinanceEmptyState(),
                 )
+
+              // ========================================================
+              // LIST
+              // ========================================================
               else
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(
@@ -183,7 +229,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                   ),
                   sliver: SliverList.builder(
                     itemCount: transactions.length,
-                    itemBuilder: (context, index) {
+                    itemBuilder: (
+                      context,
+                      index,
+                    ) {
                       final item = transactions[index];
 
                       final currentDate = _transactionDateKey(item);
@@ -208,10 +257,14 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             data: item,
                             onEdit: item.id == null
                                 ? null
-                                : () => _editTransaction(item),
+                                : () => _editTransaction(
+                                      item,
+                                    ),
                             onDelete: item.id == null
                                 ? null
-                                : () => _confirmDelete(item.id!),
+                                : () => _confirmDelete(
+                                      item.id!,
+                                    ),
                           ),
                         ],
                       );
@@ -224,6 +277,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       ),
     );
   }
+
+  // ================================================================
+  // PERIOD MENU
+  // ================================================================
 
   void _showPeriodMenu() {
     showModalBottomSheet(
@@ -310,7 +367,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               height: 28,
                               decoration: BoxDecoration(
                                 color: MyColors.primaryLight,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(
+                                  10,
+                                ),
                               ),
                               child: const Icon(
                                 Icons.check_rounded,
@@ -322,10 +381,8 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       onTap: () async {
                         Get.back();
 
-                        // Pastikan kembali ke mode bulan.
                         historyController.filterBy.value = 'bulan';
 
-                        // Sinkronkan monthYear dengan bulan aktif.
                         historyController.monthYear.value =
                             '${historyController.singleDate.value.month}'
                             '-'
@@ -372,7 +429,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               height: 28,
                               decoration: BoxDecoration(
                                 color: MyColors.primaryLight,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(
+                                  10,
+                                ),
                               ),
                               child: const Icon(
                                 Icons.check_rounded,
@@ -401,6 +460,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     );
   }
 
+  // ================================================================
+  // FILTER INFO
+  // ================================================================
+
   void _showFilterInfo() {
     showModalBottomSheet(
       context: context,
@@ -413,7 +476,12 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       builder: (_) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+            padding: const EdgeInsets.fromLTRB(
+              20,
+              12,
+              20,
+              28,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -481,6 +549,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     );
   }
 
+  // ================================================================
+  // DELETE
+  // ================================================================
+
   Future<void> _confirmDelete(int id) async {
     final confirmed = await AppConfirmDialog.show(
       context,
@@ -497,7 +569,11 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     await historyController.delete(id);
   }
 
-  String _transactionDateKey(dynamic item) {
+  // ================================================================
+  // DATE
+  // ================================================================
+
+  String _transactionDateKey(DataHistory item) {
     if (item.transactionDate == null || item.transactionDate!.trim().isEmpty) {
       return 'Tanpa tanggal';
     }
@@ -513,7 +589,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     }
   }
 
-  String _transactionDateLabel(dynamic item) {
+  String _transactionDateLabel(DataHistory item) {
     if (item.transactionDate == null || item.transactionDate!.trim().isEmpty) {
       return 'Tanpa tanggal';
     }
@@ -530,6 +606,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     }
   }
 
+  // ================================================================
+  // EDIT
+  // ================================================================
+
   void _editTransaction(DataHistory data) {
     showModalBottomSheet(
       context: context,
@@ -540,6 +620,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     );
   }
 }
+
+// ==================================================================
+// DATE DIVIDER
+// ==================================================================
 
 class _FinanceDateDivider extends StatelessWidget {
   final String label;
