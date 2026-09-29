@@ -79,7 +79,6 @@ class TransactionFormCard extends StatelessWidget {
 
           // ==========================================================
           // OUTLET / CABANG
-          // HANYA MUNCUL JIKA TIDAK TERPUSAT
           // ==========================================================
 
           Obx(
@@ -189,10 +188,12 @@ class _SaveButton extends StatelessWidget {
       () {
         final isLoading = controller.isLoadingSaveTransaction.value;
 
+        final isEdit = controller.isEdit.value;
+
         final canSave = controller.validateTransaction() && !isLoading;
 
         return ManagementSaveButton(
-          label: 'Simpan Transaksi',
+          label: isEdit ? 'Simpan Perubahan' : 'Simpan Transaksi',
           isLoading: isLoading,
           onPressed: canSave ? () => _save(context) : null,
         );
@@ -209,22 +210,28 @@ class _SaveButton extends StatelessWidget {
       await _showValidationError(
         context,
       );
+
       return;
     }
 
     final success = await controller.saveTransaction();
 
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      return;
+    }
 
     if (success) {
       Navigator.of(context).pop(true);
+
       return;
     }
 
     await AppConfirmDialog.show(
       context,
-      title: 'Gagal Menyimpan',
-      message: 'Transaksi gagal disimpan. Silakan coba kembali.',
+      title: controller.isEdit.value ? 'Gagal Memperbarui' : 'Gagal Menyimpan',
+      message: controller.isEdit.value
+          ? 'Transaksi gagal diperbarui. Silakan coba kembali.'
+          : 'Transaksi gagal disimpan. Silakan coba kembali.',
       confirmText: 'Tutup',
       cancelText: 'Batal',
       icon: Icons.error_outline_rounded,
@@ -236,25 +243,35 @@ class _SaveButton extends StatelessWidget {
     BuildContext context,
   ) async {
     String title = 'Data Belum Lengkap';
+
     String message = 'Silakan lengkapi data transaksi terlebih dahulu.';
+
     IconData icon = Icons.info_outline_rounded;
 
     if (controller.amountController.text.trim().isEmpty) {
       title = 'Nominal Belum Diisi';
+
       message = 'Silakan masukkan nominal transaksi.';
+
       icon = Icons.payments_outlined;
     } else if (controller.descriptionController.text.trim().isEmpty) {
       title = 'Keterangan Belum Diisi';
+
       message = 'Silakan masukkan keterangan transaksi.';
+
       icon = Icons.notes_outlined;
     } else if (controller.idCategoryTransaction.value <= 0) {
       title = 'Kategori Belum Dipilih';
+
       message = 'Silakan pilih kategori transaksi.';
+
       icon = Icons.category_outlined;
     } else if (!controller.isCentralized.value &&
         controller.idCabang.value <= 0) {
       title = 'Outlet Belum Dipilih';
+
       message = 'Silakan pilih outlet atau cabang transaksi.';
+
       icon = Icons.storefront_outlined;
     }
 

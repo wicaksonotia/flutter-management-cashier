@@ -16,7 +16,8 @@ class FinanceTransactionCard extends StatelessWidget {
     this.onDelete,
   });
 
-  bool get isIncome => data.transactionType == 'PEMASUKAN';
+  bool get isIncome =>
+      (data.transactionType ?? '').trim().toUpperCase() == 'PEMASUKAN';
 
   String _currency(int value) {
     return NumberFormat.currency(
@@ -26,7 +27,7 @@ class FinanceTransactionCard extends StatelessWidget {
     ).format(value);
   }
 
-  String _timeLabel() {
+  String _dateLabel() {
     if (data.transactionDate == null || data.transactionDate!.trim().isEmpty) {
       return '-';
     }
@@ -35,7 +36,7 @@ class FinanceTransactionCard extends StatelessWidget {
       final date = DateTime.parse(data.transactionDate!);
 
       return DateFormat(
-        'HH:mm',
+        'dd MMM yyyy',
         'id_ID',
       ).format(date);
     } catch (_) {
@@ -82,7 +83,7 @@ class FinanceTransactionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeChip() {
+  Widget _buildDateChip() {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 7,
@@ -96,13 +97,13 @@ class FinanceTransactionCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(
-            Icons.access_time_rounded,
+            Icons.calendar_today_outlined,
             size: 11,
             color: MyColors.textSecondary,
           ),
           const SizedBox(width: 4),
           Text(
-            _timeLabel(),
+            _dateLabel(),
             style: const TextStyle(
               fontSize: 9.5,
               fontWeight: FontWeight.w600,
@@ -143,6 +144,7 @@ class FinanceTransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isIncome ? MyColors.success : MyColors.error;
+
     final softColor = isIncome ? MyColors.successBg : MyColors.errorBg;
 
     final transactionName = data.transactionName?.trim().isNotEmpty == true
@@ -150,7 +152,9 @@ class FinanceTransactionCard extends StatelessWidget {
         : 'Transaksi';
 
     final branch = data.cabang?.trim() ?? '';
+
     final cashier = data.namaKasir?.trim() ?? '';
+
     final note = data.note?.trim() ?? '';
 
     return Container(
@@ -171,7 +175,10 @@ class FinanceTransactionCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ICON TRANSAKSI
+          // ========================================================
+          // ICON
+          // ========================================================
+
           Container(
             width: 36,
             height: 36,
@@ -188,12 +195,14 @@ class FinanceTransactionCard extends StatelessWidget {
 
           const SizedBox(width: 10),
 
-          // INFORMASI TRANSAKSI
+          // ========================================================
+          // INFORMASI
+          // ========================================================
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // NAMA TRANSAKSI
                 Text(
                   transactionName,
                   maxLines: 1,
@@ -204,20 +213,18 @@ class FinanceTransactionCard extends StatelessWidget {
                     color: MyColors.textPrimary,
                   ),
                 ),
-
                 const SizedBox(height: 5),
-
-                // OUTLET + JAM
                 Wrap(
                   spacing: 5,
                   runSpacing: 4,
                   children: [
-                    if (branch.isNotEmpty) _buildOutletChip(branch),
-                    _buildTimeChip(),
+                    if (branch.isNotEmpty)
+                      _buildOutletChip(
+                        branch,
+                      ),
+                    _buildDateChip(),
                   ],
                 ),
-
-                // CATATAN
                 if (note.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
@@ -230,11 +237,11 @@ class FinanceTransactionCard extends StatelessWidget {
                     ),
                   ),
                 ],
-
-                // KASIR
                 if (cashier.isNotEmpty) ...[
                   const SizedBox(height: 3),
-                  _buildCashier(cashier),
+                  _buildCashier(
+                    cashier,
+                  ),
                 ],
               ],
             ),
@@ -242,7 +249,10 @@ class FinanceTransactionCard extends StatelessWidget {
 
           const SizedBox(width: 8),
 
+          // ========================================================
           // NOMINAL + MENU
+          // ========================================================
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -256,34 +266,35 @@ class FinanceTransactionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 1),
-              AppPopupMenu(
-                items: [
-                  if (onEdit != null)
-                    const AppPopupMenuItem(
-                      value: 'edit',
-                      label: 'Edit Transaksi',
-                      icon: Icons.edit_outlined,
-                    ),
-                  if (onDelete != null)
-                    const AppPopupMenuItem(
-                      value: 'delete',
-                      label: 'Hapus Transaksi',
-                      icon: Icons.delete_outline_rounded,
-                      color: MyColors.error,
-                    ),
-                ],
-                onSelected: (value) {
-                  switch (value) {
-                    case 'edit':
-                      onEdit?.call();
-                      break;
+              if (onEdit != null || onDelete != null)
+                AppPopupMenu(
+                  items: [
+                    if (onEdit != null)
+                      const AppPopupMenuItem(
+                        value: 'edit',
+                        label: 'Edit Transaksi',
+                        icon: Icons.edit_outlined,
+                      ),
+                    if (onDelete != null)
+                      const AppPopupMenuItem(
+                        value: 'delete',
+                        label: 'Hapus Transaksi',
+                        icon: Icons.delete_outline_rounded,
+                        color: MyColors.error,
+                      ),
+                  ],
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'edit':
+                        onEdit?.call();
+                        break;
 
-                    case 'delete':
-                      onDelete?.call();
-                      break;
-                  }
-                },
-              ),
+                      case 'delete':
+                        onDelete?.call();
+                        break;
+                    }
+                  },
+                ),
             ],
           ),
         ],

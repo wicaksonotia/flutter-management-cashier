@@ -3,26 +3,39 @@ class FinancialHistoryModel {
   String? message;
   List<DataHistory>? data;
 
-  FinancialHistoryModel({this.status, this.message, this.data});
+  FinancialHistoryModel({
+    this.status,
+    this.message,
+    this.data,
+  });
 
-  FinancialHistoryModel.fromJson(Map<String, dynamic> json) {
+  FinancialHistoryModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
     status = json['status'];
     message = json['message'];
+
     if (json['data'] != null) {
       data = <DataHistory>[];
+
       json['data'].forEach((v) {
-        data!.add(DataHistory.fromJson(v));
+        data!.add(
+          DataHistory.fromJson(v),
+        );
       });
     }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+
     data['status'] = status;
     data['message'] = message;
+
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
+
     return data;
   }
 }
@@ -44,24 +57,32 @@ class DataHistory {
   int? idKasir;
   String? namaKasir;
 
-  DataHistory(
-      {this.id,
-      this.note,
-      this.amount,
-      this.transactionDate,
-      this.transactionType,
-      this.deleteStatus,
-      this.deleteReason,
-      this.transactionCategoryId,
-      this.transactionName,
-      this.idKios,
-      this.kios,
-      this.idCabang,
-      this.cabang,
-      this.idKasir,
-      this.namaKasir});
+  /// ADMIN = transaksi manual
+  /// KASIR = transaksi otomatis dari kasir
+  String? sourceType;
 
-  DataHistory.fromJson(Map<String, dynamic> json) {
+  DataHistory({
+    this.id,
+    this.note,
+    this.amount,
+    this.transactionDate,
+    this.transactionType,
+    this.deleteStatus,
+    this.deleteReason,
+    this.transactionCategoryId,
+    this.transactionName,
+    this.idKios,
+    this.kios,
+    this.idCabang,
+    this.cabang,
+    this.idKasir,
+    this.namaKasir,
+    this.sourceType,
+  });
+
+  DataHistory.fromJson(
+    Map<String, dynamic> json,
+  ) {
     id = json['id'];
     note = json['note'];
     amount = json['amount'];
@@ -77,10 +98,13 @@ class DataHistory {
     cabang = json['cabang'];
     idKasir = json['id_kasir'];
     namaKasir = json['nama_kasir'];
+
+    sourceType = json['source_type'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+
     data['id'] = id;
     data['note'] = note;
     data['amount'] = amount;
@@ -96,6 +120,9 @@ class DataHistory {
     data['cabang'] = cabang;
     data['id_kasir'] = idKasir;
     data['nama_kasir'] = namaKasir;
+
+    data['source_type'] = sourceType;
+
     return data;
   }
 }

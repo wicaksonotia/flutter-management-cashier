@@ -4,6 +4,7 @@ import 'package:cashier_management/controllers/category_controller.dart';
 import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
+import 'package:cashier_management/models/history_model.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,8 +34,6 @@ class TransactionController extends CategoryController {
 
   final Rx<TimeOfDay> selectTransactionExpenseTime = TimeOfDay.now().obs;
 
-  // Tetap dipertahankan karena sudah digunakan oleh
-  // struktur controller sebelumnya.
   final Rx<DateTime> selectTransactionIncomeDate = DateTime.now().obs;
 
   final Rx<TimeOfDay> selectTransactionIncomeTime = TimeOfDay.now().obs;
@@ -53,17 +52,30 @@ class TransactionController extends CategoryController {
 
   final RxBool isLoadingSaveTransaction = false.obs;
 
+  /// true  = pemasukan
+  /// false = pengeluaran
   final RxBool isIncome = false.obs;
 
   /// true  = transaksi terpusat
-  /// false = transaksi menggunakan cabang aktif
+  /// false = transaksi menggunakan cabang
   final RxBool isCentralized = true.obs;
+
+  /// true  = mode edit
+  /// false = mode tambah
+  final RxBool isEdit = false.obs;
+
+  /// ID transaksi yang sedang diedit
+  final RxInt editingId = 0.obs;
 
   // ============================================================
   // CATEGORY TYPE
   // ============================================================
 
   List<String> kategori = [];
+
+  // ============================================================
+  // FORMATTED DATE
+  // ============================================================
 
   String get formattedTransactionDate {
     return DateFormat(
@@ -73,6 +85,10 @@ class TransactionController extends CategoryController {
       selectTransactionExpenseDate.value,
     );
   }
+
+  // ============================================================
+  // FORMATTED TIME
+  // ============================================================
 
   String get formattedTransactionTime {
     final time = selectTransactionExpenseTime.value;
@@ -90,13 +106,14 @@ class TransactionController extends CategoryController {
     super.onInit();
 
     _historyController = Get.find<HistoryController>();
+
     _totalPerTypeController = Get.find<TotalPerTypeController>();
 
     setKategori();
   }
 
   // ============================================================
-  // CATEGORY
+  // CATEGORY TYPE
   // ============================================================
 
   void setKategori() {
@@ -105,24 +122,58 @@ class TransactionController extends CategoryController {
     ];
   }
 
-  /// Dipanggil ketika user mengganti:
-  /// Pemasukan <-> Pengeluaran
+  // ============================================================
+  // CURRENT CATEGORY TYPE
+  // ============================================================
+
+  List<String> get currentTransactionKategori {
+    return [
+      isIncome.value ? 'PEMASUKAN' : 'PENGELUARAN',
+    ];
+  }
+
+  // ============================================================
+  // LOAD TRANSACTION CATEGORY
+  // ============================================================
+
+  Future<void> refreshTransactionCategories() async {
+    await fetchAllCategory(
+      currentTransactionKategori,
+    );
+  }
+
+  // ============================================================
+  // CHANGE TRANSACTION TYPE
+  // ============================================================
+
   Future<void> changeTransactionType(
     bool income,
   ) async {
+    // ==========================================================
+    // SET TYPE
+    // ==========================================================
+
     isIncome.value = income;
+
+    // ==========================================================
+    // UPDATE CATEGORY TYPE
+    // ==========================================================
 
     setKategori();
 
-    // Reset kategori lama karena kategori pemasukan
-    // dan pengeluaran berbeda.
+    // ==========================================================
+    // CLEAR SELECTED CATEGORY
+    // ==========================================================
+
     idCategoryTransaction.value = 0;
 
     selectedCategoryTransaction.value = 'Category';
 
-    await fetchAllCategory(
-      isIncome.value ? ['PEMASUKAN'] : ['PENGELUARAN'],
-    );
+    // ==========================================================
+    // FETCH CATEGORY TERBARU
+    // ==========================================================
+
+    await refreshTransactionCategories();
   }
 
   // ============================================================
@@ -130,38 +181,126 @@ class TransactionController extends CategoryController {
   // ============================================================
 
   bool disableDate(DateTime day) {
-    return day.isBefore(
-      DateTime.now(),
+    final today = DateTime.now();
+
+    final currentDay = DateTime(
+      today.year,
+      today.month,
+      today.day,
     );
+
+    final selectedDay = DateTime(
+      day.year,
+      day.month,
+      day.day,
+    );
+
+    return selectedDay.isAfter(currentDay);
   }
 
+  // ============================================================
+  // DATE PICKER
+  // ============================================================
+
   Future<void> showDialogDatePicker() async {
+    final now = DateTime.now();
+
+    final today = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
+
+    final firstAllowedDate = DateTime(
+      now.year - 1,
+      now.month,
+      now.day,
+    );
+
+    final selectedDate = selectTransactionExpenseDate.value;
+
+    DateTime initialDate = selectedDate;
+
+    if (initialDate.isBefore(firstAllowedDate)) {
+      initialDate = firstAllowedDate;
+    }
+
+    if (initialDate.isAfter(today)) {
+      initialDate = today;
+    }
+
     final pickedDate = await showDatePicker(
       context: Get.context!,
-      initialDate: selectTransactionExpenseDate.value,
-      firstDate: DateTime(
-        DateTime.now().year - 1,
-      ),
-      lastDate: DateTime(
-        DateTime.now().year + 1,
-      ),
-      helpText: 'Tanggal transaksi',
+      initialDate: initialDate,
+      firstDate: firstAllowedDate,
+      lastDate: today,
+      helpText: 'Pilih tanggal transaksi',
       cancelText: 'Batal',
       confirmText: 'Pilih',
       errorFormatText: 'Masukkan tanggal yang valid',
       errorInvalidText: 'Tanggal tidak valid',
       fieldLabelText: 'Tanggal transaksi',
       fieldHintText: 'Tanggal/Bulan/Tahun',
-      selectableDayPredicate: disableDate,
       builder: (
         BuildContext context,
         Widget? child,
       ) {
         return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
               primary: MyColors.primary,
               onPrimary: Colors.white,
+              surface: MyColors.surface,
+              onSurface: MyColors.textPrimary,
+            ),
+            dialogTheme: DialogThemeData(
+              backgroundColor: MyColors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+            datePickerTheme: DatePickerThemeData(
+              backgroundColor: MyColors.surface,
+              surfaceTintColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              headerBackgroundColor: MyColors.primary,
+              headerForegroundColor: Colors.white,
+              weekdayStyle: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              dayStyle: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+              todayBackgroundColor: const WidgetStatePropertyAll(
+                MyColors.primaryLight,
+              ),
+              todayForegroundColor: const WidgetStatePropertyAll(
+                MyColors.primary,
+              ),
+              todayBorder: BorderSide(
+                color: MyColors.primary,
+                width: 1,
+              ),
+              yearStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+              cancelButtonStyle: TextButton.styleFrom(
+                foregroundColor: MyColors.textSecondary,
+                textStyle: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              confirmButtonStyle: TextButton.styleFrom(
+                foregroundColor: MyColors.primary,
+                textStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
           child: child!,
@@ -175,12 +314,11 @@ class TransactionController extends CategoryController {
 
     selectTransactionExpenseDate.value = pickedDate;
 
-    // Sinkronkan juga state income.
     selectTransactionIncomeDate.value = pickedDate;
   }
 
   // ============================================================
-  // TIME
+  // TIME PICKER
   // ============================================================
 
   Future<void> showDialogTimePicker() async {
@@ -217,7 +355,6 @@ class TransactionController extends CategoryController {
 
     selectTransactionExpenseTime.value = pickedTime;
 
-    // Sinkronkan juga state income.
     selectTransactionIncomeTime.value = pickedTime;
   }
 
@@ -225,19 +362,10 @@ class TransactionController extends CategoryController {
   // BRAND / OUTLET
   // ============================================================
 
-  /// Brand (`idKios`) selalu mengikuti Brand aktif
-  /// yang sudah dipilih melalui Drawer.
-  ///
-  /// Tidak ada perubahan Brand dari form transaksi.
   int get activeKiosId {
     return idKios.value;
   }
 
-  /// Jika transaksi terpusat:
-  ///     id_cabang = 0
-  ///
-  /// Jika tidak:
-  ///     gunakan cabang aktif dari BaseController.
   int get activeCabangId {
     if (isCentralized.value) {
       return 0;
@@ -275,6 +403,10 @@ class TransactionController extends CategoryController {
       return false;
     }
 
+    if (isEdit.value && editingId.value <= 0) {
+      return false;
+    }
+
     return true;
   }
 
@@ -292,27 +424,26 @@ class TransactionController extends CategoryController {
   }
 
   // ============================================================
-  // TRANSACTION DATE FORMAT
+  // TRANSACTION DATE
   // ============================================================
 
   String get transactionDateValue {
-    return selectTransactionExpenseDate.value.toIso8601String();
+    return DateFormat(
+      'yyyy-MM-dd',
+    ).format(
+      selectTransactionExpenseDate.value,
+    );
   }
+
+  // ============================================================
+  // TRANSACTION TIME
+  // ============================================================
 
   String get transactionTimeValue {
     final time = selectTransactionExpenseTime.value;
 
-    final dateTime = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-      time.hour,
-      time.minute,
-    );
-
-    return DateFormat(
-      'HH:mm:ss',
-    ).format(dateTime);
+    return '${time.hour.toString().padLeft(2, '0')}:'
+        '${time.minute.toString().padLeft(2, '0')}:00';
   }
 
   // ============================================================
@@ -333,19 +464,9 @@ class TransactionController extends CategoryController {
   }
 
   // ============================================================
-  // SAVE TRANSACTION
+  // SAVE / UPDATE
   // ============================================================
 
-  /// Return:
-  ///
-  /// true  = berhasil
-  /// false = gagal / validation gagal
-  ///
-  /// Controller tidak melakukan:
-  /// - Get.back()
-  /// - Get.snackbar()
-  ///
-  /// UI yang menentukan bagaimana menampilkan hasil.
   Future<bool> saveTransaction() async {
     if (isLoadingSaveTransaction.value) {
       return false;
@@ -361,22 +482,52 @@ class TransactionController extends CategoryController {
       final rawFormat = buildRequestPayload();
 
       debugPrint(
-        jsonEncode(rawFormat),
+        '======================================',
       );
 
-      final response = await RemoteDataSource.saveTransaction(
-        rawFormat,
+      debugPrint(
+        isEdit.value
+            ? 'UPDATE FINANCIAL TRANSACTION'
+            : 'SAVE FINANCIAL TRANSACTION',
       );
+
+      debugPrint(
+        jsonEncode({
+          if (isEdit.value) 'id': editingId.value,
+          ...rawFormat,
+        }),
+      );
+
+      debugPrint(
+        '======================================',
+      );
+
+      bool response;
+
+      // ========================================================
+      // EDIT
+      // ========================================================
+
+      if (isEdit.value) {
+        response = await RemoteDataSource.updateTransaction(
+          id: editingId.value,
+          rawFormat: rawFormat,
+        );
+      }
+
+      // ========================================================
+      // TAMBAH
+      // ========================================================
+
+      else {
+        response = await RemoteDataSource.saveTransaction(
+          rawFormat,
+        );
+      }
 
       if (!response) {
         return false;
       }
-
-      // ========================================================
-      // CLEAR FORM
-      // ========================================================
-
-      clearForm();
 
       // ========================================================
       // REFRESH HISTORY
@@ -384,22 +535,32 @@ class TransactionController extends CategoryController {
 
       await _historyController.getHistoriesByFilter();
 
-      _historyController.getHistoriesBySingleDate();
+      await _historyController.getHistoriesBySingleDate();
 
       // ========================================================
-      // REFRESH DASHBOARD FINANCIAL
+      // REFRESH DASHBOARD
       // ========================================================
 
-      _totalPerTypeController.getTotalSaldo();
+      await _totalPerTypeController.getTotalSaldo();
 
-      _totalPerTypeController.getTotalBranchSaldo();
+      await _totalPerTypeController.getTotalBranchSaldo();
 
-      _totalPerTypeController.getTotalPerMonth();
+      await _totalPerTypeController.getTotalPerMonth();
+
+      // ========================================================
+      // RESET
+      // ========================================================
+
+      resetForm();
 
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint(
         'saveTransaction error: $e',
+      );
+
+      debugPrint(
+        '$stackTrace',
       );
 
       return false;
@@ -409,11 +570,12 @@ class TransactionController extends CategoryController {
   }
 
   // ============================================================
-  // CLEAR FORM
+  // RESET FORM
   // ============================================================
 
-  void clearForm() {
+  void resetForm() {
     amountController.clear();
+
     descriptionController.clear();
 
     idCategoryTransaction.value = 0;
@@ -421,9 +583,20 @@ class TransactionController extends CategoryController {
     selectedCategoryTransaction.value = 'Category';
 
     dataCategoryIncomeId.value = 0;
+
     dataCategoryIncomeName.value = '';
 
     isIncome.value = false;
+
+    isCentralized.value = true;
+
+    isEdit.value = false;
+
+    editingId.value = 0;
+
+    idCabang.value = 0;
+
+    selectedCabang.value = 'Outlet';
 
     setKategori();
 
@@ -439,33 +612,117 @@ class TransactionController extends CategoryController {
   }
 
   // ============================================================
-  // RESET FORM WITHOUT RESETTING OUTLET / BRAND
+  // EDIT TRANSACTION
   // ============================================================
 
-  void resetForm() {
-    amountController.clear();
-    descriptionController.clear();
+  Future<void> setEditTransaction(
+    DataHistory data,
+  ) async {
+    // ==========================================================
+    // MODE EDIT
+    // ==========================================================
 
-    idCategoryTransaction.value = 0;
-    selectedCategoryTransaction.value = 'Category';
+    isEdit.value = true;
 
-    dataCategoryIncomeId.value = 0;
-    dataCategoryIncomeName.value = '';
+    editingId.value = data.id ?? 0;
 
-    isIncome.value = false;
+    // ==========================================================
+    // JENIS TRANSAKSI
+    // ==========================================================
 
-    // Default transaksi baru = terpusat.
-    isCentralized.value = true;
+    final transactionType = (data.transactionType ?? '').trim().toUpperCase();
+
+    final income = transactionType == 'PEMASUKAN';
+
+    isIncome.value = income;
 
     setKategori();
 
-    final now = DateTime.now();
+    // ==========================================================
+    // BRAND / KIOS
+    // ==========================================================
 
-    selectTransactionExpenseDate.value = now;
-    selectTransactionExpenseTime.value = TimeOfDay.fromDateTime(now);
+    if (data.idKios != null && data.idKios! > 0) {
+      idKios.value = data.idKios!;
+    }
 
-    selectTransactionIncomeDate.value = now;
-    selectTransactionIncomeTime.value = TimeOfDay.fromDateTime(now);
+    // ==========================================================
+    // NOMINAL
+    // ==========================================================
+
+    amountController.text = NumberFormat(
+      '#,###',
+      'id_ID',
+    ).format(
+      data.amount ?? 0,
+    );
+
+    // ==========================================================
+    // KETERANGAN
+    // ==========================================================
+
+    descriptionController.text = data.note ?? '';
+
+    // ==========================================================
+    // TERPUSAT / CABANG
+    // ==========================================================
+
+    final cabangId = data.idCabang ?? 0;
+
+    isCentralized.value = cabangId <= 0;
+
+    if (!isCentralized.value) {
+      idCabang.value = cabangId;
+
+      selectedCabang.value =
+          data.cabang?.isNotEmpty == true ? data.cabang! : 'Outlet';
+    } else {
+      idCabang.value = 0;
+
+      selectedCabang.value = 'Outlet';
+    }
+
+    // ==========================================================
+    // TANGGAL + WAKTU
+    // ==========================================================
+
+    if (data.transactionDate != null &&
+        data.transactionDate!.trim().isNotEmpty) {
+      final parsedDate = DateTime.tryParse(
+        data.transactionDate!.trim(),
+      );
+
+      if (parsedDate != null) {
+        selectTransactionExpenseDate.value = parsedDate;
+
+        selectTransactionIncomeDate.value = parsedDate;
+
+        final time = TimeOfDay(
+          hour: parsedDate.hour,
+          minute: parsedDate.minute,
+        );
+
+        selectTransactionExpenseTime.value = time;
+
+        selectTransactionIncomeTime.value = time;
+      }
+    }
+
+    // ==========================================================
+    // LOAD CATEGORY
+    // ==========================================================
+
+    await refreshTransactionCategories();
+
+    // ==========================================================
+    // RESTORE CATEGORY TERPILIH
+    // ==========================================================
+
+    idCategoryTransaction.value = data.transactionCategoryId ?? 0;
+
+    selectedCategoryTransaction.value = data.transactionName?.isNotEmpty == true
+        ? data.transactionName!
+        : 'Category';
   }
 
   // ============================================================
@@ -475,6 +732,7 @@ class TransactionController extends CategoryController {
   @override
   void onClose() {
     amountController.dispose();
+
     descriptionController.dispose();
 
     super.onClose();

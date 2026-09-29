@@ -89,26 +89,6 @@ class RemoteDataSource {
     }
   }
 
-  static Future<FinancialHistoryModel?> histories(
-      Map<String, dynamic> rawFormat) async {
-    try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.histories;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
-      if (response.statusCode == 200) {
-        final FinancialHistoryModel res =
-            FinancialHistoryModel.fromJson(response.data);
-        return res;
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
   static Future<ChartModel?> homeTotalPerMonth() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -472,21 +452,202 @@ class RemoteDataSource {
   }
 
   // ===================== TRANSACTION =====================
-  static Future<bool> saveTransaction(Map<String, dynamic> rawFormat) async {
+
+  static Future<bool> saveTransaction(
+    Map<String, dynamic> rawFormat,
+  ) async {
     try {
-      var url =
+      final url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveTransaction;
-      Response response = await Dio().post(url,
-          data: rawFormat,
-          options: Options(
-            contentType: Headers.jsonContentType,
-          ));
+
+      debugPrint(
+        '======================================',
+      );
+      debugPrint('SAVE TRANSACTION');
+      debugPrint('URL: $url');
+      debugPrint('BODY: $rawFormat');
+      debugPrint(
+        '======================================',
+      );
+
+      final Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
+      );
+
+      debugPrint(
+        'STATUS: ${response.statusCode}',
+      );
+      debugPrint(
+        'DATA: ${response.data}',
+      );
+
       if (response.statusCode == 200) {
+        if (response.data is Map) {
+          return response.data['status'] == 'ok' ||
+              response.data['status'] == true;
+        }
+
         return true;
       }
+
       return false;
-    } catch (error) {
+    } on DioException catch (e) {
+      debugPrint(
+        'SAVE TRANSACTION DIO ERROR',
+      );
+      debugPrint(
+        'TYPE: ${e.type}',
+      );
+      debugPrint(
+        'MESSAGE: ${e.message}',
+      );
+      debugPrint(
+        'STATUS: ${e.response?.statusCode}',
+      );
+      debugPrint(
+        'DATA: ${e.response?.data}',
+      );
+
       return false;
+    } catch (e, stackTrace) {
+      debugPrint(
+        'SAVE TRANSACTION ERROR: $e',
+      );
+      debugPrint(
+        '$stackTrace',
+      );
+
+      return false;
+    }
+  }
+
+  static Future<bool> updateTransaction({
+    required int id,
+    required Map<String, dynamic> rawFormat,
+  }) async {
+    try {
+      final data = {
+        'id': id,
+        ...rawFormat,
+      };
+
+      final url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateTransaction;
+
+      debugPrint('======================================');
+      debugPrint('UPDATE TRANSACTION');
+      debugPrint('URL: $url');
+      debugPrint('REQUEST: ${jsonEncode(data)}');
+      debugPrint('======================================');
+
+      final response = await Dio().post(
+        url,
+        data: jsonEncode(data),
+        options: Options(
+          contentType: Headers.jsonContentType,
+          responseType: ResponseType.json,
+        ),
+      );
+
+      debugPrint('======================================');
+      debugPrint(
+        'UPDATE TRANSACTION RESPONSE: '
+        '${response.statusCode}',
+      );
+      debugPrint(
+        'RESPONSE DATA: ${response.data}',
+      );
+      debugPrint('======================================');
+
+      if (response.statusCode != 200) {
+        return false;
+      }
+
+      final responseData = response.data;
+
+      if (responseData is Map<String, dynamic>) {
+        return responseData['status']?.toString().toLowerCase() == 'ok';
+      }
+
+      return false;
+    } catch (error, stackTrace) {
+      debugPrint(
+        'updateTransaction ERROR: $error',
+      );
+
+      debugPrint(
+        '$stackTrace',
+      );
+
+      return false;
+    }
+  }
+
+  static Future<FinancialHistoryModel?> histories(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      final url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.histories;
+
+      debugPrint(
+        '======================================',
+      );
+      debugPrint('GET HISTORIES');
+      debugPrint('URL: $url');
+      debugPrint('BODY: $rawFormat');
+      debugPrint(
+        '======================================',
+      );
+
+      final Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
+      );
+
+      debugPrint(
+        'STATUS: ${response.statusCode}',
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic responseData =
+            response.data is String ? jsonDecode(response.data) : response.data;
+
+        return FinancialHistoryModel.fromJson(
+          Map<String, dynamic>.from(
+            responseData,
+          ),
+        );
+      }
+
+      return null;
+    } on DioException catch (e) {
+      debugPrint(
+        'HISTORIES DIO ERROR: ${e.message}',
+      );
+      debugPrint(
+        'STATUS: ${e.response?.statusCode}',
+      );
+      debugPrint(
+        'DATA: ${e.response?.data}',
+      );
+
+      return null;
+    } catch (e, stackTrace) {
+      debugPrint(
+        'HISTORIES ERROR: $e',
+      );
+      debugPrint(
+        '$stackTrace',
+      );
+
+      return null;
     }
   }
 

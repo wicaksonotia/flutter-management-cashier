@@ -203,36 +203,42 @@ class CategoryController extends BaseController {
   Future<void> fetchAllCategory(
     Object kategori,
   ) async {
+    if (isLoadingWithoutPagination.value) {
+      return;
+    }
+
     try {
       await initializeBaseController();
 
       isLoadingWithoutPagination.value = true;
 
       final rawFormat = {
-        'status': 'all',
+        'status': 'TRUE',
+        'is_cashier': false,
         'id_kios': idKios.value,
         'kategori': kategori,
         'textSearch': '',
         'page': 1,
         'limit': 999999,
-        'sort': sortOrder.value,
+        'sort': 'ASC',
       };
 
-      final result = await RemoteDataSource.listCategories(rawFormat);
+      debugPrint(
+        'FETCH TRANSACTION CATEGORY: $rawFormat',
+      );
+
+      final result = await RemoteDataSource.listCategories(
+        rawFormat,
+      );
 
       if (result != null) {
         final data = result.data ?? [];
 
         resultDataCategoryWithoutPagination.assignAll(data);
 
-        // Jangan auto-select.
-        //
-        // Sebelumnya:
-        //
-        // idCategoryTransaction.value = data.first.id;
-        // selectedCategoryTransaction.value = ...
-        //
-        // Sekarang user wajib memilih sendiri.
+        debugPrint(
+          'TRANSACTION CATEGORY RESULT: ${data.length}',
+        );
       } else {
         resultDataCategoryWithoutPagination.clear();
       }

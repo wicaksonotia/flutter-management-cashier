@@ -78,19 +78,15 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     final data = historyController.resultData.toList();
 
     if (selectedType == 1) {
-      return data
-          .where(
-            (item) => item.transactionType == 'PEMASUKAN',
-          )
-          .toList();
+      return data.where((item) {
+        return (item.transactionType ?? '').toUpperCase() == 'PEMASUKAN';
+      }).toList();
     }
 
     if (selectedType == 2) {
-      return data
-          .where(
-            (item) => item.transactionType == 'PENGELUARAN',
-          )
-          .toList();
+      return data.where((item) {
+        return (item.transactionType ?? '').toUpperCase() == 'PENGELUARAN';
+      }).toList();
     }
 
     return data;
@@ -292,6 +288,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                     ) {
                       final item = transactions[index];
 
+                      final isAdminTransaction =
+                          (item.sourceType ?? '').toUpperCase() == 'ADMIN';
+
                       final currentDate = _transactionDateKey(item);
 
                       final previousDate = index > 0
@@ -314,10 +313,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             ),
                           FinanceTransactionCard(
                             data: item,
-                            onEdit: item.id == null
+                            onEdit: item.id == null || !isAdminTransaction
                                 ? null
                                 : () => _editTransaction(item),
-                            onDelete: item.id == null
+                            onDelete: item.id == null || !isAdminTransaction
                                 ? null
                                 : () => _confirmDelete(item.id!),
                           ),
@@ -608,12 +607,53 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   // EDIT
   // ================================================================
 
-  void _editTransaction(
+  // ================================================================
+  // EDIT
+  // ================================================================
+
+  Future<void> _editTransaction(
     DataHistory data,
-  ) {
-    debugPrint(
-      'Edit transaksi id: ${data.id}',
-    );
+  ) async {
+    try {
+      // Pastikan CabangController tersedia karena form transaksi
+      // membutuhkan controller ini ketika transaksi bukan terpusat.
+      if (!Get.isRegistered<CabangController>()) {
+        Get.put(CabangController());
+      }
+
+      // Isi form berdasarkan transaksi yang dipilih.
+      await transactionController.setEditTransaction(data);
+
+      if (!mounted) return;
+
+      // Buka form edit.
+      final result = await Get.to(
+        () => TransactionForm(),
+      );
+
+      // Jika update berhasil, refresh seluruh data history.
+      if (result == true) {
+        await _loadData();
+      }
+    } catch (error, stackTrace) {
+      debugPrint(
+        'EDIT TRANSACTION ERROR: $error',
+      );
+      debugPrint(
+        '$stackTrace',
+      );
+
+      if (!mounted) return;
+
+      Get.snackbar(
+        'Gagal',
+        'Tidak dapat membuka transaksi untuk diedit.',
+        icon: const Icon(
+          Icons.error_outline_rounded,
+        ),
+        snackPosition: SnackPosition.TOP,
+      );
+    }
   }
 }
 

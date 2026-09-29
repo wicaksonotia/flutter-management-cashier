@@ -414,9 +414,17 @@ class _SelectTableListPageState<T> extends State<SelectTableListPage<T>> {
 
     try {
       await widget.onRefresh!();
-    } catch (error) {
+
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (error, stackTrace) {
       debugPrint(
         'SelectTableListPage refresh error: $error',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
       );
     }
   }

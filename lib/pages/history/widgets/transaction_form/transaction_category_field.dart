@@ -18,21 +18,27 @@ class TransactionCategoryField extends StatelessWidget {
         title: 'Pilih Kategori',
         isLoading: controller.isLoadingWithoutPagination,
         items: controller.resultDataCategoryWithoutPagination,
+
         enableSearch: true,
         searchHint: 'Cari kategori...',
+
         titleBuilder: (item) {
           return item.categoryName ?? '-';
         },
+
         isSelected: (item) {
           return controller.idCategoryTransaction.value == (item.id ?? 0);
         },
+
         onItemTap: (item) async {
           controller.selectTransactionCategory(item);
+        },
 
-          // JANGAN Get.back() di sini.
-          //
-          // SelectTableListPage sudah menangani
-          // navigasi setelah item dipilih.
+        // ============================================================
+        // PULL TO REFRESH
+        // ============================================================
+        onRefresh: () async {
+          await controller.refreshTransactionCategories();
         },
       ),
     );
