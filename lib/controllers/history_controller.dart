@@ -7,16 +7,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoryController extends GetxController {
   // ============================================================
-  // HISTORY
+  // HISTORY - FILTER
   // ============================================================
 
   final RxList<DataHistory> resultData = <DataHistory>[].obs;
 
   final RxBool isLoadingHistory = false.obs;
 
+  // ============================================================
+  // HISTORY - SINGLE DATE / TODAY
+  // ============================================================
+
   final RxList<DataHistory> resultDataSingleDate = <DataHistory>[].obs;
 
   final RxBool isLoadingSingleDate = false.obs;
+
+  // ============================================================
+  // HISTORY - YESTERDAY
+  // Digunakan untuk perbandingan data Home
+  // ============================================================
+
+  final RxList<DataHistory> resultDataYesterday = <DataHistory>[].obs;
+
+  final RxBool isLoadingYesterday = false.obs;
 
   // ============================================================
   // CATEGORY LOADING
@@ -27,7 +40,7 @@ class HistoryController extends GetxController {
   final RxBool isLoadingCategoryPengeluaran = false.obs;
 
   // ============================================================
-  // SUMMARY
+  // SUMMARY - FILTER
   // ============================================================
 
   final RxInt totalIncome = 0.obs;
@@ -35,6 +48,147 @@ class HistoryController extends GetxController {
   final RxInt totalExpense = 0.obs;
 
   final RxInt totalBalance = 0.obs;
+
+  // ============================================================
+  // HOME SUMMARY - TODAY
+  // ============================================================
+
+  int get todayTransactionCount {
+    return _validTransactions(resultDataSingleDate).length;
+  }
+
+  int get todayIncome {
+    return _calculateIncome(resultDataSingleDate);
+  }
+
+  int get todayExpense {
+    return _calculateExpense(resultDataSingleDate);
+  }
+
+  int get todayBalance {
+    return todayIncome - todayExpense;
+  }
+
+  int get todayAverageTransaction {
+    final count = todayTransactionCount;
+
+    if (count <= 0) {
+      return 0;
+    }
+
+    final total = _calculateTransactionValue(
+      resultDataSingleDate,
+    );
+
+    return (total / count).round();
+  }
+
+  // ============================================================
+  // HOME SUMMARY - YESTERDAY
+  // ============================================================
+
+  int get yesterdayTransactionCount {
+    return _validTransactions(resultDataYesterday).length;
+  }
+
+  int get yesterdayIncome {
+    return _calculateIncome(resultDataYesterday);
+  }
+
+  int get yesterdayExpense {
+    return _calculateExpense(resultDataYesterday);
+  }
+
+  int get yesterdayBalance {
+    return yesterdayIncome - yesterdayExpense;
+  }
+
+  // ============================================================
+  // HOME GROWTH
+  //
+  // Return percentage.
+  //
+  // Contoh:
+  // yesterday = 100.000
+  // today     = 120.000
+  // result    = 20.0
+  //
+  // Jika kemarin 0:
+  // - hari ini > 0 => 100%
+  // - hari ini = 0 => 0%
+  // ============================================================
+
+  double get incomeGrowth {
+    return _calculateGrowth(
+      todayIncome,
+      yesterdayIncome,
+    );
+  }
+
+  double get expenseGrowth {
+    return _calculateGrowth(
+      todayExpense,
+      yesterdayExpense,
+    );
+  }
+
+  double get balanceGrowth {
+    return _calculateGrowth(
+      todayBalance,
+      yesterdayBalance,
+    );
+  }
+
+  // ============================================================
+  // HOME - RECENT TRANSACTIONS
+  // ============================================================
+
+  List<DataHistory> get recentTransactions {
+    final data = _validTransactions(
+      resultDataSingleDate,
+    );
+
+    final sorted = List<DataHistory>.from(data);
+
+    sorted.sort(
+      (a, b) {
+        final dateA = _parseDateTime(a.transactionDate);
+        final dateB = _parseDateTime(b.transactionDate);
+
+        return dateB.compareTo(dateA);
+      },
+    );
+
+    return sorted.take(5).toList();
+  }
+
+  // ============================================================
+  // HOME - TODAY INCOME TRANSACTIONS
+  // ============================================================
+
+  List<DataHistory> get todayIncomeTransactions {
+    return _validTransactions(
+      resultDataSingleDate,
+    )
+        .where(
+          (item) => item.transactionType == 'PEMASUKAN',
+        )
+        .toList();
+  }
+
+  // ============================================================
+  // HOME - TODAY EXPENSE TRANSACTIONS
+  // ============================================================
+
+  List<DataHistory> get todayExpenseTransactions {
+    return _validTransactions(
+      resultDataSingleDate,
+    )
+        .where(
+          (item) => item.transactionType == 'PENGELUARAN',
+        )
+        .toList();
+  }
 
   // ============================================================
   // APPLIED FILTER
@@ -97,30 +251,48 @@ class HistoryController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
 
     idKios.value = prefs.getInt('id_kios') ?? 0;
+
     namaKios.value = prefs.getString('kios') ?? '';
 
     monthYear = '${singleDate.value.month}-${singleDate.value.year}'.obs;
 
-    getHistoriesBySingleDate();
+    await Future.wait([
+      getHistoriesBySingleDate(),
+      getHistoriesYesterday(),
+    ]);
   }
 
   // ============================================================
-  // OUTLET / BRAND
+  // REFRESH HOME DATA
+  // ============================================================
+
+  Future<void> refreshHomeData() async {
+    await Future.wait([
+      getHistoriesBySingleDate(),
+      getHistoriesYesterday(),
+    ]);
+  }
+
+  // ============================================================
+  // CHANGE OUTLET
   // ============================================================
 
   Future<void> changeOutlet() async {
     final prefs = await SharedPreferences.getInstance();
 
     idKios.value = prefs.getInt('id_kios') ?? 0;
+
     namaKios.value = prefs.getString('kios') ?? '';
 
     resetTransactionFilter();
 
-    await getHistoriesBySingleDate();
-    await getHistoriesByFilter();
-
-    await getDataListCategoryPemasukan();
-    await getDataListCategoryPengeluaran();
+    await Future.wait([
+      getHistoriesBySingleDate(),
+      getHistoriesYesterday(),
+      getHistoriesByFilter(),
+      getDataListCategoryPemasukan(),
+      getDataListCategoryPengeluaran(),
+    ]);
   }
 
   // ============================================================
@@ -141,7 +313,9 @@ class HistoryController extends GetxController {
         'sort': 'ASC',
       };
 
-      final result = await RemoteDataSource.listCategories(rawFormat);
+      final result = await RemoteDataSource.listCategories(
+        rawFormat,
+      );
 
       if (result?.data != null) {
         listCategoryPemasukan.assignAll(
@@ -161,7 +335,10 @@ class HistoryController extends GetxController {
       debugPrint(
         'getDataListCategoryPemasukan ERROR: $error',
       );
-      debugPrint('$stackTrace');
+
+      debugPrint(
+        '$stackTrace',
+      );
 
       Get.snackbar(
         'Error',
@@ -192,7 +369,9 @@ class HistoryController extends GetxController {
         'sort': 'ASC',
       };
 
-      final result = await RemoteDataSource.listCategories(rawFormat);
+      final result = await RemoteDataSource.listCategories(
+        rawFormat,
+      );
 
       if (result?.data != null) {
         listCategoryPengeluaran.assignAll(
@@ -212,7 +391,10 @@ class HistoryController extends GetxController {
       debugPrint(
         'getDataListCategoryPengeluaran ERROR: $error',
       );
-      debugPrint('$stackTrace');
+
+      debugPrint(
+        '$stackTrace',
+      );
 
       Get.snackbar(
         'Error',
@@ -226,7 +408,7 @@ class HistoryController extends GetxController {
   }
 
   // ============================================================
-  // HISTORY - SINGLE DATE
+  // HISTORY - TODAY / SELECTED DATE
   // ============================================================
 
   Future<void> getHistoriesBySingleDate() async {
@@ -243,10 +425,16 @@ class HistoryController extends GetxController {
         'cabang_kios': [],
       };
 
-      final result = await RemoteDataSource.histories(rawFormat);
+      final result = await RemoteDataSource.histories(
+        rawFormat,
+      );
 
       if (result != null && result.data != null) {
-        resultDataSingleDate.assignAll(result.data!);
+        resultDataSingleDate.assignAll(
+          result.data!,
+        );
+      } else {
+        resultDataSingleDate.clear();
       }
     } catch (error) {
       Get.snackbar(
@@ -255,8 +443,56 @@ class HistoryController extends GetxController {
         icon: const Icon(Icons.error),
         snackPosition: SnackPosition.TOP,
       );
+
+      resultDataSingleDate.clear();
     } finally {
       isLoadingSingleDate(false);
+    }
+  }
+
+  // ============================================================
+  // HISTORY - YESTERDAY
+  // ============================================================
+
+  Future<void> getHistoriesYesterday() async {
+    try {
+      isLoadingYesterday(true);
+
+      final yesterday = DateTime(
+        selectedDate.value.year,
+        selectedDate.value.month,
+        selectedDate.value.day - 1,
+      );
+
+      final rawFormat = {
+        'startDate': yesterday.toString(),
+        'endDate': yesterday.toString(),
+        'monthYear': '${yesterday.month}-${yesterday.year}',
+        'filter_by_date_or_month': 'tanggal',
+        'id_kios': idKios.value,
+        'kategori': [],
+        'cabang_kios': [],
+      };
+
+      final result = await RemoteDataSource.histories(
+        rawFormat,
+      );
+
+      if (result != null && result.data != null) {
+        resultDataYesterday.assignAll(
+          result.data!,
+        );
+      } else {
+        resultDataYesterday.clear();
+      }
+    } catch (error) {
+      debugPrint(
+        'getHistoriesYesterday ERROR: $error',
+      );
+
+      resultDataYesterday.clear();
+    } finally {
+      isLoadingYesterday(false);
     }
   }
 
@@ -282,10 +518,14 @@ class HistoryController extends GetxController {
         '>>> HISTORY FILTER: $rawFormat',
       );
 
-      final result = await RemoteDataSource.histories(rawFormat);
+      final result = await RemoteDataSource.histories(
+        rawFormat,
+      );
 
       if (result != null && result.data != null) {
-        resultData.assignAll(result.data!);
+        resultData.assignAll(
+          result.data!,
+        );
 
         _calculateSummary();
       } else {
@@ -308,27 +548,17 @@ class HistoryController extends GetxController {
   }
 
   // ============================================================
-  // SUMMARY
+  // SUMMARY - FILTER
   // ============================================================
 
   void _calculateSummary() {
-    totalIncome.value = resultData
-        .where(
-          (history) => history.transactionType == 'PEMASUKAN',
-        )
-        .fold(
-          0,
-          (sum, history) => sum + (history.amount ?? 0),
-        );
+    totalIncome.value = _calculateIncome(
+      resultData,
+    );
 
-    totalExpense.value = resultData
-        .where(
-          (history) => history.transactionType == 'PENGELUARAN',
-        )
-        .fold(
-          0,
-          (sum, history) => sum + (history.amount ?? 0),
-        );
+    totalExpense.value = _calculateExpense(
+      resultData,
+    );
 
     totalBalance.value = totalIncome.value - totalExpense.value;
   }
@@ -376,15 +606,21 @@ class HistoryController extends GetxController {
     await getHistoriesByFilter();
   }
 
-  bool isOutletSelected(dynamic value) {
+  bool isOutletSelected(
+    dynamic value,
+  ) {
     return tempTagCabangKios.contains(value);
   }
 
-  bool isCategorySelected(dynamic value) {
+  bool isCategorySelected(
+    dynamic value,
+  ) {
     return tempTagCategory.contains(value);
   }
 
-  void toggleOutlet(dynamic value) {
+  void toggleOutlet(
+    dynamic value,
+  ) {
     if (tempTagCabangKios.contains(value)) {
       tempTagCabangKios.remove(value);
     } else {
@@ -392,7 +628,9 @@ class HistoryController extends GetxController {
     }
   }
 
-  void toggleCategory(dynamic value) {
+  void toggleCategory(
+    dynamic value,
+  ) {
     if (tempTagCategory.contains(value)) {
       tempTagCategory.remove(value);
     } else {
@@ -433,6 +671,10 @@ class HistoryController extends GetxController {
 
     getHistoriesByFilter();
   }
+
+  // ============================================================
+  // DATE RANGE PICKER
+  // ============================================================
 
   Future<void> showDialogDateRangePicker() async {
     final pickedDate = await showDateRangePicker(
@@ -480,7 +722,9 @@ class HistoryController extends GetxController {
   // DELETE
   // ============================================================
 
-  Future<void> delete(int id) async {
+  Future<void> delete(
+    int id,
+  ) async {
     final resultUpdate = await RemoteDataSource.deleteHistory(id);
 
     if (resultUpdate) {
@@ -491,7 +735,11 @@ class HistoryController extends GetxController {
         snackPosition: SnackPosition.TOP,
       );
 
-      await getHistoriesByFilter();
+      await Future.wait([
+        getHistoriesByFilter(),
+        getHistoriesBySingleDate(),
+        getHistoriesYesterday(),
+      ]);
     } else {
       Get.snackbar(
         'Notification',
@@ -500,5 +748,108 @@ class HistoryController extends GetxController {
         snackPosition: SnackPosition.TOP,
       );
     }
+  }
+
+  // ============================================================
+  // PRIVATE HELPER
+  // ============================================================
+
+  List<DataHistory> _validTransactions(
+    RxList<DataHistory> source,
+  ) {
+    return source
+        .where(
+          (item) => item.deleteStatus != true,
+        )
+        .toList();
+  }
+
+  int _calculateIncome(
+    RxList<DataHistory> source,
+  ) {
+    return _validTransactions(source)
+        .where(
+          (history) => history.transactionType == 'PEMASUKAN',
+        )
+        .fold(
+          0,
+          (sum, history) => sum + (history.amount ?? 0),
+        );
+  }
+
+  int _calculateExpense(
+    RxList<DataHistory> source,
+  ) {
+    return _validTransactions(source)
+        .where(
+          (history) => history.transactionType == 'PENGELUARAN',
+        )
+        .fold(
+          0,
+          (sum, history) => sum + (history.amount ?? 0),
+        );
+  }
+
+  int _calculateTransactionValue(
+    RxList<DataHistory> source,
+  ) {
+    return _validTransactions(source).fold(
+      0,
+      (sum, history) => sum + (history.amount ?? 0),
+    );
+  }
+
+  double _calculateGrowth(
+    int current,
+    int previous,
+  ) {
+    if (previous == 0) {
+      if (current > 0) {
+        return 100;
+      }
+
+      return 0;
+    }
+
+    return ((current - previous) / previous) * 100;
+  }
+
+  DateTime _parseDateTime(
+    String? value,
+  ) {
+    if (value == null || value.isEmpty) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+
+    return DateTime.tryParse(value) ?? DateTime.fromMillisecondsSinceEpoch(0);
+  }
+
+  String formatRupiah(int value) {
+    if (value.abs() >= 1000000) {
+      final juta = value / 1000000;
+
+      if (juta == juta.roundToDouble()) {
+        return 'Rp ${juta.toInt()} jt';
+      }
+
+      return 'Rp ${juta.toStringAsFixed(1)} jt';
+    }
+
+    if (value.abs() >= 1000) {
+      final ribu = value / 1000;
+
+      if (ribu == ribu.roundToDouble()) {
+        return 'Rp ${ribu.toInt()}K';
+      }
+
+      return 'Rp ${ribu.toStringAsFixed(1)}K';
+    }
+
+    return 'Rp $value';
+  }
+
+  String formatGrowth(double value) {
+    final prefix = value > 0 ? '+' : '';
+    return '$prefix${value.toStringAsFixed(1)}%';
   }
 }

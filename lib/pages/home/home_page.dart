@@ -68,46 +68,76 @@ class _HomePageState extends State<HomePage> {
               title: 'Ringkasan Hari Ini',
             ),
             const SizedBox(height: 10),
-            const Row(
+            Row(
               children: [
                 Expanded(
-                  child: HomeStatCard(
-                    icon: Icons.receipt_long_rounded,
-                    title: 'Transaksi',
-                    value: '128',
-                    subtitle: 'hari ini',
+                  child: Obx(
+                    () => HomeStatCard(
+                      icon: Icons.receipt_long_rounded,
+                      title: 'Transaksi',
+                      value: historyController.isLoadingSingleDate.value
+                          ? '-'
+                          : historyController.todayTransactionCount.toString(),
+                      subtitle: 'hari ini',
+                      loading: historyController.isLoadingSingleDate.value,
+                    ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
-                  child: HomeStatCard(
-                    icon: Icons.shopping_bag_rounded,
-                    title: 'Produk',
-                    value: '246',
-                    subtitle: 'terjual',
+                  child: Obx(
+                    () => HomeStatCard(
+                      icon: Icons.payments_rounded,
+                      title: 'Pemasukan',
+                      value: historyController.isLoadingSingleDate.value
+                          ? '-'
+                          : historyController.formatRupiah(
+                              historyController.todayIncome,
+                            ),
+                      subtitle: 'hari ini',
+                      loading: historyController.isLoadingSingleDate.value,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            const Row(
+            Row(
               children: [
                 Expanded(
-                  child: HomeStatCard(
-                    icon: Icons.payments_rounded,
-                    title: 'Rata-rata',
-                    value: 'Rp 32K',
-                    subtitle: 'per transaksi',
+                  child: Obx(
+                    () => HomeStatCard(
+                      icon: Icons.calculate_rounded,
+                      title: 'Rata-rata',
+                      value: historyController.isLoadingSingleDate.value
+                          ? '-'
+                          : historyController.formatRupiah(
+                              historyController.todayAverageTransaction,
+                            ),
+                      subtitle: 'per transaksi',
+                      loading: historyController.isLoadingSingleDate.value,
+                    ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
-                  child: HomeStatCard(
-                    icon: Icons.trending_up_rounded,
-                    title: 'Pertumbuhan',
-                    value: '+12.8%',
-                    subtitle: 'vs kemarin',
-                    accent: true,
+                  child: Obx(
+                    () {
+                      final growth = historyController.incomeGrowth;
+
+                      return HomeStatCard(
+                        icon: growth >= 0
+                            ? Icons.trending_up_rounded
+                            : Icons.trending_down_rounded,
+                        title: 'Pertumbuhan',
+                        value: historyController.isLoadingSingleDate.value
+                            ? '-'
+                            : historyController.formatGrowth(growth),
+                        subtitle: 'vs kemarin',
+                        accent: growth >= 0,
+                        loading: historyController.isLoadingSingleDate.value,
+                      );
+                    },
                   ),
                 ),
               ],

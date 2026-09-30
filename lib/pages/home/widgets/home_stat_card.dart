@@ -7,6 +7,7 @@ class HomeStatCard extends StatelessWidget {
   final String value;
   final String subtitle;
   final bool accent;
+  final bool loading;
 
   const HomeStatCard({
     super.key,
@@ -15,6 +16,7 @@ class HomeStatCard extends StatelessWidget {
     required this.value,
     required this.subtitle,
     this.accent = false,
+    this.loading = false,
   });
 
   @override
@@ -59,14 +61,30 @@ class HomeStatCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 3),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -.3,
-              color: MyColors.textPrimary,
+          AnimatedSwitcher(
+            duration: const Duration(
+              milliseconds: 200,
             ),
+            child: loading
+                ? Container(
+                    key: const ValueKey('loading'),
+                    width: 80,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: MyColors.primaryLight,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  )
+                : Text(
+                    value,
+                    key: ValueKey(value),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -.3,
+                      color: MyColors.textPrimary,
+                    ),
+                  ),
           ),
           const SizedBox(height: 2),
           Text(
