@@ -4,7 +4,6 @@ import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
 
 class LineChartSample1 extends StatelessWidget {
   const LineChartSample1({super.key});

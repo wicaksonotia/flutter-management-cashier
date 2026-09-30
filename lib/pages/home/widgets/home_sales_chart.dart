@@ -1,5 +1,4 @@
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
-import 'package:cashier_management/models/chart_model.dart';
 import 'package:cashier_management/pages/home/line_chart.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:flutter/material.dart';
