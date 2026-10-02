@@ -284,7 +284,7 @@ class _TransactionCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isDeleted
-                    ? MyColors.error.withOpacity(.25)
+                    ? MyColors.error.withValues(alpha: .25)
                     : MyColors.border,
               ),
             ),

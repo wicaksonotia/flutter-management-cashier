@@ -72,7 +72,7 @@ class LineChartSample1 extends StatelessWidget {
         _expenseLine(data),
       ],
       lineTouchData: _touchData(data),
-      extraLinesData: ExtraLinesData(
+      extraLinesData: const ExtraLinesData(
         horizontalLines: [],
       ),
     );

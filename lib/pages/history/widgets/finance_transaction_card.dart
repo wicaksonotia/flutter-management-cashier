@@ -6,18 +6,23 @@ import 'package:intl/intl.dart';
 
 class FinanceTransactionCard extends StatelessWidget {
   final DataHistory data;
+
+  final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
   const FinanceTransactionCard({
     super.key,
     required this.data,
+    this.onTap,
     this.onEdit,
     this.onDelete,
   });
 
   bool get isIncome =>
       (data.transactionType ?? '').trim().toUpperCase() == 'PEMASUKAN';
+
+  bool get isDeleted => data.deleteStatus == true;
 
   String _currency(int value) {
     return NumberFormat.currency(
@@ -33,7 +38,9 @@ class FinanceTransactionCard extends StatelessWidget {
     }
 
     try {
-      final date = DateTime.parse(data.transactionDate!);
+      final date = DateTime.parse(
+        data.transactionDate!,
+      );
 
       return DateFormat(
         'dd MMM yyyy',
@@ -44,7 +51,9 @@ class FinanceTransactionCard extends StatelessWidget {
     }
   }
 
-  Widget _buildOutletChip(String branch) {
+  Widget _buildOutletChip(
+    String branch,
+  ) {
     return Container(
       constraints: const BoxConstraints(
         maxWidth: 150,
@@ -76,6 +85,38 @@ class FinanceTransactionCard extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: MyColors.primary,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCentralizedChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 7,
+        vertical: 4,
+      ),
+      decoration: BoxDecoration(
+        color: MyColors.surfaceSoft,
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.account_balance_outlined,
+            size: 11,
+            color: MyColors.textSecondary,
+          ),
+          SizedBox(width: 4),
+          Text(
+            'Terpusat',
+            style: TextStyle(
+              fontSize: 9.5,
+              fontWeight: FontWeight.w600,
+              color: MyColors.textSecondary,
             ),
           ),
         ],
@@ -115,7 +156,9 @@ class FinanceTransactionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCashier(String cashier) {
+  Widget _buildCashier(
+    String cashier,
+  ) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -161,143 +204,186 @@ class FinanceTransactionCard extends StatelessWidget {
       margin: const EdgeInsets.only(
         bottom: 8,
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 10,
-      ),
       decoration: BoxDecoration(
         color: MyColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: MyColors.border,
+          color: isDeleted
+              ? MyColors.error.withValues(alpha: 0.35)
+              : MyColors.border,
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // ========================================================
-          // ICON
-          // ========================================================
-
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: softColor,
-              borderRadius: BorderRadius.circular(11),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
             ),
-            child: Icon(
-              isIncome ? Icons.south_west_rounded : Icons.north_east_rounded,
-              color: color,
-              size: 18,
-            ),
-          ),
-
-          const SizedBox(width: 10),
-
-          // ========================================================
-          // INFORMASI
-          // ========================================================
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  transactionName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: MyColors.textPrimary,
+                // ==================================================
+                // ICON
+                // ==================================================
+
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: softColor,
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: Icon(
+                    isIncome
+                        ? Icons.south_west_rounded
+                        : Icons.north_east_rounded,
+                    color: color,
+                    size: 18,
                   ),
                 ),
-                const SizedBox(height: 5),
-                Wrap(
-                  spacing: 5,
-                  runSpacing: 4,
-                  children: [
-                    if (branch.isNotEmpty)
-                      _buildOutletChip(
-                        branch,
+
+                const SizedBox(width: 10),
+
+                // ==================================================
+                // INFORMASI
+                // ==================================================
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              transactionName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: MyColors.textPrimary,
+                              ),
+                            ),
+                          ),
+                          if (isDeleted) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: MyColors.errorBg,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                'Dihapus',
+                                style: TextStyle(
+                                  fontSize: 8.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: MyColors.error,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
-                    _buildDateChip(),
+                      const SizedBox(height: 5),
+                      Wrap(
+                        spacing: 5,
+                        runSpacing: 4,
+                        children: [
+                          if (branch.isNotEmpty)
+                            _buildOutletChip(
+                              branch,
+                            )
+                          else
+                            _buildCentralizedChip(),
+                          _buildDateChip(),
+                        ],
+                      ),
+                      if (note.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          note,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: MyColors.textMuted,
+                          ),
+                        ),
+                      ],
+                      if (cashier.isNotEmpty) ...[
+                        const SizedBox(height: 3),
+                        _buildCashier(
+                          cashier,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // ==================================================
+                // NOMINAL + MENU
+                // ==================================================
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${isIncome ? '+' : '-'}${_currency(data.amount ?? 0)}',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                        color: color,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    if (onEdit != null || onDelete != null)
+                      AppPopupMenu(
+                        items: [
+                          if (onEdit != null)
+                            const AppPopupMenuItem(
+                              value: 'edit',
+                              label: 'Edit Transaksi',
+                              icon: Icons.edit_outlined,
+                            ),
+                          if (onDelete != null)
+                            const AppPopupMenuItem(
+                              value: 'delete',
+                              label: 'Hapus Transaksi',
+                              icon: Icons.delete_outline_rounded,
+                              color: MyColors.error,
+                            ),
+                        ],
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'edit':
+                              onEdit?.call();
+                              break;
+
+                            case 'delete':
+                              onDelete?.call();
+                              break;
+                          }
+                        },
+                      ),
                   ],
                 ),
-                if (note.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    note,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: MyColors.textMuted,
-                    ),
-                  ),
-                ],
-                if (cashier.isNotEmpty) ...[
-                  const SizedBox(height: 3),
-                  _buildCashier(
-                    cashier,
-                  ),
-                ],
               ],
             ),
           ),
-
-          const SizedBox(width: 8),
-
-          // ========================================================
-          // NOMINAL + MENU
-          // ========================================================
-
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${isIncome ? '+' : '-'}${_currency(data.amount ?? 0)}',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w800,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 1),
-              if (onEdit != null || onDelete != null)
-                AppPopupMenu(
-                  items: [
-                    if (onEdit != null)
-                      const AppPopupMenuItem(
-                        value: 'edit',
-                        label: 'Edit Transaksi',
-                        icon: Icons.edit_outlined,
-                      ),
-                    if (onDelete != null)
-                      const AppPopupMenuItem(
-                        value: 'delete',
-                        label: 'Hapus Transaksi',
-                        icon: Icons.delete_outline_rounded,
-                        color: MyColors.error,
-                      ),
-                  ],
-                  onSelected: (value) {
-                    switch (value) {
-                      case 'edit':
-                        onEdit?.call();
-                        break;
-
-                      case 'delete':
-                        onDelete?.call();
-                        break;
-                    }
-                  },
-                ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

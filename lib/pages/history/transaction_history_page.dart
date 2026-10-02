@@ -41,6 +41,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     super.initState();
 
     historyController = Get.find<HistoryController>();
+
     transactionController = Get.find<TransactionController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -99,6 +100,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   String _periodLabel() {
     if (historyController.filterBy.value == 'tanggal') {
       final start = historyController.startDate.value;
+
       final end = historyController.endDate.value;
 
       final formatter = DateFormat(
@@ -106,7 +108,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         'id_ID',
       );
 
-      if (DateUtils.isSameDay(start, end)) {
+      if (DateUtils.isSameDay(
+        start,
+        end,
+      )) {
         return formatter.format(start);
       }
 
@@ -126,7 +131,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   // SEGMENTED
   // ================================================================
 
-  void _changeType(int index) {
+  void _changeType(
+    int index,
+  ) {
     setState(() {
       selectedType = index;
     });
@@ -157,6 +164,26 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   }
 
   // ================================================================
+  // TRANSACTION DETAIL
+  // ================================================================
+
+  void _showTransactionDetail(
+    DataHistory data,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.35),
+      builder: (_) {
+        return _TransactionDetailSheet(
+          data: data,
+        );
+      },
+    );
+  }
+
+  // ================================================================
   // BUILD
   // ================================================================
 
@@ -166,11 +193,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       key: _scaffoldKey,
       backgroundColor: MyColors.background,
       drawer: const custom_drawer.NavigationDrawer(),
-
-      // ============================================================
-      // ADD TRANSACTION
-      // ============================================================
-
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: MyColors.primary,
         foregroundColor: Colors.white,
@@ -186,11 +208,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           ),
         ),
       ),
-
-      // ============================================================
-      // BODY
-      // ============================================================
-
       body: Obx(
         () {
           final transactions = _filteredTransactions();
@@ -198,9 +215,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           return CustomScrollView(
             physics: const ClampingScrollPhysics(),
             slivers: [
-              // ======================================================
+              // ==================================================
               // HEADER + SUMMARY
-              // ======================================================
+              // ==================================================
 
               FinanceBackground(
                 brandName: historyController.namaKios.value,
@@ -216,9 +233,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 ),
               ),
 
-              // ======================================================
+              // ==================================================
               // SPACE
-              // ======================================================
+              // ==================================================
 
               const SliverToBoxAdapter(
                 child: SizedBox(
@@ -226,9 +243,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 ),
               ),
 
-              // ======================================================
+              // ==================================================
               // SEGMENTED
-              // ======================================================
+              // ==================================================
 
               SliverToBoxAdapter(
                 child: FinanceSegmented(
@@ -237,9 +254,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 ),
               ),
 
-              // ======================================================
+              // ==================================================
               // FILTER
-              // ======================================================
+              // ==================================================
 
               SliverToBoxAdapter(
                 child: FinanceFilterBar(
@@ -250,27 +267,27 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 ),
               ),
 
-              // ======================================================
+              // ==================================================
               // LOADING
-              // ======================================================
+              // ==================================================
 
               if (historyController.isLoadingHistory.value)
                 const SliverToBoxAdapter(
                   child: FinanceLoadingState(),
                 )
 
-              // ======================================================
+              // ==================================================
               // EMPTY
-              // ======================================================
+              // ==================================================
 
               else if (transactions.isEmpty)
                 const SliverToBoxAdapter(
                   child: FinanceEmptyState(),
                 )
 
-              // ======================================================
+              // ==================================================
               // TRANSACTION LIST
-              // ======================================================
+              // ==================================================
 
               else
                 SliverPadding(
@@ -291,7 +308,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       final isAdminTransaction =
                           (item.sourceType ?? '').toUpperCase() == 'ADMIN';
 
-                      final currentDate = _transactionDateKey(item);
+                      final currentDate = _transactionDateKey(
+                        item,
+                      );
 
                       final previousDate = index > 0
                           ? _transactionDateKey(
@@ -313,12 +332,36 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             ),
                           FinanceTransactionCard(
                             data: item,
+
+                            // ==================================================
+                            // TAP DETAIL
+                            // ==================================================
+
+                            onTap: () {
+                              _showTransactionDetail(
+                                item,
+                              );
+                            },
+
+                            // ==================================================
+                            // EDIT
+                            // ==================================================
+
                             onEdit: item.id == null || !isAdminTransaction
                                 ? null
-                                : () => _editTransaction(item),
+                                : () => _editTransaction(
+                                      item,
+                                    ),
+
+                            // ==================================================
+                            // DELETE
+                            // ==================================================
+
                             onDelete: item.id == null || !isAdminTransaction
                                 ? null
-                                : () => _confirmDelete(item.id!),
+                                : () => _confirmDelete(
+                                      item.id!,
+                                    ),
                           ),
                         ],
                       );
@@ -366,11 +409,15 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       height: 4,
                       decoration: BoxDecoration(
                         color: MyColors.border,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(
+                      height: 20,
+                    ),
 
                     const Align(
                       alignment: Alignment.centerLeft,
@@ -384,7 +431,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(
+                      height: 8,
+                    ),
 
                     // ==================================================
                     // BULAN
@@ -397,7 +446,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                         height: 42,
                         decoration: BoxDecoration(
                           color: MyColors.primaryLight,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ),
                         ),
                         child: const Icon(
                           Icons.calendar_month_rounded,
@@ -424,7 +475,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               height: 28,
                               decoration: BoxDecoration(
                                 color: MyColors.primaryLight,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(
+                                  10,
+                                ),
                               ),
                               child: const Icon(
                                 Icons.check_rounded,
@@ -447,7 +500,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       },
                     ),
 
-                    const SizedBox(height: 4),
+                    const SizedBox(
+                      height: 4,
+                    ),
 
                     // ==================================================
                     // RENTANG TANGGAL
@@ -460,7 +515,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                         height: 42,
                         decoration: BoxDecoration(
                           color: MyColors.primaryLight,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ),
                         ),
                         child: const Icon(
                           Icons.date_range_rounded,
@@ -487,7 +544,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               height: 28,
                               decoration: BoxDecoration(
                                 color: MyColors.primaryLight,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(
+                                  10,
+                                ),
                               ),
                               child: const Icon(
                                 Icons.check_rounded,
@@ -505,7 +564,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       },
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(
+                      height: 8,
+                    ),
                   ],
                 ),
               );
@@ -525,7 +586,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.35),
+      barrierColor: Colors.black.withValues(
+        alpha: 0.35,
+      ),
       builder: (_) {
         return TransactionFilterSheet(
           selectedType: selectedType,
@@ -538,7 +601,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   // DELETE
   // ================================================================
 
-  Future<void> _confirmDelete(int id) async {
+  Future<void> _confirmDelete(
+    int id,
+  ) async {
     final confirmed = await AppConfirmDialog.show(
       context,
       title: 'Hapus transaksi?',
@@ -551,7 +616,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
     if (!confirmed) return;
 
-    await historyController.delete(id);
+    await historyController.delete(
+      id,
+    );
   }
 
   // ================================================================
@@ -607,31 +674,26 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   // EDIT
   // ================================================================
 
-  // ================================================================
-  // EDIT
-  // ================================================================
-
   Future<void> _editTransaction(
     DataHistory data,
   ) async {
     try {
-      // Pastikan CabangController tersedia karena form transaksi
-      // membutuhkan controller ini ketika transaksi bukan terpusat.
       if (!Get.isRegistered<CabangController>()) {
-        Get.put(CabangController());
+        Get.put(
+          CabangController(),
+        );
       }
 
-      // Isi form berdasarkan transaksi yang dipilih.
-      await transactionController.setEditTransaction(data);
+      await transactionController.setEditTransaction(
+        data,
+      );
 
       if (!mounted) return;
 
-      // Buka form edit.
       final result = await Get.to(
         () => TransactionForm(),
       );
 
-      // Jika update berhasil, refresh seluruh data history.
       if (result == true) {
         await _loadData();
       }
@@ -639,6 +701,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       debugPrint(
         'EDIT TRANSACTION ERROR: $error',
       );
+
       debugPrint(
         '$stackTrace',
       );
@@ -669,7 +732,9 @@ class _FinanceDateDivider extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         2,
@@ -687,7 +752,9 @@ class _FinanceDateDivider extends StatelessWidget {
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(
+            width: 8,
+          ),
           Text(
             label,
             style: const TextStyle(
@@ -696,7 +763,9 @@ class _FinanceDateDivider extends StatelessWidget {
               color: MyColors.textPrimary,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(
+            width: 10,
+          ),
           Expanded(
             child: Container(
               height: 1,
@@ -704,6 +773,455 @@ class _FinanceDateDivider extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ==================================================================
+// TRANSACTION DETAIL SHEET
+// ==================================================================
+
+class _TransactionDetailSheet extends StatelessWidget {
+  final DataHistory data;
+
+  const _TransactionDetailSheet({
+    required this.data,
+  });
+
+  bool get isIncome =>
+      (data.transactionType ?? '').trim().toUpperCase() == 'PEMASUKAN';
+
+  bool get isDeleted => data.deleteStatus == true;
+
+  String _currency(
+    int value,
+  ) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(value);
+  }
+
+  String _dateLabel() {
+    if (data.transactionDate == null || data.transactionDate!.trim().isEmpty) {
+      return '-';
+    }
+
+    try {
+      final date = DateTime.parse(
+        data.transactionDate!,
+      );
+
+      return DateFormat(
+        'EEEE, dd MMMM yyyy',
+        'id_ID',
+      ).format(date);
+    } catch (_) {
+      return data.transactionDate!;
+    }
+  }
+
+  String _sourceLabel() {
+    final source = (data.sourceType ?? '').trim().toUpperCase();
+
+    switch (source) {
+      case 'KASIR':
+        return 'Kasir';
+
+      case 'ADMIN':
+        return 'Admin';
+
+      default:
+        return source.isEmpty ? '-' : source;
+    }
+  }
+
+  bool get isCentralized =>
+      data.idCabang == null ||
+      data.idCabang == 0 ||
+      (data.cabang ?? '').trim().isEmpty;
+
+  Widget _detailItem({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        bottom: 16,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: MyColors.primaryLight,
+              borderRadius: BorderRadius.circular(
+                10,
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: MyColors.primary,
+            ),
+          ),
+          const SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: MyColors.textMuted,
+                  ),
+                ),
+                const SizedBox(
+                  height: 3,
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: MyColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    final color = isIncome ? MyColors.success : MyColors.error;
+
+    final transactionName = data.transactionName?.trim().isNotEmpty == true
+        ? data.transactionName!.trim()
+        : 'Transaksi';
+
+    final note = data.note?.trim() ?? '';
+
+    final branch = data.cabang?.trim() ?? '';
+
+    final cashier = data.namaKasir?.trim() ?? '';
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(24),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            12,
+            20,
+            24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ==================================================
+                // HANDLE
+                // ==================================================
+
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: MyColors.border,
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 20,
+                ),
+
+                // ==================================================
+                // HEADER
+                // ==================================================
+
+                Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: isIncome ? MyColors.successBg : MyColors.errorBg,
+                        borderRadius: BorderRadius.circular(
+                          13,
+                        ),
+                      ),
+                      child: Icon(
+                        isIncome
+                            ? Icons.south_west_rounded
+                            : Icons.north_east_rounded,
+                        color: color,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            transactionName,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              color: MyColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 3,
+                          ),
+                          Text(
+                            isIncome ? 'Pemasukan' : 'Pengeluaran',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: MyColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(
+                  height: 20,
+                ),
+
+                // ==================================================
+                // NOMINAL
+                // ==================================================
+
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(
+                    16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isIncome ? MyColors.successBg : MyColors.errorBg,
+                    borderRadius: BorderRadius.circular(
+                      16,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Nominal transaksi',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: MyColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        '${isIncome ? '+' : '-'}${_currency(data.amount ?? 0)}',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                          color: color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 20,
+                ),
+
+                // ==================================================
+                // INFORMASI TRANSAKSI
+                // ==================================================
+
+                _detailItem(
+                  icon: Icons.layers_outlined,
+                  label: 'Sumber transaksi',
+                  value: _sourceLabel(),
+                ),
+
+                _detailItem(
+                  icon: Icons.calendar_today_outlined,
+                  label: 'Tanggal',
+                  value: _dateLabel(),
+                ),
+
+                if (isCentralized)
+                  _detailItem(
+                    icon: Icons.account_balance_outlined,
+                    label: 'Tujuan transaksi',
+                    value: 'Terpusat / tidak terkait outlet',
+                  )
+                else
+                  _detailItem(
+                    icon: Icons.storefront_outlined,
+                    label: 'Outlet',
+                    value: branch.isNotEmpty ? branch : '-',
+                  ),
+
+                if (cashier.isNotEmpty)
+                  _detailItem(
+                    icon: Icons.person_outline_rounded,
+                    label: 'Kasir',
+                    value: cashier,
+                  ),
+
+                // ==================================================
+                // KETERANGAN
+                // ==================================================
+
+                if (note.isNotEmpty) ...[
+                  const Text(
+                    'Keterangan',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: MyColors.textMuted,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(
+                      14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: MyColors.surfaceSoft,
+                      borderRadius: BorderRadius.circular(
+                        12,
+                      ),
+                      border: Border.all(
+                        color: MyColors.border,
+                      ),
+                    ),
+                    child: Text(
+                      note,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.5,
+                        color: MyColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+
+                // ==================================================
+                // STATUS DIHAPUS
+                // ==================================================
+
+                if (isDeleted) ...[
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(
+                      14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: MyColors.errorBg,
+                      borderRadius: BorderRadius.circular(
+                        12,
+                      ),
+                      border: Border.all(
+                        color: MyColors.error.withValues(
+                          alpha: 0.25,
+                        ),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.delete_outline_rounded,
+                              size: 18,
+                              color: MyColors.error,
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            const Text(
+                              'Transaksi dihapus',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: MyColors.error,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (data.deleteReason?.trim().isNotEmpty == true) ...[
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            data.deleteReason!.trim(),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              height: 1.4,
+                              color: MyColors.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+
+                const SizedBox(
+                  height: 4,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

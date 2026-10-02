@@ -4,8 +4,6 @@ import 'package:cashier_management/controllers/splash_controller.dart';
 import 'package:cashier_management/controllers/total_per_type_controller.dart';
 import 'package:cashier_management/controllers/transaction_controller.dart';
 
-import 'package:cashier_management/pages/add_transaction/calculator.dart';
-import 'package:cashier_management/pages/add_transaction/form_transaction.dart';
 import 'package:cashier_management/pages/history/transaction_history_page.dart';
 
 import 'package:cashier_management/pages/login_page.dart';
@@ -163,11 +161,6 @@ class RouterClass {
     // ========================================================
 
     GetPage(
-      name: addtransaction,
-      page: () => const FormTransaction(),
-    ),
-
-    GetPage(
       name: transactionhistory,
       page: () => const TransactionHistoryPage(),
       binding: BindingsBuilder(() {
@@ -181,11 +174,6 @@ class RouterClass {
     GetPage(
       name: monitoringoutlet,
       page: () => const MonitoringPage(),
-    ),
-
-    GetPage(
-      name: calculator,
-      page: () => const CalculatorPage(),
     ),
 
     // ========================================================

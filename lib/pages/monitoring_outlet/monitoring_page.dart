@@ -183,7 +183,7 @@ class _MonitoringPageState extends State<MonitoringPage> {
                     color: MyColors.primaryLight,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: MyColors.primary.withOpacity(.08),
+                      color: MyColors.primary.withValues(alpha: .08),
                     ),
                   ),
                   child: Row(
@@ -749,7 +749,7 @@ class _EmptyTransaction extends StatelessWidget {
           Container(
             width: 74,
             height: 74,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: MyColors.primaryLight,
               shape: BoxShape.circle,
             ),

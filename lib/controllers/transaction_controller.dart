@@ -247,7 +247,7 @@ class TransactionController extends CategoryController {
       ) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: MyColors.primary,
               onPrimary: Colors.white,
               surface: MyColors.surface,
@@ -281,7 +281,7 @@ class TransactionController extends CategoryController {
               todayForegroundColor: const WidgetStatePropertyAll(
                 MyColors.primary,
               ),
-              todayBorder: BorderSide(
+              todayBorder: const BorderSide(
                 color: MyColors.primary,
                 width: 1,
               ),
