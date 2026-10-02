@@ -41,7 +41,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     super.initState();
 
     historyController = Get.find<HistoryController>();
-
     transactionController = Get.find<TransactionController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -100,7 +99,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   String _periodLabel() {
     if (historyController.filterBy.value == 'tanggal') {
       final start = historyController.startDate.value;
-
       final end = historyController.endDate.value;
 
       final formatter = DateFormat(
@@ -174,7 +172,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.35),
+      barrierColor: Colors.black.withValues(
+        alpha: 0.35,
+      ),
       builder: (_) {
         return _TransactionDetailSheet(
           data: data,
@@ -308,9 +308,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       final isAdminTransaction =
                           (item.sourceType ?? '').toUpperCase() == 'ADMIN';
 
-                      final currentDate = _transactionDateKey(
-                        item,
-                      );
+                      final currentDate = _transactionDateKey(item);
 
                       final previousDate = index > 0
                           ? _transactionDateKey(
@@ -332,31 +330,16 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             ),
                           FinanceTransactionCard(
                             data: item,
-
-                            // ==================================================
-                            // TAP DETAIL
-                            // ==================================================
-
                             onTap: () {
                               _showTransactionDetail(
                                 item,
                               );
                             },
-
-                            // ==================================================
-                            // EDIT
-                            // ==================================================
-
                             onEdit: item.id == null || !isAdminTransaction
                                 ? null
                                 : () => _editTransaction(
                                       item,
                                     ),
-
-                            // ==================================================
-                            // DELETE
-                            // ==================================================
-
                             onDelete: item.id == null || !isAdminTransaction
                                 ? null
                                 : () => _confirmDelete(
@@ -409,9 +392,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       height: 4,
                       decoration: BoxDecoration(
                         color: MyColors.border,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
 
@@ -446,9 +427,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                         height: 42,
                         decoration: BoxDecoration(
                           color: MyColors.primaryLight,
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.calendar_month_rounded,
@@ -462,9 +441,16 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                           color: MyColors.textPrimary,
                         ),
                       ),
-                      subtitle: const Text(
-                        'Tampilkan transaksi berdasarkan bulan',
-                        style: TextStyle(
+                      subtitle: Text(
+                        historyController.filterBy.value == 'bulan'
+                            ? DateFormat(
+                                'MMMM yyyy',
+                                'id_ID',
+                              ).format(
+                                historyController.singleDate.value,
+                              )
+                            : 'Tampilkan transaksi berdasarkan bulan',
+                        style: const TextStyle(
                           fontSize: 12,
                           color: MyColors.textSecondary,
                         ),
@@ -487,16 +473,15 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             )
                           : null,
                       onTap: () async {
-                        Get.back();
+                        Navigator.of(context).pop();
 
-                        historyController.filterBy.value = 'bulan';
+                        await Future.delayed(
+                          const Duration(milliseconds: 150),
+                        );
 
-                        historyController.monthYear.value =
-                            '${historyController.singleDate.value.month}'
-                            '-'
-                            '${historyController.singleDate.value.year}';
+                        if (!mounted) return;
 
-                        await historyController.getHistoriesByFilter();
+                        await _showMonthPicker();
                       },
                     ),
 
@@ -515,9 +500,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                         height: 42,
                         decoration: BoxDecoration(
                           color: MyColors.primaryLight,
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.date_range_rounded,
@@ -556,7 +539,13 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             )
                           : null,
                       onTap: () async {
-                        Get.back();
+                        Navigator.of(context).pop();
+
+                        await Future.delayed(
+                          const Duration(milliseconds: 150),
+                        );
+
+                        if (!mounted) return;
 
                         historyController.filterBy.value = 'tanggal';
 
@@ -572,6 +561,244 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
               );
             },
           ),
+        );
+      },
+    );
+  }
+
+  // ================================================================
+  // MONTH PICKER
+  // ================================================================
+
+  Future<void> _showMonthPicker() async {
+    final controller = historyController;
+
+    int selectedYear = controller.singleDate.value.year;
+
+    final now = DateTime.now();
+    final currentYear = now.year;
+    final currentMonth = now.month;
+
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final selectedMonth = controller.singleDate.value.month;
+
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
+              padding: const EdgeInsets.fromLTRB(
+                20,
+                12,
+                20,
+                24,
+              ),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // HANDLE
+                    Container(
+                      width: 42,
+                      height: 4,
+                      margin: const EdgeInsets.only(
+                        bottom: 20,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD0D5DD),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+
+                    // HEADER
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'Pilih Bulan',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: MyColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: selectedYear <= 2000
+                              ? null
+                              : () {
+                                  setState(() {
+                                    selectedYear--;
+                                  });
+                                },
+                          icon: const Icon(
+                            Icons.chevron_left_rounded,
+                          ),
+                        ),
+                        Text(
+                          '$selectedYear',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: MyColors.primary,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: selectedYear >= currentYear
+                              ? null
+                              : () {
+                                  setState(() {
+                                    selectedYear++;
+                                  });
+                                },
+                          icon: const Icon(
+                            Icons.chevron_right_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 12,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 2.2,
+                      ),
+                      itemBuilder: (context, index) {
+                        final month = index + 1;
+
+                        final isSelected =
+                            selectedYear == controller.singleDate.value.year &&
+                                month == selectedMonth;
+
+                        final isFuture = selectedYear > currentYear ||
+                            (selectedYear == currentYear &&
+                                month > currentMonth);
+
+                        final date = DateTime(
+                          selectedYear,
+                          month,
+                          1,
+                        );
+
+                        final monthName = DateFormat(
+                          'MMM',
+                          'id_ID',
+                        ).format(date);
+
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: isFuture
+                                ? null
+                                : () async {
+                                    await controller.selectMonth(
+                                      date,
+                                    );
+
+                                    if (sheetContext.mounted) {
+                                      Navigator.of(
+                                        sheetContext,
+                                      ).pop();
+                                    }
+                                  },
+                            child: AnimatedContainer(
+                              duration: const Duration(
+                                milliseconds: 150,
+                              ),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? MyColors.primary
+                                    : isFuture
+                                        ? const Color(
+                                            0xFFF2F4F7,
+                                          )
+                                        : MyColors.primaryLight,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? MyColors.primary
+                                      : Colors.transparent,
+                                ),
+                              ),
+                              child: Text(
+                                monthName,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : isFuture
+                                          ? MyColors.textMuted
+                                          : MyColors.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // MONTH SELECTED
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: MyColors.primaryLight,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_month_rounded,
+                            size: 20,
+                            color: MyColors.primary,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            DateFormat(
+                              'MMMM yyyy',
+                              'id_ID',
+                            ).format(
+                              controller.singleDate.value,
+                            ),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: MyColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -721,6 +948,94 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
 }
 
 // ==================================================================
+// MONTH GRID
+// ==================================================================
+
+// ignore: unused_element
+class _MonthGrid extends StatelessWidget {
+  final int selectedYear;
+  final int selectedMonth;
+  final Future<void> Function(int month) onMonthSelected;
+
+  const _MonthGrid({
+    required this.selectedYear,
+    required this.selectedMonth,
+    required this.onMonthSelected,
+  });
+
+  static const List<String> monthShortNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
+  ];
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 12,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 2.25,
+      ),
+      itemBuilder: (
+        context,
+        index,
+      ) {
+        final month = index + 1;
+
+        final isSelected = month == selectedMonth;
+
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () async {
+              await onMonthSelected(month);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(
+                milliseconds: 150,
+              ),
+              decoration: BoxDecoration(
+                color: isSelected ? MyColors.primary : MyColors.surfaceSoft,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected ? MyColors.primary : MyColors.border,
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                monthShortNames[index],
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: isSelected ? Colors.white : MyColors.textPrimary,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ==================================================================
 // DATE DIVIDER
 // ==================================================================
 
@@ -860,9 +1175,7 @@ class _TransactionDetailSheet extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: MyColors.primaryLight,
-              borderRadius: BorderRadius.circular(
-                10,
-              ),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               icon,
@@ -951,9 +1264,7 @@ class _TransactionDetailSheet extends StatelessWidget {
                     height: 4,
                     decoration: BoxDecoration(
                       color: MyColors.border,
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
@@ -973,9 +1284,7 @@ class _TransactionDetailSheet extends StatelessWidget {
                       height: 44,
                       decoration: BoxDecoration(
                         color: isIncome ? MyColors.successBg : MyColors.errorBg,
-                        borderRadius: BorderRadius.circular(
-                          13,
-                        ),
+                        borderRadius: BorderRadius.circular(13),
                       ),
                       child: Icon(
                         isIncome
@@ -1034,14 +1343,10 @@ class _TransactionDetailSheet extends StatelessWidget {
 
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(
-                    16,
-                  ),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: isIncome ? MyColors.successBg : MyColors.errorBg,
-                    borderRadius: BorderRadius.circular(
-                      16,
-                    ),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1127,14 +1432,10 @@ class _TransactionDetailSheet extends StatelessWidget {
                   ),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(
-                      14,
-                    ),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: MyColors.surfaceSoft,
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: MyColors.border,
                       ),
@@ -1160,14 +1461,10 @@ class _TransactionDetailSheet extends StatelessWidget {
                   ),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(
-                      14,
-                    ),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: MyColors.errorBg,
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: MyColors.error.withValues(
                           alpha: 0.25,
@@ -1177,17 +1474,17 @@ class _TransactionDetailSheet extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.delete_outline_rounded,
                               size: 18,
                               color: MyColors.error,
                             ),
-                            const SizedBox(
+                            SizedBox(
                               width: 8,
                             ),
-                            const Text(
+                            Text(
                               'Transaksi dihapus',
                               style: TextStyle(
                                 fontSize: 12,

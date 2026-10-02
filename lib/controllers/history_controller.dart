@@ -24,7 +24,6 @@ class HistoryController extends GetxController {
 
   // ============================================================
   // HISTORY - YESTERDAY
-  // Digunakan untuk perbandingan data Home
   // ============================================================
 
   final RxList<DataHistory> resultDataYesterday = <DataHistory>[].obs;
@@ -54,15 +53,21 @@ class HistoryController extends GetxController {
   // ============================================================
 
   int get todayTransactionCount {
-    return _validTransactions(resultDataSingleDate).length;
+    return _validTransactions(
+      resultDataSingleDate,
+    ).length;
   }
 
   int get todayIncome {
-    return _calculateIncome(resultDataSingleDate);
+    return _calculateIncome(
+      resultDataSingleDate,
+    );
   }
 
   int get todayExpense {
-    return _calculateExpense(resultDataSingleDate);
+    return _calculateExpense(
+      resultDataSingleDate,
+    );
   }
 
   int get todayBalance {
@@ -88,15 +93,21 @@ class HistoryController extends GetxController {
   // ============================================================
 
   int get yesterdayTransactionCount {
-    return _validTransactions(resultDataYesterday).length;
+    return _validTransactions(
+      resultDataYesterday,
+    ).length;
   }
 
   int get yesterdayIncome {
-    return _calculateIncome(resultDataYesterday);
+    return _calculateIncome(
+      resultDataYesterday,
+    );
   }
 
   int get yesterdayExpense {
-    return _calculateExpense(resultDataYesterday);
+    return _calculateExpense(
+      resultDataYesterday,
+    );
   }
 
   int get yesterdayBalance {
@@ -105,17 +116,6 @@ class HistoryController extends GetxController {
 
   // ============================================================
   // HOME GROWTH
-  //
-  // Return percentage.
-  //
-  // Contoh:
-  // yesterday = 100.000
-  // today     = 120.000
-  // result    = 20.0
-  //
-  // Jika kemarin 0:
-  // - hari ini > 0 => 100%
-  // - hari ini = 0 => 0%
   // ============================================================
 
   double get incomeGrowth {
@@ -148,12 +148,19 @@ class HistoryController extends GetxController {
       resultDataSingleDate,
     );
 
-    final sorted = List<DataHistory>.from(data);
+    final sorted = List<DataHistory>.from(
+      data,
+    );
 
     sorted.sort(
       (a, b) {
-        final dateA = _parseDateTime(a.transactionDate);
-        final dateB = _parseDateTime(b.transactionDate);
+        final dateA = _parseDateTime(
+          a.transactionDate,
+        );
+
+        final dateB = _parseDateTime(
+          b.transactionDate,
+        );
 
         return dateB.compareTo(dateA);
       },
@@ -171,7 +178,7 @@ class HistoryController extends GetxController {
       resultDataSingleDate,
     )
         .where(
-          (item) => item.transactionType == 'PEMASUKAN',
+          (item) => (item.transactionType ?? '').toUpperCase() == 'PEMASUKAN',
         )
         .toList();
   }
@@ -185,7 +192,7 @@ class HistoryController extends GetxController {
       resultDataSingleDate,
     )
         .where(
-          (item) => item.transactionType == 'PENGELUARAN',
+          (item) => (item.transactionType ?? '').toUpperCase() == 'PENGELUARAN',
         )
         .toList();
   }
@@ -220,17 +227,32 @@ class HistoryController extends GetxController {
   // DATE
   // ============================================================
 
-  final Rx<DateTime> singleDate = DateTime.now().obs;
+  /// Source of truth untuk periode BULAN.
+  final Rx<DateTime> singleDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    1,
+  ).obs;
 
+  /// Source of truth untuk mode RENTANG TANGGAL.
   final Rx<DateTime> startDate = DateTime.now().obs;
 
   final Rx<DateTime> endDate = DateTime.now().obs;
 
+  /// Source of truth untuk data HOME hari ini.
   final Rx<DateTime> selectedDate = DateTime.now().obs;
 
+  /// Mode filter aktif.
+  ///
+  /// bulan   = berdasarkan bulan
+  /// tanggal = berdasarkan rentang tanggal
   final RxString filterBy = 'bulan'.obs;
 
-  late RxString monthYear;
+  /// Format yang dikirim ke API:
+  ///
+  /// 10-2026
+  final RxString monthYear =
+      '${DateTime.now().month}-${DateTime.now().year}'.obs;
 
   // ============================================================
   // ACTIVE BRAND
@@ -254,12 +276,124 @@ class HistoryController extends GetxController {
 
     namaKios.value = prefs.getString('kios') ?? '';
 
-    monthYear = '${singleDate.value.month}-${singleDate.value.year}'.obs;
+    _syncMonthYear();
 
     await Future.wait([
       getHistoriesBySingleDate(),
       getHistoriesYesterday(),
     ]);
+  }
+
+  // ============================================================
+  // MONTH YEAR
+  // ============================================================
+
+  void _syncMonthYear() {
+    monthYear.value = '${singleDate.value.month}-${singleDate.value.year}';
+  }
+
+  Future<void> selectMonth(DateTime date) async {
+    final selectedMonth = DateTime(
+      date.year,
+      date.month,
+      1,
+    );
+
+    singleDate.value = selectedMonth;
+
+    monthYear.value = '${selectedMonth.month}-${selectedMonth.year}';
+
+    filterBy.value = 'bulan';
+
+    // Sekalian sinkronkan range tanggal.
+    // Jadi kalau nanti pindah dari Bulan -> Rentang Tanggal,
+    // range awalnya mengikuti bulan yang dipilih.
+    final firstDay = DateTime(
+      selectedMonth.year,
+      selectedMonth.month,
+      1,
+    );
+
+    final lastDay = DateTime(
+      selectedMonth.year,
+      selectedMonth.month + 1,
+      0,
+    );
+
+    final today = DateTime.now();
+
+    startDate.value = firstDay;
+
+    endDate.value = lastDay.isAfter(today)
+        ? DateTime(
+            today.year,
+            today.month,
+            today.day,
+          )
+        : lastDay;
+
+    await getHistoriesByFilter();
+  }
+
+  // ============================================================
+  // CHANGE MONTH
+  // ============================================================
+
+  Future<void> changeMonth({
+    required int year,
+    required int month,
+  }) async {
+    singleDate.value = DateTime(
+      year,
+      month,
+      1,
+    );
+
+    _syncMonthYear();
+
+    filterBy.value = 'bulan';
+
+    await getHistoriesByFilter();
+  }
+
+  // ============================================================
+  // NEXT MONTH
+  // ============================================================
+
+  Future<void> goToNextMonth() async {
+    final current = singleDate.value;
+
+    final nextMonth = DateTime(
+      current.year,
+      current.month + 1,
+      1,
+    );
+
+    final now = DateTime.now();
+
+    // Jangan boleh memilih bulan masa depan.
+    if (nextMonth.year > now.year ||
+        (nextMonth.year == now.year && nextMonth.month > now.month)) {
+      return;
+    }
+
+    await selectMonth(nextMonth);
+  }
+
+  // ============================================================
+  // PREVIOUS MONTH
+  // ============================================================
+
+  Future<void> goToPreviousMonth() async {
+    final current = singleDate.value;
+
+    final previousMonth = DateTime(
+      current.year,
+      current.month - 1,
+      1,
+    );
+
+    await selectMonth(previousMonth);
   }
 
   // ============================================================
@@ -306,7 +440,9 @@ class HistoryController extends GetxController {
       final rawFormat = {
         'status': 'TRUE',
         'id_kios': idKios.value,
-        'kategori': ['PEMASUKAN'],
+        'kategori': [
+          'PEMASUKAN',
+        ],
         'textSearch': '',
         'page': 1,
         'limit': 999999,
@@ -343,7 +479,9 @@ class HistoryController extends GetxController {
       Get.snackbar(
         'Error',
         error.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error,
+        ),
         snackPosition: SnackPosition.TOP,
       );
     } finally {
@@ -362,7 +500,9 @@ class HistoryController extends GetxController {
       final rawFormat = {
         'status': 'TRUE',
         'id_kios': idKios.value,
-        'kategori': ['PENGELUARAN'],
+        'kategori': [
+          'PENGELUARAN',
+        ],
         'textSearch': '',
         'page': 1,
         'limit': 999999,
@@ -399,7 +539,9 @@ class HistoryController extends GetxController {
       Get.snackbar(
         'Error',
         error.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error,
+        ),
         snackPosition: SnackPosition.TOP,
       );
     } finally {
@@ -418,7 +560,7 @@ class HistoryController extends GetxController {
       final rawFormat = {
         'startDate': selectedDate.value.toString(),
         'endDate': selectedDate.value.toString(),
-        'monthYear': monthYear.value,
+        'monthYear': '${selectedDate.value.month}-${selectedDate.value.year}',
         'filter_by_date_or_month': 'tanggal',
         'id_kios': idKios.value,
         'kategori': [],
@@ -440,7 +582,9 @@ class HistoryController extends GetxController {
       Get.snackbar(
         'Error',
         error.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error,
+        ),
         snackPosition: SnackPosition.TOP,
       );
 
@@ -504,15 +648,39 @@ class HistoryController extends GetxController {
     try {
       isLoadingHistory(true);
 
-      final rawFormat = {
-        'startDate': startDate.value.toString(),
-        'endDate': endDate.value.toString(),
-        'monthYear': monthYear.value,
-        'filter_by_date_or_month': filterBy.value,
-        'id_kios': idKios.value,
-        'kategori': tagCategory.toList(),
-        'cabang_kios': tagCabangKios.toList(),
-      };
+      final Map<String, dynamic> rawFormat;
+
+      if (filterBy.value == 'tanggal') {
+        // ========================================================
+        // RENTANG TANGGAL
+        // ========================================================
+
+        rawFormat = {
+          'startDate': startDate.value.toString(),
+          'endDate': endDate.value.toString(),
+          'monthYear': '${startDate.value.month}-${startDate.value.year}',
+          'filter_by_date_or_month': 'tanggal',
+          'id_kios': idKios.value,
+          'kategori': tagCategory.toList(),
+          'cabang_kios': tagCabangKios.toList(),
+        };
+      } else {
+        // ========================================================
+        // BULAN
+        // ========================================================
+
+        _syncMonthYear();
+
+        rawFormat = {
+          'startDate': singleDate.value.toString(),
+          'endDate': singleDate.value.toString(),
+          'monthYear': monthYear.value,
+          'filter_by_date_or_month': 'bulan',
+          'id_kios': idKios.value,
+          'kategori': tagCategory.toList(),
+          'cabang_kios': tagCabangKios.toList(),
+        };
+      }
 
       debugPrint(
         '>>> HISTORY FILTER: $rawFormat',
@@ -539,7 +707,9 @@ class HistoryController extends GetxController {
       Get.snackbar(
         'Error',
         error.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error,
+        ),
         snackPosition: SnackPosition.TOP,
       );
     } finally {
@@ -609,32 +779,48 @@ class HistoryController extends GetxController {
   bool isOutletSelected(
     dynamic value,
   ) {
-    return tempTagCabangKios.contains(value);
+    return tempTagCabangKios.contains(
+      value,
+    );
   }
 
   bool isCategorySelected(
     dynamic value,
   ) {
-    return tempTagCategory.contains(value);
+    return tempTagCategory.contains(
+      value,
+    );
   }
 
   void toggleOutlet(
     dynamic value,
   ) {
-    if (tempTagCabangKios.contains(value)) {
-      tempTagCabangKios.remove(value);
+    if (tempTagCabangKios.contains(
+      value,
+    )) {
+      tempTagCabangKios.remove(
+        value,
+      );
     } else {
-      tempTagCabangKios.add(value);
+      tempTagCabangKios.add(
+        value,
+      );
     }
   }
 
   void toggleCategory(
     dynamic value,
   ) {
-    if (tempTagCategory.contains(value)) {
-      tempTagCategory.remove(value);
+    if (tempTagCategory.contains(
+      value,
+    )) {
+      tempTagCategory.remove(
+        value,
+      );
     } else {
-      tempTagCategory.add(value);
+      tempTagCategory.add(
+        value,
+      );
     }
   }
 
@@ -644,32 +830,6 @@ class HistoryController extends GetxController {
 
   void selectAllCategory() {
     tempTagCategory.clear();
-  }
-
-  // ============================================================
-  // DATE / MONTH
-  // ============================================================
-
-  void goToNextMonth() {
-    singleDate.value = DateTime(
-      singleDate.value.year,
-      singleDate.value.month + 1,
-    );
-
-    monthYear.value = '${singleDate.value.month}-${singleDate.value.year}';
-
-    getHistoriesByFilter();
-  }
-
-  void goToPreviousMonth() {
-    singleDate.value = DateTime(
-      singleDate.value.year,
-      singleDate.value.month - 1,
-    );
-
-    monthYear.value = '${singleDate.value.month}-${singleDate.value.year}';
-
-    getHistoriesByFilter();
   }
 
   // ============================================================
@@ -684,7 +844,9 @@ class HistoryController extends GetxController {
         end: endDate.value,
       ),
       firstDate: DateTime.now().subtract(
-        const Duration(days: 365),
+        const Duration(
+          days: 365,
+        ),
       ),
       lastDate: DateTime.now(),
       builder: (
@@ -711,6 +873,7 @@ class HistoryController extends GetxController {
     }
 
     startDate.value = pickedDate.start;
+
     endDate.value = pickedDate.end;
 
     filterBy.value = 'tanggal';
@@ -725,13 +888,17 @@ class HistoryController extends GetxController {
   Future<void> delete(
     int id,
   ) async {
-    final resultUpdate = await RemoteDataSource.deleteHistory(id);
+    final resultUpdate = await RemoteDataSource.deleteHistory(
+      id,
+    );
 
     if (resultUpdate) {
       Get.snackbar(
         'Notification',
         'Data deleted successfully',
-        icon: const Icon(Icons.check),
+        icon: const Icon(
+          Icons.check,
+        ),
         snackPosition: SnackPosition.TOP,
       );
 
@@ -744,7 +911,9 @@ class HistoryController extends GetxController {
       Get.snackbar(
         'Notification',
         'Failed to delete data',
-        icon: const Icon(Icons.error),
+        icon: const Icon(
+          Icons.error,
+        ),
         snackPosition: SnackPosition.TOP,
       );
     }
@@ -769,11 +938,16 @@ class HistoryController extends GetxController {
   ) {
     return _validTransactions(source)
         .where(
-          (history) => history.transactionType == 'PEMASUKAN',
+          (history) =>
+              (history.transactionType ?? '').toUpperCase() == 'PEMASUKAN',
         )
         .fold(
           0,
-          (sum, history) => sum + (history.amount ?? 0),
+          (
+            sum,
+            history,
+          ) =>
+              sum + (history.amount ?? 0),
         );
   }
 
@@ -782,11 +956,16 @@ class HistoryController extends GetxController {
   ) {
     return _validTransactions(source)
         .where(
-          (history) => history.transactionType == 'PENGELUARAN',
+          (history) =>
+              (history.transactionType ?? '').toUpperCase() == 'PENGELUARAN',
         )
         .fold(
           0,
-          (sum, history) => sum + (history.amount ?? 0),
+          (
+            sum,
+            history,
+          ) =>
+              sum + (history.amount ?? 0),
         );
   }
 
@@ -795,7 +974,11 @@ class HistoryController extends GetxController {
   ) {
     return _validTransactions(source).fold(
       0,
-      (sum, history) => sum + (history.amount ?? 0),
+      (
+        sum,
+        history,
+      ) =>
+          sum + (history.amount ?? 0),
     );
   }
 
@@ -818,13 +1001,22 @@ class HistoryController extends GetxController {
     String? value,
   ) {
     if (value == null || value.isEmpty) {
-      return DateTime.fromMillisecondsSinceEpoch(0);
+      return DateTime.fromMillisecondsSinceEpoch(
+        0,
+      );
     }
 
-    return DateTime.tryParse(value) ?? DateTime.fromMillisecondsSinceEpoch(0);
+    return DateTime.tryParse(
+          value,
+        ) ??
+        DateTime.fromMillisecondsSinceEpoch(
+          0,
+        );
   }
 
-  String formatRupiah(int value) {
+  String formatRupiah(
+    int value,
+  ) {
     if (value.abs() >= 1000000) {
       final juta = value / 1000000;
 
@@ -848,8 +1040,11 @@ class HistoryController extends GetxController {
     return 'Rp $value';
   }
 
-  String formatGrowth(double value) {
+  String formatGrowth(
+    double value,
+  ) {
     final prefix = value > 0 ? '+' : '';
+
     return '$prefix${value.toStringAsFixed(1)}%';
   }
 }
