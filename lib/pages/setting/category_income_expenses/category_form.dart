@@ -84,6 +84,10 @@ class _CategoryFormState extends State<CategoryForm> {
 
           _buildNameField(),
 
+          const SizedBox(height: 20),
+
+          _buildCashierSwitch(),
+
           const SizedBox(height: 28),
 
           // =========================================================
@@ -186,6 +190,7 @@ class _CategoryFormState extends State<CategoryForm> {
               color: MyColors.primary,
               onTap: () {
                 controller.isPemasukan.value = true;
+                controller.saveCategoryError = null;
               },
             ),
           ),
@@ -198,6 +203,8 @@ class _CategoryFormState extends State<CategoryForm> {
               color: MyColors.error,
               onTap: () {
                 controller.isPemasukan.value = false;
+                controller.isCashier.value = false;
+                controller.saveCategoryError = null;
               },
             ),
           ),
@@ -356,25 +363,130 @@ class _CategoryFormState extends State<CategoryForm> {
 
     if (!mounted) return;
 
-    if (success) {
-      Navigator.of(context).pop();
+    if (!success) {
+      final message =
+          controller.saveCategoryError ?? 'Kategori gagal disimpan.';
 
-      Get.snackbar(
-        'Berhasil',
-        isEdit
-            ? 'Kategori berhasil diperbarui.'
-            : 'Kategori berhasil ditambahkan.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: MyColors.successBg,
-        colorText: MyColors.success,
-        icon: const Icon(
-          Icons.check_circle_outline_rounded,
-          color: MyColors.success,
-        ),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
+      debugPrint('FORM SAVE GAGAL: $message');
+
+      await showDialog<void>(
+        context: context,
+        useRootNavigator: true,
+        builder: (dialogContext) {
+          return AlertDialog(
+            icon: Icon(
+              Icons.error_outline_rounded,
+              color: MyColors.error,
+              size: 40,
+            ),
+            title: const Text('Gagal menyimpan kategori'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
       );
+
+      return;
     }
+
+// Jika berhasil, lanjutkan alur sukses yang sudah ada.
+    Navigator.of(context).pop();
+
+    Get.snackbar(
+      'Berhasil',
+      isEdit
+          ? 'Kategori berhasil diperbarui.'
+          : 'Kategori berhasil ditambahkan.',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: MyColors.successBg,
+      colorText: MyColors.success,
+      icon: const Icon(
+        Icons.check_circle_outline_rounded,
+        color: MyColors.success,
+      ),
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+    );
+  }
+
+  Widget _buildCashierSwitch() {
+    return Obx(() {
+      if (!controller.isPemasukan.value) {
+        return const SizedBox.shrink();
+      }
+
+      final isCashier = controller.isCashier.value;
+
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: MyColors.surfaceSoft,
+          borderRadius: BorderRadius.circular(13),
+          border: Border.all(
+            color: MyColors.border,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: isCashier
+                    ? MyColors.primary.withValues(alpha: .10)
+                    : MyColors.border.withValues(alpha: .35),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(
+                Icons.point_of_sale_rounded,
+                color: isCashier ? MyColors.primary : MyColors.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Kategori Kasir',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: MyColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isCashier
+                        ? 'Kategori ditandai sebagai kategori kasir.'
+                        : 'Kategori keuangan biasa.',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      height: 1.4,
+                      color: MyColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch.adaptive(
+              value: isCashier,
+              activeTrackColor: MyColors.primary,
+              onChanged: (value) {
+                controller.isCashier.value = value;
+              },
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 

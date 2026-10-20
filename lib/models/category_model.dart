@@ -48,13 +48,15 @@ class DataCategory {
   String? categoryType;
   bool? status;
   int? statusTransaksi;
+  bool? isCashier;
 
   DataCategory(
       {this.id,
       this.categoryName,
       this.categoryType,
       this.status,
-      this.statusTransaksi});
+      this.statusTransaksi,
+      this.isCashier});
 
   DataCategory.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -62,15 +64,18 @@ class DataCategory {
     categoryType = json['category_type'];
     status = json['status'];
     statusTransaksi = json['status_transaksi'];
+    final value = json['is_cashier'];
+    isCashier = value == true || value == 1 || value == '1';
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['category_name'] = categoryName;
-    data['category_type'] = categoryType;
-    data['status'] = status;
-    data['status_transaksi'] = statusTransaksi;
-    return data;
+    return {
+      'id': id,
+      'category_name': categoryName,
+      'category_type': categoryType,
+      'status': status,
+      'status_transaksi': statusTransaksi,
+      'is_cashier': isCashier ?? false,
+    };
   }
 }

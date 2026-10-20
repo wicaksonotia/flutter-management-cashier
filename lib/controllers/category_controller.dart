@@ -42,6 +42,9 @@ class CategoryController extends BaseController {
 
   final RxString sortOrder = 'ASC'.obs;
 
+  final isCashier = false.obs;
+  String? saveCategoryError;
+
   // ===========================================================================
   // PAGINATION
   // ===========================================================================
@@ -72,6 +75,7 @@ class CategoryController extends BaseController {
     nameController.clear();
 
     isPemasukan.value = false;
+    isCashier.value = false;
 
     update();
   }
@@ -284,39 +288,45 @@ class CategoryController extends BaseController {
   // ===========================================================================
 
   Future<bool> saveCategory() async {
+    // Bersihkan pesan error dari percobaan sebelumnya.
+    saveCategoryError = null;
+
     try {
       isLoadingSaveCategory.value = true;
+
+      // Kategori Pengeluaran tidak boleh menjadi kategori kasir.
+      final bool cashierValue = isPemasukan.value && isCashier.value;
 
       final rawFormat = {
         'id_kios': idKios.value,
         'id_category': idCategoryTransaction.value,
         'category_name': nameController.text.trim(),
         'is_pemasukan': isPemasukan.value,
+        'is_cashier': cashierValue,
       };
 
-      debugPrint(
-        'saveCategory: $rawFormat',
-      );
+      debugPrint('SAVE CATEGORY REQUEST: $rawFormat');
 
-      final result = await RemoteDataSource.saveCategory(
-        rawFormat,
-      );
+      final result = await RemoteDataSource.saveCategory(rawFormat);
+
+      debugPrint('CONTROLLER SAVE RESULT: $result');
 
       if (result == null ||
           result['status'] != 'ok' ||
           result['data'] == null) {
+        saveCategoryError =
+            result?['message']?.toString() ?? 'Kategori gagal disimpan.';
+
+        debugPrint('SAVE CATEGORY ERROR: $saveCategoryError');
         return false;
       }
 
       final newItem = DataCategory.fromJson(
-        result['data'],
+        Map<String, dynamic>.from(result['data'] as Map),
       );
 
       if (idCategoryTransaction.value == 0) {
-        resultDataCategory.insert(
-          0,
-          newItem,
-        );
+        resultDataCategory.insert(0, newItem);
       } else {
         final index = resultDataCategory.indexWhere(
           (item) => item.id == newItem.id,
@@ -328,12 +338,12 @@ class CategoryController extends BaseController {
       }
 
       resultDataCategory.refresh();
-
       return true;
-    } catch (e) {
-      debugPrint(
-        'CategoryController.saveCategory error: $e',
-      );
+    } catch (e, stackTrace) {
+      debugPrint('CategoryController.saveCategory error: $e');
+      debugPrint('$stackTrace');
+
+      saveCategoryError = 'Terjadi kesalahan saat memproses data kategori.';
 
       return false;
     } finally {
@@ -345,16 +355,11 @@ class CategoryController extends BaseController {
   // EDIT CATEGORY
   // ===========================================================================
 
-  void editCategory(
-    DataCategory model,
-  ) {
+  void editCategory(DataCategory model) {
     idCategoryTransaction.value = model.id ?? 0;
-
     nameController.text = model.categoryName ?? '';
-
     isPemasukan.value = model.categoryType == 'PEMASUKAN';
-
-    update();
+    isCashier.value = model.isCashier ?? false;
   }
 
   // ===========================================================================
@@ -403,32 +408,36 @@ class CategoryController extends BaseController {
   // DELETE CATEGORY
   // ===========================================================================
 
-  Future<bool> deleteCategory(
-    int id,
-  ) async {
-    try {
-      isLoadingSaveCategory.value = true;
+  Future<void> deleteCategory(int id) async {
+    final result = await RemoteDataSource.deleteCategory(
+      idCategory: id,
+      idKios: idKios.value,
+    );
 
-      final deletedId = await RemoteDataSource.deleteCategory(id);
-
-      if (deletedId == null) {
-        return false;
-      }
-
-      resultDataCategory.removeWhere(
-        (item) => item.id == deletedId,
+    if (result == null || result['status'] != 'ok') {
+      Get.snackbar(
+        'Gagal menghapus kategori',
+        result?['message']?.toString() ?? 'Kategori gagal dihapus.',
+        snackPosition: SnackPosition.TOP,
       );
-
-      return true;
-    } catch (e) {
-      debugPrint(
-        'CategoryController.deleteCategory error: $e',
-      );
-
-      return false;
-    } finally {
-      isLoadingSaveCategory.value = false;
+      return;
     }
+
+    final deletedId = result['data'] is Map
+        ? int.tryParse(result['data']['id'].toString())
+        : null;
+
+    if (deletedId != null) {
+      resultDataCategory.removeWhere((item) => item.id == deletedId);
+      resultDataCategoryWithoutPagination
+          .removeWhere((item) => item.id == deletedId);
+    }
+
+    Get.snackbar(
+      'Berhasil',
+      result['message']?.toString() ?? 'Kategori berhasil dihapus.',
+      snackPosition: SnackPosition.TOP,
+    );
   }
 
   // ===========================================================================

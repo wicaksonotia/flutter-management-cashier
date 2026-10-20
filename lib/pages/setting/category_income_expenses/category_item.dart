@@ -121,10 +121,22 @@ class CategoryItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      _TypeBadge(
-                        label: isIncome ? 'PEMASUKAN' : 'PENGELUARAN',
-                        color: accent,
-                        background: accentBackground,
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 5,
+                        children: [
+                          _TypeBadge(
+                            label: isIncome ? 'PEMASUKAN' : 'PENGELUARAN',
+                            color: accent,
+                            background: accentBackground,
+                          ),
+                          if (model.isCashier == true)
+                            const _TypeBadge(
+                              label: 'KATEGORI KASIR',
+                              color: MyColors.primaryDark,
+                              background: MyColors.primaryLight,
+                            ),
+                        ],
                       ),
                     ],
                   ),

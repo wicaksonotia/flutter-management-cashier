@@ -345,24 +345,72 @@ class RemoteDataSource {
 
 // ===================== CATEGORY =====================
   // SAVE CATEGORY
-  static Future<Map<String, dynamic>?> saveCategory(
-      Map<String, dynamic> rawFormat) async {
-    try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveCategory;
 
-      Response response = await Dio().post(
+  static Future<Map<String, dynamic>?> saveCategory(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    final url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveCategory;
+
+    debugPrint('SAVE CATEGORY URL: $url');
+    debugPrint('SAVE CATEGORY REQUEST: $rawFormat');
+
+    try {
+      final response = await Dio().post(
         url,
         data: rawFormat,
-        options: Options(contentType: Headers.jsonContentType),
+        options: Options(
+          contentType: Headers.jsonContentType,
+          receiveTimeout: const Duration(seconds: 20),
+          sendTimeout: const Duration(seconds: 20),
+        ),
       );
 
-      if (response.statusCode == 200) {
-        return response.data; // <-- ini penting
+      debugPrint('SAVE CATEGORY HTTP: ${response.statusCode}');
+      debugPrint('SAVE CATEGORY RESPONSE: ${response.data}');
+
+      if (response.data is Map) {
+        return Map<String, dynamic>.from(response.data);
       }
 
-      return null;
-    } catch (e) {
-      return null;
+      if (response.data is String) {
+        try {
+          final decoded = jsonDecode(response.data);
+          if (decoded is Map) {
+            return Map<String, dynamic>.from(decoded);
+          }
+        } catch (_) {
+          debugPrint('SAVE CATEGORY RESPONSE BUKAN JSON VALID');
+        }
+      }
+
+      return {
+        'status': 'error',
+        'message': 'Respons server tidak valid.',
+      };
+    } on DioException catch (e) {
+      debugPrint('SAVE CATEGORY DIO ERROR: ${e.type}');
+      debugPrint('SAVE CATEGORY ERROR MESSAGE: ${e.message}');
+      debugPrint('SAVE CATEGORY ERROR RESPONSE: ${e.response?.data}');
+      debugPrint('SAVE CATEGORY HTTP ERROR: ${e.response?.statusCode}');
+
+      final data = e.response?.data;
+
+      if (data is Map) {
+        return Map<String, dynamic>.from(data);
+      }
+
+      return {
+        'status': 'error',
+        'message': data?.toString() ?? 'Gagal menghubungi server.',
+      };
+    } catch (e, stackTrace) {
+      debugPrint('SAVE CATEGORY ERROR: $e');
+      debugPrint('$stackTrace');
+
+      return {
+        'status': 'error',
+        'message': 'Terjadi kesalahan saat menyimpan kategori.',
+      };
     }
   }
 
@@ -386,24 +434,48 @@ class RemoteDataSource {
   }
 
   //DELETE CATEGORY
-  static Future<int?> deleteCategory(int idCategory) async {
+
+  static Future<Map<String, dynamic>?> deleteCategory({
+    required int idCategory,
+    required int idKios,
+  }) async {
     try {
-      var url =
+      final url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteCategory;
 
-      Response response = await Dio().post(
+      final response = await Dio().post(
         url,
-        data: {"id_category": idCategory},
+        data: {
+          'id_category': idCategory,
+          'id_kios': idKios,
+        },
         options: Options(contentType: Headers.jsonContentType),
       );
 
-      if (response.statusCode == 200 && response.data["status"] == "ok") {
-        return response.data["data"]["id"]; // return id yang dihapus
+      if (response.data is Map) {
+        return Map<String, dynamic>.from(response.data);
       }
 
-      return null;
+      return {
+        'status': 'error',
+        'message': 'Respons server tidak valid.',
+      };
+    } on DioException catch (e) {
+      final data = e.response?.data;
+
+      if (data is Map) {
+        return Map<String, dynamic>.from(data);
+      }
+
+      return {
+        'status': 'error',
+        'message': 'Gagal menghapus kategori. Periksa koneksi server.',
+      };
     } catch (e) {
-      return null;
+      return {
+        'status': 'error',
+        'message': 'Terjadi kesalahan saat menghapus kategori.',
+      };
     }
   }
 
