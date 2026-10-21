@@ -1047,4 +1047,51 @@ class HistoryController extends GetxController {
 
     return '$prefix${value.toStringAsFixed(1)}%';
   }
+
+  // ============================================================
+// TOP 5 PENGELUARAN TERBESAR
+// ============================================================
+
+  List<Map<String, dynamic>> get topExpenseCategories {
+    final Map<String, Map<String, dynamic>> grouped = {};
+
+    for (final item in resultData) {
+      if (item.deleteStatus == true) continue;
+
+      if ((item.transactionType ?? '').trim().toUpperCase() != 'PENGELUARAN') {
+        continue;
+      }
+
+      final categoryName = item.transactionName?.trim().isNotEmpty == true
+          ? item.transactionName!.trim()
+          : 'Kategori lainnya';
+
+      // Utamakan ID kategori agar nama yang sama dari kategori berbeda
+      // tidak otomatis digabung menjadi satu.
+      final key = item.transactionCategoryId != null
+          ? 'id_${item.transactionCategoryId}'
+          : 'name_${categoryName.toLowerCase()}';
+
+      final entry = grouped.putIfAbsent(
+        key,
+        () => {
+          'categoryId': item.transactionCategoryId,
+          'name': categoryName,
+          'total': 0,
+          'count': 0,
+        },
+      );
+
+      entry['total'] = (entry['total'] as int) + (item.amount ?? 0);
+      entry['count'] = (entry['count'] as int) + 1;
+    }
+
+    final result = grouped.values.toList();
+
+    result.sort(
+      (a, b) => (b['total'] as int).compareTo(a['total'] as int),
+    );
+
+    return result.take(5).toList();
+  }
 }

@@ -3,6 +3,7 @@ import 'package:cashier_management/controllers/history_controller.dart';
 import 'package:cashier_management/controllers/transaction_controller.dart';
 import 'package:cashier_management/models/history_model.dart';
 import 'package:cashier_management/pages/history/transaction_form.dart';
+import 'package:cashier_management/pages/history/widgets/expense_top_categories.dart';
 import 'package:cashier_management/pages/history/widgets/finance_empty_state.dart';
 import 'package:cashier_management/pages/history/widgets/finance_filter_bar.dart';
 import 'package:cashier_management/pages/history/widgets/finance_header.dart';
@@ -240,6 +241,16 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
               const SliverToBoxAdapter(
                 child: SizedBox(
                   height: 22,
+                ),
+              ),
+
+              // ==================================================
+              // TOP 5 PENGELUARAN TERBESAR
+              // ==================================================
+
+              SliverToBoxAdapter(
+                child: ExpenseTopCategories(
+                  controller: historyController,
                 ),
               ),
 
