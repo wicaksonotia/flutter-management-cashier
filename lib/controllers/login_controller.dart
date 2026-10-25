@@ -1,4 +1,6 @@
+import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/database/api_request.dart';
+import 'package:cashier_management/models/kios_model.dart';
 import 'package:cashier_management/routes.dart';
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
@@ -98,14 +100,58 @@ class LoginController extends GetxController {
       }
 
       final prefs = await SharedPreferences.getInstance();
-      final int idKios = prefs.getInt('id_kios') ?? 0;
 
-      if (idKios > 0) {
+      final KiosController kiosController = Get.isRegistered<KiosController>()
+          ? Get.find<KiosController>()
+          : Get.put<KiosController>(
+              KiosController(),
+              permanent: true,
+            );
+
+      // Pastikan controller menggunakan owner yang baru login.
+      kiosController.idOwner.value =
+          prefs.getInt('id_owner') ?? kiosController.idOwner.value;
+
+      // Ambil daftar outlet milik akun yang baru login.
+      await kiosController.fetchDataListKiosFinancial();
+
+      final int savedKiosId = prefs.getInt('id_kios') ?? 0;
+
+      // Jika outlet aktif belum ada, pilih outlet pertama dari daftar.
+      if (savedKiosId <= 0 && kiosController.resultDataKios.isNotEmpty) {
+        KiosModel? firstKios;
+
+        for (final item in kiosController.resultDataKios) {
+          if ((item.idKios ?? 0) > 0) {
+            firstKios = item;
+            break;
+          }
+        }
+
+        if (firstKios != null) {
+          await prefs.setInt('id_kios', firstKios.idKios!);
+          await prefs.setString('kios', firstKios.kios ?? '');
+          await prefs.setString('phone', firstKios.phone ?? '');
+
+          kiosController.idKios.value = firstKios.idKios!;
+          kiosController.selectedKios.value = firstKios.kios ?? '';
+        }
+      } else if (savedKiosId > 0) {
+        kiosController.idKios.value = savedKiosId;
+        kiosController.selectedKios.value = prefs.getString('kios') ?? '';
+      }
+
+      final int activeKiosId = prefs.getInt('id_kios') ?? 0;
+
+      if (activeKiosId > 0) {
         Get.offAllNamed(RouterClass.home);
       } else {
         Get.offAllNamed(RouterClass.addoutlet);
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      debugPrint('Login error: $error');
+      debugPrint('$stackTrace');
+
       Get.snackbar(
         'Notification',
         error.toString(),
@@ -330,14 +376,17 @@ class LoginController extends GetxController {
   // ============================================================
 
   Future<void> logout() async {
+    // Bersihkan state outlet akun sebelumnya.
+    if (Get.isRegistered<KiosController>()) {
+      Get.find<KiosController>().resetOutletSession();
+    }
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.clear();
 
     isLogin.value = false;
 
-    Get.offAllNamed(
-      RouterClass.login,
-    );
+    Get.offAllNamed(RouterClass.login);
   }
 }

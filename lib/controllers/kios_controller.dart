@@ -284,7 +284,7 @@ class KiosController extends BaseController {
       // Upload logo hanya jika file benar-benar tersedia.
       final selectedFile = pickedFile1.value;
 
-      if (selectedFile != null && selectedFile.path.trim().isNotEmpty) {
+      if (selectedFile.path.trim().isNotEmpty) {
         final logoFile = File(selectedFile.path);
 
         if (await logoFile.exists()) {
@@ -442,6 +442,33 @@ class KiosController extends BaseController {
 
       return false;
     }
+  }
+
+  void resetOutletSession() {
+    // Reset outlet aktif.
+    idKios.value = 0;
+    selectedKios.value = '';
+
+    // Bersihkan daftar outlet akun sebelumnya.
+    resultDataKios.clear();
+
+    // Bersihkan form.
+    kios.clear();
+    phone.clear();
+    description.clear();
+
+    // Reset logo.
+    logo.value = '';
+    oldLogo.value = '';
+    removeLogo.value = false;
+    resetPickedLogo();
+
+    // Reset status loading.
+    isLoading.value = false;
+    isLoadingFinancialKios.value = false;
+    isLoadingSaveKios.value = false;
+
+    update();
   }
 
   // ============================================================
