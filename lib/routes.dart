@@ -150,9 +150,12 @@ class RouterClass {
           HistoryController(),
         );
 
-        Get.put<KiosController>(
-          KiosController(),
-        );
+        if (!Get.isRegistered<KiosController>()) {
+          Get.put<KiosController>(
+            KiosController(),
+            permanent: true,
+          );
+        }
       }),
     ),
 

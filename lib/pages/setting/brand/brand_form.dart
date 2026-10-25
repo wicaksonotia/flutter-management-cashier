@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cashier_management/controllers/kios_controller.dart';
 import 'package:cashier_management/database/api_endpoints.dart';
+import 'package:cashier_management/routes.dart';
 import 'package:cashier_management/utils/background_form.dart';
 import 'package:cashier_management/utils/colors.dart';
 import 'package:cashier_management/utils/input_field.dart';
@@ -9,8 +10,10 @@ import 'package:cashier_management/utils/management_header_form.dart';
 import 'package:cashier_management/utils/management_save_button.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BrandForm extends StatefulWidget {
   const BrandForm({super.key});
@@ -76,6 +79,22 @@ class _BrandFormState extends State<BrandForm> {
         _kiosController.description.text.trim().isNotEmpty;
   }
 
+  Future<void> _handleBack() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (!mounted) return;
+
+    final int idKios = prefs.getInt('id_kios') ?? 0;
+
+    if (idKios > 0) {
+      // Sudah punya Brand aktif, kembali ke daftar Brand.
+      Get.offAllNamed(RouterClass.outlet);
+    } else {
+      // Belum punya Brand aktif, kembali ke login.
+      Get.offAllNamed(RouterClass.home);
+    }
+  }
+
   // ============================================================
   // BUILD
   // ============================================================
@@ -89,6 +108,7 @@ class _BrandFormState extends State<BrandForm> {
         removeTop: true,
         child: BackgroundForm(
           headerTitle: 'Brand',
+          onBack: _handleBack,
           container: _buildPageContent(),
         ),
       ),
@@ -188,6 +208,18 @@ class _BrandFormState extends State<BrandForm> {
       label: 'Nama Brand',
       hint: 'Masukkan nama brand',
       icon: Icons.storefront_outlined,
+      textCapitalization: TextCapitalization.characters,
+      inputFormatters: [
+        TextInputFormatter.withFunction((oldValue, newValue) {
+          final upperText = newValue.text.toUpperCase();
+
+          return newValue.copyWith(
+            text: upperText,
+            selection: newValue.selection,
+            composing: TextRange.empty,
+          );
+        }),
+      ],
     );
   }
 
@@ -707,7 +739,6 @@ class _BrandFormState extends State<BrandForm> {
   // ============================================================
   // SAVE
   // ============================================================
-
   Future<void> _saveBrand() async {
     if (!_isFormValid) {
       _showMessage(
@@ -731,7 +762,18 @@ class _BrandFormState extends State<BrandForm> {
       return;
     }
 
-    Navigator.pop(context);
+    final prefs = await SharedPreferences.getInstance();
+    final int idKios = prefs.getInt('id_kios') ?? 0;
+
+    if (!mounted) return;
+
+    if (idKios > 0) {
+      // Brand pertama: langsung masuk Home.
+      Get.offAllNamed(RouterClass.home);
+    } else {
+      // Jika belum memiliki Brand aktif, buka daftar Brand.
+      Get.offAllNamed(RouterClass.outlet);
+    }
   }
 
   // ============================================================

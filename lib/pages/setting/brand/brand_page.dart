@@ -21,7 +21,7 @@ class BrandPage extends StatefulWidget {
 }
 
 class _BrandPageState extends State<BrandPage> {
-  late final KiosController kiosController;
+  late KiosController kiosController;
   late final CabangController cabangController;
 
   @override
@@ -30,14 +30,19 @@ class _BrandPageState extends State<BrandPage> {
 
     kiosController = Get.isRegistered<KiosController>()
         ? Get.find<KiosController>()
-        : Get.put(KiosController());
+        : Get.put<KiosController>(
+            KiosController(),
+            permanent: true,
+          );
 
     cabangController = Get.isRegistered<CabangController>()
         ? Get.find<CabangController>()
         : Get.put(CabangController());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      kiosController.fetchDataListKiosFinancial();
+      if (mounted) {
+        kiosController.fetchDataListKiosFinancial();
+      }
     });
   }
 

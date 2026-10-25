@@ -239,97 +239,142 @@ class KiosController extends BaseController {
   // ============================================================
 
   Future<bool> saveOutlet() async {
-    if (!isFormValid) {
-      return false;
-    }
+    if (isLoadingSaveKios.value) return false;
 
     try {
-      isLoadingSaveKios(true);
+      isLoadingSaveKios.value = true;
 
-      final filePath = pickedFile1.value.path.trim();
+      // Nama Brand selalu disimpan dalam huruf besar.
+      final String brandName = kios.text.trim().toUpperCase();
+
+      if (brandName.isEmpty) {
+        if (Get.key.currentState?.overlay != null) {
+          Get.snackbar(
+            'Peringatan',
+            'Nama Brand wajib diisi.',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
+        return false;
+      }
+
+      // Sinkronkan juga nilai controller dengan huruf besar.
+      kios.value = kios.value.copyWith(
+        text: brandName,
+        selection: TextSelection.collapsed(offset: brandName.length),
+        composing: TextRange.empty,
+      );
+
+      final prefs = await SharedPreferences.getInstance();
+
+      // Simpan sesi Brand aktif sebelum penyimpanan.
+      final int activeKiosId = prefs.getInt('id_kios') ?? 0;
+      final int ownerId = prefs.getInt('id_owner') ?? idOwner.value;
 
       final Map<String, dynamic> formMap = {
         'id_owner': idOwner.value,
         'kios_id': idKios.value,
-        'kios': kios.text.trim(),
+        'kios': brandName,
         'phone': phone.text.trim(),
         'description': description.text.trim(),
         'old_logo': oldLogo.value.trim(),
-
-        // 1 = hapus logo lama
-        // 0 = pertahankan logo lama
         'remove_logo': removeLogo.value ? '1' : '0',
       };
 
-      // ========================================================
-      // LOGO BARU
-      // ========================================================
+      // Upload logo hanya jika file benar-benar tersedia.
+      final selectedFile = pickedFile1.value;
 
-      if (filePath.isNotEmpty) {
-        final file = File(filePath);
+      if (selectedFile != null && selectedFile.path.trim().isNotEmpty) {
+        final logoFile = File(selectedFile.path);
 
-        if (!file.existsSync()) {
+        if (await logoFile.exists()) {
+          formMap['logo'] = await dio.MultipartFile.fromFile(
+            logoFile.path,
+            filename: logoFile.uri.pathSegments.last,
+          );
+
+          // Logo baru menggantikan logo lama.
+          formMap['remove_logo'] = '0';
+        } else {
+          debugPrint('Logo tidak ditemukan: ${selectedFile.path}');
+
+          if (Get.key.currentState?.overlay != null) {
+            Get.snackbar(
+              'Peringatan',
+              'File logo tidak ditemukan. Silakan pilih logo kembali.',
+              snackPosition: SnackPosition.BOTTOM,
+            );
+          }
           return false;
         }
-
-        final fileSizeInBytes = await file.length();
-
-        final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
-
-        if (fileSizeInMB > 2) {
-          return false;
-        }
-
-        // Logo baru selalu menjadi prioritas.
-        formMap['remove_logo'] = '0';
-
-        formMap['logo'] = await dio.MultipartFile.fromFile(
-          filePath,
-          filename: filePath.split('/').last,
-        );
       }
-
-      // ========================================================
-      // TANPA LOGO BARU
-      // ========================================================
-      //
-      // Jangan kirim logo lama sebagai string.
-      //
-      // Backend menentukan:
-      //
-      // remove_logo = 1
-      // -> hapus logo lama
-      //
-      // remove_logo = 0
-      // -> pertahankan logo lama
-      //
-      // Brand baru tanpa logo:
-      // -> backend menyimpan logo kosong.
-      // ========================================================
 
       final formData = dio.FormData.fromMap(formMap);
 
-      final result = await RemoteDataSource.saveOutlet(
-        formData,
-      );
+      final bool result = await RemoteDataSource.saveOutlet(formData);
 
       if (!result) {
+        if (Get.key.currentState?.overlay != null) {
+          Get.snackbar(
+            'Gagal',
+            'Brand gagal disimpan. Silakan coba kembali.',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
         return false;
+      }
+
+      // Ambil ulang daftar Brand milik owner.
+      final List<KiosModel>? latestKios =
+          await RemoteDataSource.getListKiosAndDetail({
+        'id_owner': ownerId,
+      });
+
+      if (latestKios != null) {
+        resultDataKios.assignAll(latestKios);
+
+        // Jika owner belum mempunyai Brand aktif,
+        // aktifkan Brand pertama yang tersedia.
+        if (activeKiosId <= 0 && latestKios.isNotEmpty) {
+          KiosModel? firstKios;
+
+          for (final item in latestKios) {
+            if ((item.idKios ?? 0) > 0) {
+              firstKios = item;
+              break;
+            }
+          }
+
+          if (firstKios != null) {
+            await prefs.setInt('id_kios', firstKios.idKios!);
+            await prefs.setString('kios', firstKios.kios ?? '');
+            await prefs.setString('phone', firstKios.phone ?? '');
+
+            idKios.value = firstKios.idKios!;
+            selectedKios.value = firstKios.kios ?? '';
+          }
+        }
       }
 
       clearOutletController();
 
       return true;
-    } catch (e) {
-      debugPrint(
-        'KiosController.saveOutlet: $e',
-      );
+    } catch (e, stackTrace) {
+      debugPrint('Save outlet error: $e');
+      debugPrint('Stack trace: $stackTrace');
+
+      // Hindari memunculkan snackbar jika overlay sudah tidak tersedia.
+      if (Get.key.currentState?.overlay != null) {
+        Get.snackbar(
+          'Error',
+          'Terjadi kesalahan saat menyimpan Brand.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
 
       return false;
     } finally {
-      isLoadingSaveKios(false);
-
-      await fetchDataListKiosFinancial();
+      isLoadingSaveKios.value = false;
     }
   }
 

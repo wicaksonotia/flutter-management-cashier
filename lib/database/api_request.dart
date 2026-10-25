@@ -18,31 +18,65 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RemoteDataSource {
   static Future<bool> login(FormData data) async {
     try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.login;
-      Response response = await Dio().post(
+      final url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.login;
+
+      final response = await Dio().post(
         url,
         data: data,
-        options: Options(contentType: Headers.jsonContentType),
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
       );
-      if (response.statusCode == 200) {
-        if (response.data['status'] == 'ok') {
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('statusLogin', true);
-          await prefs.setString('username', response.data['username']);
-          await prefs.setString('password', response.data['password']);
-          await prefs.setInt('id_owner', response.data['id_owner']);
-          await prefs.setString('nama_owner', response.data['nama_owner']);
-          await prefs.setString('phone_owner', response.data['phone_owner']);
-          await prefs.setString('alamat_owner', response.data['alamat_owner']);
-          await prefs.setInt('id_kios', response.data['id_kios']);
-          await prefs.setString('kios', response.data['kios']);
-          await prefs.setString('phone', response.data['phone'] ?? '');
-          await prefs.setString('alamat', response.data['alamat']);
-          return true;
-        }
+
+      if (response.statusCode != 200 || response.data['status'] != 'ok') {
+        return false;
       }
-      return false;
-    } catch (e) {
+
+      final result = response.data;
+
+      // Validasi identitas owner.
+      final int? idOwner = int.tryParse(
+        result['id_owner']?.toString() ?? '',
+      );
+
+      if (idOwner == null || idOwner <= 0) {
+        return false;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+
+      // Simpan data owner terlebih dahulu.
+      await prefs.setString('username', result['username'] ?? '');
+      await prefs.setString('password', result['password'] ?? '');
+      await prefs.setInt('id_owner', idOwner);
+      await prefs.setString('nama_owner', result['nama_owner'] ?? '');
+      await prefs.setString(
+        'phone_owner',
+        result['phone_owner'] ?? '',
+      );
+      await prefs.setString(
+        'alamat_owner',
+        result['alamat_owner'] ?? '',
+      );
+
+      // Owner baru boleh belum mempunyai kios.
+      final int idKios = int.tryParse(
+            result['id_kios']?.toString() ?? '',
+          ) ??
+          0;
+
+      await prefs.setInt('id_kios', idKios);
+      await prefs.setString('kios', result['kios'] ?? '');
+      await prefs.setString('phone', result['phone'] ?? '');
+      await prefs.setString('alamat', result['alamat'] ?? '');
+
+      // Tandai login sukses setelah penyimpanan data selesai.
+      await prefs.setBool('statusLogin', true);
+
+      return true;
+    } catch (e, stackTrace) {
+      debugPrint('Login error: $e');
+      debugPrint('Stack trace: $stackTrace');
       return false;
     }
   }

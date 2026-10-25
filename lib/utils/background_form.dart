@@ -6,10 +6,12 @@ class BackgroundForm extends StatelessWidget {
     super.key,
     required this.headerTitle,
     required this.container,
+    this.onBack,
   });
 
   final String headerTitle;
   final Widget container;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +20,7 @@ class BackgroundForm extends StatelessWidget {
       children: [
         Stack(
           children: [
-            // ============================================================
             // HEADER BACKGROUND
-            // ============================================================
             Container(
               height: 300,
               decoration: const BoxDecoration(
@@ -39,9 +39,7 @@ class BackgroundForm extends StatelessWidget {
               ),
             ),
 
-            // ============================================================
             // DECORATION
-            // ============================================================
             Positioned(
               top: -100,
               left: -50,
@@ -85,9 +83,7 @@ class BackgroundForm extends StatelessWidget {
               ),
             ),
 
-            // ============================================================
             // TITLE
-            // ============================================================
             Positioned(
               top: 60,
               left: 80,
@@ -102,14 +98,10 @@ class BackgroundForm extends StatelessWidget {
               ),
             ),
 
-            // ============================================================
             // CONTENT
-            // ============================================================
             container,
 
-            // ============================================================
             // BACK BUTTON
-            // ============================================================
             Positioned(
               top: 50,
               left: 20,
@@ -120,7 +112,11 @@ class BackgroundForm extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      Navigator.of(context).pop();
+                      if (onBack != null) {
+                        onBack!();
+                      } else if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
                     },
                     borderRadius: BorderRadius.circular(24),
                     child: const Center(

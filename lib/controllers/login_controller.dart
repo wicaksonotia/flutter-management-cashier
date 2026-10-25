@@ -94,16 +94,17 @@ class LoginController extends GetxController {
       final bool result = await RemoteDataSource.login(formData);
 
       if (!result) {
-        throw "Kios is not registered";
+        throw 'Login gagal. Periksa username dan password.';
       }
 
-      // --------------------------------------------------------
-      // Setelah login berhasil
-      // --------------------------------------------------------
+      final prefs = await SharedPreferences.getInstance();
+      final int idKios = prefs.getInt('id_kios') ?? 0;
 
-      Get.offAllNamed(
-        RouterClass.home,
-      );
+      if (idKios > 0) {
+        Get.offAllNamed(RouterClass.home);
+      } else {
+        Get.offAllNamed(RouterClass.addoutlet);
+      }
     } catch (error) {
       Get.snackbar(
         'Notification',
